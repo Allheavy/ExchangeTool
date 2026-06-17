@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="application-name" content="交換枚数 計算ツール" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>交換枚数 計算ツール｜PWA</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #fffdf8;
+      --ink: #1f2937;
+      --muted: #667085;
+      --line: #d8d0c1;
+      --soft: #ede5d8;
+      --dark: #111827;
+      --accent: #0f766e;
+      --accent-soft: #dcf5ef;
+      --warn: #b45309;
+      --warn-soft: #fff2cc;
+      --danger: #b91c1c;
+      --shadow: 0 12px 28px rgba(17, 24, 39, .12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Yu Gothic UI", "Hiragino Sans", system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 14px 14px 92px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 1.24rem; margin-bottom: 4px; letter-spacing: 0; }
+    h2 { font-size: 1rem; margin-bottom: 10px; }
+    h3 { font-size: .92rem; margin-bottom: 8px; }
+    .note, .small { color: var(--muted); font-size: .86rem; }
+
+    .top {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 800;
+    }
+
+    .tab.active {
+      background: var(--panel);
+      box-shadow: 0 1px 6px rgba(17, 24, 39, .1);
+    }
+
+    .panel {
+      display: grid;
+      gap: 13px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel > *, .row, .row-3, .section-title, .preset-strip, .chips {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title h2 {
+      margin-bottom: 0;
+    }
+
+    .section-title .compact-btn {
+      width: auto;
+      min-width: 64px;
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: .86rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .primary-input {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+    }
+
+    .primary-input input {
+      min-height: 52px;
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    input, select, button {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 7px;
+      font: inherit;
+    }
+
+    input, select {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input[type="number"] { text-align: right; }
+
+    button {
+      padding: 9px 12px;
+      border: 0;
+      background: var(--dark);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: var(--soft);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    button.danger {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .preset-strip, .chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .preset-chip, .chip {
+      flex: 0 0 auto;
+      width: auto;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .chip input {
+      width: auto;
+      min-height: auto;
+    }
+
+    .metric-line {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .status-line {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .status-item {
+      min-width: 0;
+      padding: 10px 8px;
+      border-right: 1px solid var(--line);
+    }
+
+    .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 0; }
+    .status-label { color: var(--muted); font-size: .72rem; font-weight: 800; }
+    .status-value { font-size: 1.04rem; font-weight: 900; overflow-wrap: anywhere; }
+
+    .callout {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent-soft);
+      font-weight: 800;
+    }
+
+    .callout.hot {
+      border-left-color: var(--warn);
+      background: var(--warn-soft);
+    }
+
+    .details, .sheet {
+      display: none;
+    }
+
+    .details.open, .sheet.open {
+      display: grid;
+      gap: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 6px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); background: #f2eadf; font-size: .74rem; }
+
+    .member {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .payment {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-weight: 800;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(245, 241, 232, .94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .bottom-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 8px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 30;
+      max-height: min(78vh, 620px);
+      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+      overflow: auto;
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -18px 34px rgba(17, 24, 39, .18);
+    }
+
+    .sheet-inner {
+      display: grid;
+      gap: 12px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .calc-display {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      text-align: right;
+      font-size: 1.5rem;
+      font-weight: 900;
+      min-height: 58px;
+      overflow-wrap: anywhere;
+    }
+
+    .examples {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .setting-block {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+    }
+
+    .manage-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .manage-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+      font-weight: 800;
+    }
+
+    .manage-row button {
+      width: auto;
+      min-width: 54px;
+      min-height: 32px;
+      padding: 5px 9px;
+      font-size: .82rem;
+    }
+
+    .hidden { display: none !important; }
+    .good { color: #047857; }
+    .warn { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="top">
+      <div>
+        <h1>交換枚数 計算ツール</h1>
+        <p class="note">スマホ用。余り、あと何玉/枚、景品・金額、ノリ打ち精算。</p>
+      </div>
+      <nav class="tabs" aria-label="画面切替">
+        <button class="tab active" data-tab="exchange" type="button">交換計算</button>
+        <button class="tab" data-tab="group" type="button">ノリ打ち</button>
+      </nav>
+    </div>
+
+    <section id="exchangeTab">
+      <section class="panel">
+        <h2>交換計算</h2>
+
+        <div>
+          <label>交換設定Preset</label>
+          <div id="presetStrip" class="preset-strip"></div>
+        </div>
+
+        <div class="primary-input">
+          <label for="medals">持ち玉/枚数</label>
+          <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="155" />
+        </div>
+
+        <div>
+          <label for="rateType">交換率</label>
+          <select id="rateType"></select>
+        </div>
+
+        <div>
+          <label>使う景品</label>
+          <div id="prizeChoices" class="chips"></div>
+        </div>
+
+        <div class="metric-line">
+          <div class="status-item">
+            <div class="status-label">余り</div>
+            <div id="leftMedals" class="status-value">0枚</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">あと</div>
+            <div id="nextShortage" class="status-value">0枚</div>
+          </div>
+        </div>
+
+        <div id="nextCallout" class="callout"></div>
+      </section>
+
+      <section id="exchangeDetails" class="panel details">
+        <h2>景品・金額</h2>
+        <div class="status-line">
+          <div class="status-item">
+            <div class="status-label">交換額</div>
+            <div id="bestYen" class="status-value">0円</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">必要</div>
+            <div id="bestRequired" class="status-value">0枚</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">景品</div>
+            <div id="bestCombo" class="status-value">-</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>交換額</th>
+              <th>必要</th>
+              <th>余り</th>
+              <th>景品</th>
+            </tr>
+          </thead>
+          <tbody id="candidateRows"></tbody>
+        </table>
+      </section>
+
+      <section id="settingsPanel" class="panel">
+        <h2>設定</h2>
+
+        <div class="setting-block">
+          <h3>景品タイプを追加</h3>
+          <label for="newPrizeValue">景品額（円）</label>
+          <div class="row-3">
+            <input id="newPrizeValue" type="number" min="1" step="1" inputmode="numeric" placeholder="例: 100" />
+            <span></span>
+            <button id="addPrizeBtn" type="button">追加</button>
+          </div>
+          <div id="prizeTypeList" class="manage-list"></div>
+        </div>
+
+        <div class="setting-block">
+          <h3>交換率を追加</h3>
+          <input id="newRateName" type="text" placeholder="交換率名 例: 21.73円スロット" />
+          <div class="row-3">
+            <input id="newRateValue" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="100円あたり数量" />
+            <select id="newRateUnit">
+              <option value="枚">枚</option>
+              <option value="玉">玉</option>
+            </select>
+            <button id="addRateBtn" type="button">追加</button>
+          </div>
+          <ul class="examples small">
+            <li>4円パチンコ: 28玉</li>
+            <li>1円パチンコ: 112玉</li>
+            <li>21.73円スロット: 5.2枚</li>
+          </ul>
+          <div id="rateTypeList" class="manage-list"></div>
+        </div>
+
+        <div class="setting-block">
+          <h3>交換設定Presetを保存</h3>
+          <input id="presetName" type="text" placeholder="Preset名（店名）" />
+          <label for="presetRate">交換率</label>
+          <select id="presetRate"></select>
+          <label>景品額（円）</label>
+          <div id="presetPrizeChoices" class="chips"></div>
+          <button id="savePresetBtn" type="button">Preset保存</button>
+        </div>
+
+        <div class="setting-block">
+          <h3>保存済みPreset</h3>
+          <select id="presetManage"></select>
+          <button id="deletePresetBtn" class="danger" type="button">選択Presetを削除</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="groupTab" class="hidden">
+      <section class="panel">
+        <h2>ノリ打ち</h2>
+        <label for="groupMode">比重モード</label>
+        <select id="groupMode">
+          <option value="none">比重なし</option>
+          <option value="A">比重A（優遇）</option>
+          <option value="B">比重B（強めに優遇）</option>
+        </select>
+        <p class="note">比重Aは成績が良い人へ軽く寄せます。比重BはAより強く寄せます。投資・回収が1000円単位なら、目標収支と受け渡しも1000円単位にします。</p>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>メンバー</h2>
+          <button id="addMemberBtn" class="compact-btn" type="button">追加</button>
+        </div>
+        <div id="memberRows"></div>
+      </section>
+
+      <section class="panel">
+        <h2>結果</h2>
+        <div class="status-line">
+          <div class="status-item">
+            <div class="status-label">総投資</div>
+            <div id="groupInvestment" class="status-value">0円</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">総回収</div>
+            <div id="groupRecovery" class="status-value">0円</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">収支</div>
+            <div id="groupProfit" class="status-value">0円</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>名前</th>
+              <th>実績</th>
+              <th>目標収支</th>
+              <th>差額</th>
+            </tr>
+          </thead>
+          <tbody id="memberResultRows"></tbody>
+        </table>
+        <h3>受け渡し</h3>
+        <div id="paymentRows"></div>
+      </section>
+    </section>
+  </main>
+
+  <div id="bottomBar" class="bottom-bar">
+    <div class="bottom-inner">
+      <button id="openCalcBtn" class="secondary" type="button">電卓</button>
+      <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
+    </div>
+  </div>
+
+  <section id="calcSheet" class="sheet">
+    <div class="sheet-inner">
+      <div class="section-title">
+        <h2>電卓</h2>
+        <button id="closeCalcBtn" class="secondary" type="button">閉じる</button>
+      </div>
+      <div id="calcDisplay" class="calc-display">0</div>
+      <div class="calc-grid">
+        <button class="calc-key secondary" data-key="7" type="button">7</button>
+        <button class="calc-key secondary" data-key="8" type="button">8</button>
+        <button class="calc-key secondary" data-key="9" type="button">9</button>
+        <button class="calc-key secondary" data-key="back" type="button">⌫</button>
+        <button class="calc-key secondary" data-key="4" type="button">4</button>
+        <button class="calc-key secondary" data-key="5" type="button">5</button>
+        <button class="calc-key secondary" data-key="6" type="button">6</button>
+        <button class="calc-key secondary" data-key="+" type="button">+</button>
+        <button class="calc-key secondary" data-key="1" type="button">1</button>
+        <button class="calc-key secondary" data-key="2" type="button">2</button>
+        <button class="calc-key secondary" data-key="3" type="button">3</button>
+        <button class="calc-key secondary" data-key="-" type="button">-</button>
+        <button class="calc-key secondary" data-key="0" type="button">0</button>
+        <button class="calc-key danger" data-key="clear" type="button">C</button>
+        <button class="calc-key secondary" data-key="=" type="button">=</button>
+        <button id="applyCalcBtn" type="button">入れる</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    import {
+      DEFAULT_PRIZES,
+      RATE_CONFIGS,
+      calculateExchange,
+      deletePrizeType,
+      deleteRateType,
+      evaluateCalculatorExpression,
+      formatNumber,
+      nextMemberName,
+      settleGroup,
+      unitLabelFor,
+    } from "./app-core.mjs";
+
+    const SETTINGS_KEY = "exchangeTool.settings.v5";
+    const PRESETS_KEY = "exchangeTool.presets.v5";
+    const PRIZES_KEY = "exchangeTool.prizes.v5";
+    const RATES_KEY = "exchangeTool.rates.v5";
+    const HIDDEN_RATES_KEY = "exchangeTool.hiddenRates.v5";
+    const medalsInput = document.getElementById("medals");
+    const rateTypeInput = document.getElementById("rateType");
+    const prizeChoices = document.getElementById("prizeChoices");
+    const presetPrizeChoices = document.getElementById("presetPrizeChoices");
+    const details = document.getElementById("exchangeDetails");
+    const calcSheet = document.getElementById("calcSheet");
+    const memberRows = document.getElementById("memberRows");
+    let calcExpression = "";
+    let calcResult = 0;
+    let members = [
+      { name: "A", investment: "", recovery: "" },
+      { name: "B", investment: "", recovery: "" },
+    ];
+
+    function loadJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getPrizeTypes() {
+      return [...new Set(loadJson(PRIZES_KEY, DEFAULT_PRIZES).map(Number).filter((value) => value > 0))]
+        .sort((a, b) => a - b);
+    }
+
+    function getRates() {
+      const hidden = new Set(loadJson(HIDDEN_RATES_KEY, []));
+      return Object.fromEntries(
+        Object.entries({ ...RATE_CONFIGS, ...loadJson(RATES_KEY, {}) })
+          .filter(([id]) => !hidden.has(id))
+      );
+    }
+
+    function checkedValues(root, name) {
+      return [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((input) => Number(input.value));
+    }
+
+    function currentPrizes() {
+      return checkedValues(document, "prize");
+    }
+
+    function saveSettings() {
+      saveJson(SETTINGS_KEY, {
+        rateType: rateTypeInput.value,
+        prizes: currentPrizes(),
+        detailsOpen: details.classList.contains("open"),
+      });
+    }
+
+    function comboText(combo) {
+      return Object.entries(combo)
+        .map(([yen, count]) => [Number(yen), count])
+        .filter(([, count]) => count > 0)
+        .sort((a, b) => b[0] - a[0])
+        .map(([yen, count]) => `${formatNumber(yen)}円×${count}`)
+        .join(" / ") || "-";
+    }
+
+    function renderRates(selected = rateTypeInput.value) {
+      const rates = getRates();
+      const fallback = rates[selected] ? selected : Object.keys(rates)[0];
+      [rateTypeInput, document.getElementById("presetRate")].forEach((select) => {
+        select.innerHTML = "";
+        Object.entries(rates).forEach(([id, rate]) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = `${rate.label}（${formatNumber(rate.medalsPerYen * 100)}${rate.unitLabel || "玉/枚"}/100円）`;
+          select.appendChild(option);
+        });
+        select.value = fallback || "";
+      });
+    }
+
+    function renderPrizeChecks(root, name, selected) {
+      root.innerHTML = "";
+      getPrizeTypes().forEach((prize) => {
+        const label = document.createElement("label");
+        label.className = "chip";
+        label.innerHTML = `<input type="checkbox" name="${name}" value="${prize}" ${selected.includes(prize) ? "checked" : ""} />${formatNumber(prize)}円`;
+        root.appendChild(label);
+      });
+    }
+
+    function renderPrizeChoices(selected = currentPrizes().length ? currentPrizes() : getPrizeTypes()) {
+      renderPrizeChecks(prizeChoices, "prize", selected);
+      renderPrizeChecks(presetPrizeChoices, "presetPrize", selected);
+      renderManageLists();
+    }
+
+    function renderManageLists() {
+      const prizeList = document.getElementById("prizeTypeList");
+      prizeList.innerHTML = "";
+      getPrizeTypes().forEach((prize) => {
+        const row = document.createElement("div");
+        row.className = "manage-row";
+        row.innerHTML = `<span>${formatNumber(prize)}円</span><button class="danger" type="button" data-delete-prize="${prize}">削除</button>`;
+        prizeList.appendChild(row);
+      });
+
+      const rateList = document.getElementById("rateTypeList");
+      rateList.innerHTML = "";
+      Object.entries(getRates()).forEach(([id, rate]) => {
+        const row = document.createElement("div");
+        row.className = "manage-row";
+        row.innerHTML = `<span>${rate.label}</span><button class="danger" type="button" data-delete-rate="${id}">削除</button>`;
+        rateList.appendChild(row);
+      });
+    }
+
+    function renderPresets() {
+      const presets = loadJson(PRESETS_KEY, []);
+      const strip = document.getElementById("presetStrip");
+      const manage = document.getElementById("presetManage");
+      strip.innerHTML = "";
+      manage.innerHTML = `<option value="">Presetを選択</option>`;
+      if (presets.length === 0) {
+        strip.innerHTML = `<span class="note">下の設定からPresetを保存できます。</span>`;
+      }
+      presets.forEach((preset, index) => {
+        const button = document.createElement("button");
+        button.className = "preset-chip";
+        button.type = "button";
+        button.dataset.applyPreset = String(index);
+        button.textContent = preset.name;
+        strip.appendChild(button);
+
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = preset.name;
+        manage.appendChild(option);
+      });
+    }
+
+    function applyPreset(preset) {
+      if (!preset) return;
+      renderRates(preset.rateType);
+      rateTypeInput.value = preset.rateType;
+      const mergedPrizes = [...new Set([...getPrizeTypes(), ...preset.prizes])].sort((a, b) => a - b);
+      saveJson(PRIZES_KEY, mergedPrizes);
+      renderPrizeChoices(preset.prizes);
+      renderExchange();
+    }
+
+    function currentUnit() {
+      return unitLabelFor(rateTypeInput.value, getRates());
+    }
+
+    function renderExchange() {
+      const rates = getRates();
+      const result = calculateExchange({
+        medals: medalsInput.value,
+        rateType: rateTypeInput.value,
+        prizes: currentPrizes(),
+        rates,
+      });
+      const unit = currentUnit();
+      const shortage = result.next.shortage;
+      document.getElementById("leftMedals").textContent = `${formatNumber(result.best.left)}${unit}`;
+      document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
+      document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
+      document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
+      document.getElementById("bestCombo").textContent = comboText(result.best.combo);
+
+      const callout = document.getElementById("nextCallout");
+      callout.className = `callout ${shortage <= 10 ? "hot" : ""}`;
+      callout.textContent = result.next.yen
+        ? `あと${formatNumber(shortage)}${unit}で+${formatNumber(result.next.increaseYen)}円に届きます。`
+        : "景品を1つ以上選んでください。";
+
+      const rows = document.getElementById("candidateRows");
+      rows.innerHTML = "";
+      result.candidates.forEach((candidate) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatNumber(candidate.yen)}円</td>
+          <td>${formatNumber(candidate.requiredMedals)}${unit}</td>
+          <td>${formatNumber(candidate.left)}${unit}</td>
+          <td>${comboText(candidate.combo)}</td>
+        `;
+        rows.appendChild(tr);
+      });
+      saveSettings();
+    }
+
+    function renderCalc() {
+      document.getElementById("calcDisplay").textContent = calcExpression || String(calcResult || 0);
+    }
+
+    function commitCalcResult() {
+      calcResult = evaluateCalculatorExpression(calcExpression);
+      calcExpression = String(calcResult);
+      renderCalc();
+    }
+
+    function renderMembers() {
+      memberRows.innerHTML = "";
+      members.forEach((member, index) => {
+        const row = document.createElement("div");
+        row.className = "member";
+        row.innerHTML = `
+          <input type="text" placeholder="名前" value="${member.name}" data-member="${index}" data-field="name" />
+          <div class="row">
+            <input type="number" min="0" step="100" inputmode="numeric" placeholder="投資額" value="${member.investment}" data-member="${index}" data-field="investment" />
+            <input type="number" min="0" step="100" inputmode="numeric" placeholder="回収額" value="${member.recovery}" data-member="${index}" data-field="recovery" />
+          </div>
+          <button class="danger" type="button" data-remove-member="${index}">削除</button>
+        `;
+        memberRows.appendChild(row);
+      });
+      renderGroup();
+    }
+
+    function renderGroup() {
+      const result = settleGroup({ mode: document.getElementById("groupMode").value, members });
+      document.getElementById("groupInvestment").textContent = `${formatNumber(result.totalInvestment)}円`;
+      document.getElementById("groupRecovery").textContent = `${formatNumber(result.totalRecovery)}円`;
+      const profit = document.getElementById("groupProfit");
+      profit.textContent = `${result.totalProfit >= 0 ? "+" : ""}${formatNumber(result.totalProfit)}円`;
+      profit.className = `status-value ${result.totalProfit >= 0 ? "good" : "warn"}`;
+
+      const memberResultRows = document.getElementById("memberResultRows");
+      memberResultRows.innerHTML = "";
+      result.members.forEach((member) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${member.name}</td>
+          <td>${member.performance >= 0 ? "+" : ""}${formatNumber(member.performance)}円</td>
+          <td>${member.targetNet >= 0 ? "+" : ""}${formatNumber(member.targetNet)}円</td>
+          <td>${member.balance >= 0 ? "渡す " : "受ける "}${formatNumber(Math.abs(member.balance))}円</td>
+        `;
+        memberResultRows.appendChild(tr);
+      });
+
+      const payments = document.getElementById("paymentRows");
+      payments.innerHTML = "";
+      if (result.payments.length === 0) {
+        payments.innerHTML = `<p class="note">受け渡しはありません。</p>`;
+        return;
+      }
+      result.payments.forEach((payment) => {
+        const row = document.createElement("div");
+        row.className = "payment";
+        row.innerHTML = `<span>${payment.from} → ${payment.to}</span><strong>${formatNumber(payment.amount)}円</strong>`;
+        payments.appendChild(row);
+      });
+    }
+
+    function applyInitialSettings() {
+      const settings = loadJson(SETTINGS_KEY, {
+        rateType: "rate5152",
+        prizes: getPrizeTypes(),
+        detailsOpen: false,
+      });
+      renderRates(settings.rateType);
+      renderPrizeChoices(settings.prizes);
+      details.classList.toggle("open", !!settings.detailsOpen);
+      document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
+        ? "景品・金額を隠す"
+        : "景品・金額を見る";
+    }
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", item === tab));
+        document.getElementById("exchangeTab").classList.toggle("hidden", tab.dataset.tab !== "exchange");
+        document.getElementById("groupTab").classList.toggle("hidden", tab.dataset.tab !== "group");
+        document.getElementById("bottomBar").classList.toggle("hidden", tab.dataset.tab !== "exchange");
+      });
+    });
+
+    document.getElementById("toggleDetailsBtn").addEventListener("click", () => {
+      details.classList.toggle("open");
+      document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
+        ? "景品・金額を隠す"
+        : "景品・金額を見る";
+      renderExchange();
+    });
+
+    document.getElementById("openCalcBtn").addEventListener("click", () => calcSheet.classList.add("open"));
+    document.getElementById("closeCalcBtn").addEventListener("click", () => calcSheet.classList.remove("open"));
+
+    document.querySelectorAll(".calc-key").forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.key;
+        if (key === "clear") {
+          calcExpression = "";
+          calcResult = 0;
+        } else if (key === "back") {
+          calcExpression = calcExpression.slice(0, -1);
+        } else if (key === "=") {
+          commitCalcResult();
+          return;
+        } else if (key === "+" || key === "-") {
+          if (calcExpression === "") calcExpression = "0";
+          calcExpression = calcExpression.replace(/[+-]$/, "") + key;
+        } else if (calcExpression.length < 18) {
+          calcExpression += key;
+          calcExpression = calcExpression.replace(/^0+(?=\d)/, "");
+        }
+        renderCalc();
+      });
+    });
+
+    document.getElementById("applyCalcBtn").addEventListener("click", () => {
+      const value = evaluateCalculatorExpression(calcExpression || String(calcResult || 0));
+      medalsInput.value = Math.max(0, Math.floor(value));
+      calcExpression = "";
+      calcResult = 0;
+      renderCalc();
+      calcSheet.classList.remove("open");
+      renderExchange();
+    });
+
+    document.getElementById("addPrizeBtn").addEventListener("click", () => {
+      const value = Math.floor(Number(document.getElementById("newPrizeValue").value || 0));
+      if (value <= 0) return;
+      saveJson(PRIZES_KEY, [...new Set([...getPrizeTypes(), value])].sort((a, b) => a - b));
+      document.getElementById("newPrizeValue").value = "";
+      renderPrizeChoices(currentPrizes());
+      renderExchange();
+    });
+
+    document.getElementById("addRateBtn").addEventListener("click", () => {
+      const name = document.getElementById("newRateName").value.trim();
+      const per100 = Number(document.getElementById("newRateValue").value);
+      const unitLabel = document.getElementById("newRateUnit").value;
+      if (!name || !Number.isFinite(per100) || per100 <= 0) return;
+      const rates = loadJson(RATES_KEY, {});
+      const id = `custom_${Date.now()}`;
+      rates[id] = { label: name, medalsPerYen: per100 / 100, unitLabel };
+      saveJson(RATES_KEY, rates);
+      document.getElementById("newRateName").value = "";
+      document.getElementById("newRateValue").value = "";
+      renderRates(id);
+      renderManageLists();
+      renderExchange();
+    });
+
+    document.getElementById("prizeTypeList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-delete-prize]");
+      if (!button) return;
+      if (getPrizeTypes().length <= 1) return;
+      const presets = loadJson(PRESETS_KEY, []);
+      const result = deletePrizeType({
+        prizeTypes: getPrizeTypes(),
+        selectedPrizes: currentPrizes(),
+        presets,
+        prize: Number(button.dataset.deletePrize),
+      });
+      saveJson(PRIZES_KEY, result.prizeTypes);
+      saveJson(PRESETS_KEY, result.presets);
+      renderPrizeChoices(result.selectedPrizes.length ? result.selectedPrizes : result.prizeTypes);
+      renderPresets();
+      renderExchange();
+    });
+
+    document.getElementById("rateTypeList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-delete-rate]");
+      if (!button) return;
+      const rateType = button.dataset.deleteRate;
+      if (Object.keys(getRates()).length <= 1) return;
+      const customRates = loadJson(RATES_KEY, {});
+      const hiddenRates = new Set(loadJson(HIDDEN_RATES_KEY, []));
+      if (RATE_CONFIGS[rateType]) hiddenRates.add(rateType);
+      const result = deleteRateType({
+        customRates,
+        currentRateType: rateTypeInput.value,
+        presets: loadJson(PRESETS_KEY, []),
+        rateType,
+        fallbackRateType: "rate5152",
+      });
+      saveJson(RATES_KEY, result.customRates);
+      saveJson(HIDDEN_RATES_KEY, [...hiddenRates]);
+      saveJson(PRESETS_KEY, result.presets);
+      renderRates(result.currentRateType);
+      renderPresets();
+      renderManageLists();
+      renderExchange();
+    });
+
+    document.getElementById("savePresetBtn").addEventListener("click", () => {
+      const name = document.getElementById("presetName").value.trim();
+      const prizes = checkedValues(presetPrizeChoices, "presetPrize");
+      if (!name || prizes.length === 0) return;
+      const presets = loadJson(PRESETS_KEY, []);
+      presets.push({ name, rateType: document.getElementById("presetRate").value, prizes });
+      saveJson(PRESETS_KEY, presets);
+      document.getElementById("presetName").value = "";
+      renderPresets();
+    });
+
+    document.getElementById("deletePresetBtn").addEventListener("click", () => {
+      const index = Number(document.getElementById("presetManage").value);
+      if (!Number.isInteger(index)) return;
+      const presets = loadJson(PRESETS_KEY, []);
+      presets.splice(index, 1);
+      saveJson(PRESETS_KEY, presets);
+      renderPresets();
+    });
+
+    document.getElementById("presetStrip").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-apply-preset]");
+      if (!button) return;
+      applyPreset(loadJson(PRESETS_KEY, [])[Number(button.dataset.applyPreset)]);
+    });
+
+    document.getElementById("addMemberBtn").addEventListener("click", () => {
+      members.push({ name: nextMemberName(members), investment: "", recovery: "" });
+      renderMembers();
+    });
+
+    memberRows.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!target.matches("[data-member]")) return;
+      members[Number(target.dataset.member)][target.dataset.field] = target.value;
+      renderGroup();
+    });
+
+    memberRows.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove-member]");
+      if (!button) return;
+      members.splice(Number(button.dataset.removeMember), 1);
+      if (members.length === 0) members.push({ name: "A", investment: "", recovery: "" });
+      renderMembers();
+    });
+
+    [medalsInput, rateTypeInput].forEach((el) => el.addEventListener("input", renderExchange));
+    rateTypeInput.addEventListener("change", renderExchange);
+    prizeChoices.addEventListener("change", renderExchange);
+    presetPrizeChoices.addEventListener("change", () => {});
+    document.getElementById("groupMode").addEventListener("change", renderGroup);
+
+    applyInitialSettings();
+    renderPresets();
+    renderMembers();
+    renderCalc();
+    renderExchange();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
