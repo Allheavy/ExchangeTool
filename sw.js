@@ -1,4 +1,4 @@
-const CACHE_NAME = "exchange-tool-pwa-v12";
+const CACHE_NAME = "exchange-tool-pwa-v13";
 const ASSETS = [
   "./",
   "./index.html",

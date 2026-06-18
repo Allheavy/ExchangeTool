@@ -14,6 +14,8 @@ assert.deepEqual(DEFAULT_PRIZES, [500, 1000, 5000]);
 
 const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
+assert.match(indexHtml, /id="mainRateCategory"/);
+assert.match(indexHtml, /id="mainRateOption"/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),

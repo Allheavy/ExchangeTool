@@ -513,9 +513,21 @@
           <div id="presetStrip" class="preset-strip"></div>
         </div>
 
-        <div>
-          <label for="rateType">交換率</label>
-          <select id="rateType"></select>
+        <div class="rate-builder">
+          <div>
+            <label for="mainRateCategory">種類</label>
+            <select id="mainRateCategory">
+              <option value="pachi4">4円パチンコ</option>
+              <option value="pachi1">1円パチンコ</option>
+              <option value="slot20">20円スロ</option>
+              <option value="slot5">5円スロ</option>
+            </select>
+          </div>
+          <div>
+            <label for="mainRateOption">交換率</label>
+            <select id="mainRateOption"></select>
+          </div>
+          <select id="rateType" class="hidden" aria-hidden="true"></select>
         </div>
 
         <div>
@@ -625,8 +637,11 @@
         <div class="setting-block">
           <h3>交換設定Presetを保存</h3>
           <input id="presetName" type="text" placeholder="Preset名（店名）" />
-          <label for="presetRate">交換率</label>
-          <select id="presetRate"></select>
+          <div>
+            <label>現在の交換率</label>
+            <div id="presetRateSummary" class="field-help">-</div>
+            <select id="presetRate" class="hidden" aria-hidden="true"></select>
+          </div>
           <label>景品額（円）</label>
           <div id="presetPrizeChoices" class="chips"></div>
           <button id="savePresetBtn" type="button">Preset保存</button>
@@ -763,6 +778,8 @@
     const HIDDEN_RATES_KEY = "exchangeTool.hiddenRates.v5";
     const medalsInput = document.getElementById("medals");
     const rateTypeInput = document.getElementById("rateType");
+    const mainRateCategoryInput = document.getElementById("mainRateCategory");
+    const mainRateOptionInput = document.getElementById("mainRateOption");
     const prizeChoices = document.getElementById("prizeChoices");
     const presetPrizeChoices = document.getElementById("presetPrizeChoices");
     const details = document.getElementById("exchangeDetails");
@@ -771,6 +788,7 @@
     const toast = document.getElementById("toast");
     const toastActionBtn = document.getElementById("toastActionBtn");
     let activePresetName = "";
+    let mainRateId = "";
     let calcExpression = "";
     let calcResult = 0;
     let toastTimer = 0;
@@ -797,12 +815,41 @@
         .sort((a, b) => a - b);
     }
 
+    function customRates() {
+      return Object.fromEntries(
+        Object.entries(loadJson(RATES_KEY, {})).filter(([id]) => !id.startsWith("guided_"))
+      );
+    }
+
     function getRates() {
       const hidden = new Set(loadJson(HIDDEN_RATES_KEY, []));
       return Object.fromEntries(
-        Object.entries({ ...RATE_CONFIGS, ...loadJson(RATES_KEY, {}) })
+        Object.entries({ ...RATE_CONFIGS, ...guidedRateConfigs(), ...customRates() })
           .filter(([id]) => !hidden.has(id))
       );
+    }
+
+    function manageableRates() {
+      const hidden = new Set(loadJson(HIDDEN_RATES_KEY, []));
+      return Object.fromEntries(
+        Object.entries({ ...RATE_CONFIGS, ...customRates() })
+          .filter(([id]) => !hidden.has(id))
+      );
+    }
+
+    function guidedRateId(category, value) {
+      return `guided_${category}_${String(value).replace(".", "_")}`;
+    }
+
+    function guidedRateConfigs() {
+      const entries = {};
+      ["pachi4", "pachi1", "slot20", "slot5"].forEach((category) => {
+        rateCategoryOptions(category).forEach((option) => {
+          const rate = buildRateConfigFromOption(category, option.value);
+          if (rate) entries[guidedRateId(category, option.value)] = rate;
+        });
+      });
+      return entries;
     }
 
     function checkedValues(root, name) {
@@ -871,7 +918,73 @@
         });
         select.value = fallback || "";
       });
+      const summary = document.getElementById("presetRateSummary");
+      if (summary) summary.textContent = rates[fallback]?.label || "-";
       document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
+    }
+
+    function selectedGuidedRateConfig() {
+      return buildRateConfigFromOption(mainRateCategoryInput.value, mainRateOptionInput.value);
+    }
+
+    function findGuidedRateSelection(rate) {
+      if (!rate) return null;
+      for (const category of ["pachi4", "pachi1", "slot20", "slot5"]) {
+        for (const option of rateCategoryOptions(category)) {
+          const candidate = buildRateConfigFromOption(category, option.value);
+          if (
+            candidate
+            && candidate.unitLabel === rate.unitLabel
+            && Math.abs(candidate.medalsPerYen - rate.medalsPerYen) < 1e-9
+          ) {
+            return { category, option: option.value };
+          }
+        }
+      }
+      return null;
+    }
+
+    function ensureMainRateId(rateConfig) {
+      const existing = Object.entries({ ...RATE_CONFIGS, ...guidedRateConfigs(), ...customRates() })
+        .find(([, rate]) => rate.label === rateConfig.label && Math.abs(rate.medalsPerYen - rateConfig.medalsPerYen) < 1e-9);
+      if (existing) return existing[0];
+      return guidedRateId(mainRateCategoryInput.value, mainRateOptionInput.value);
+    }
+
+    function renderMainRateOptions(selected = mainRateOptionInput.value) {
+      const options = rateCategoryOptions(mainRateCategoryInput.value);
+      const fallback = options.some((option) => option.value === selected) ? selected : options[0]?.value || "";
+      mainRateOptionInput.innerHTML = "";
+      options.forEach((option) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = option.value;
+        optionEl.textContent = option.label;
+        mainRateOptionInput.appendChild(optionEl);
+      });
+      mainRateOptionInput.value = fallback;
+    }
+
+    function syncMainRateToHidden({ custom = true } = {}) {
+      const rateConfig = selectedGuidedRateConfig();
+      if (!rateConfig) return;
+      mainRateId = ensureMainRateId(rateConfig);
+      renderRates(mainRateId);
+      rateTypeInput.value = mainRateId;
+      if (custom) markCustomSettings();
+      renderExchange();
+    }
+
+    function applyRateToMainControls(rateType) {
+      const rate = getRates()[rateType];
+      const selection = findGuidedRateSelection(rate);
+      if (!selection) return false;
+      mainRateCategoryInput.value = selection.category;
+      renderMainRateOptions(selection.option);
+      mainRateOptionInput.value = selection.option;
+      mainRateId = rateType;
+      renderRates(rateType);
+      rateTypeInput.value = rateType;
+      return true;
     }
 
     function renderRateBuilder() {
@@ -922,7 +1035,7 @@
 
       const rateList = document.getElementById("rateTypeList");
       rateList.innerHTML = "";
-      Object.entries(getRates()).forEach(([id, rate]) => {
+      Object.entries(manageableRates()).forEach(([id, rate]) => {
         const row = document.createElement("div");
         row.className = "manage-row";
         row.innerHTML = `<span>${rate.label}</span><button class="danger" type="button" data-delete-rate="${id}">削除</button>`;
@@ -957,8 +1070,10 @@
     function applyPreset(preset) {
       if (!preset) return;
       activePresetName = preset.name;
-      renderRates(preset.rateType);
-      rateTypeInput.value = preset.rateType;
+      if (!applyRateToMainControls(preset.rateType)) {
+        renderRates(preset.rateType);
+        rateTypeInput.value = preset.rateType;
+      }
       const mergedPrizes = [...new Set([...getPrizeTypes(), ...preset.prizes])].sort((a, b) => a - b);
       saveJson(PRIZES_KEY, mergedPrizes);
       renderPrizeChoices(preset.prizes);
@@ -1074,7 +1189,10 @@
         prizes: getPrizeTypes(),
         detailsOpen: false,
       });
-      renderRates(settings.rateType);
+      renderMainRateOptions();
+      if (!applyRateToMainControls(settings.rateType)) {
+        syncMainRateToHidden({ custom: false });
+      }
       renderPrizeChoices(settings.prizes);
       details.classList.toggle("open", !!settings.detailsOpen);
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
@@ -1177,7 +1295,7 @@
           return;
         }
       }
-      const rates = loadJson(RATES_KEY, {});
+      const rates = customRates();
       const id = `custom_${Date.now()}`;
       rates[id] = rateConfig;
       saveJson(RATES_KEY, rates);
@@ -1232,16 +1350,16 @@
         showToast("交換率は1つ以上必要です。");
         return;
       }
-      const customRates = loadJson(RATES_KEY, {});
+      const storedCustomRates = customRates();
       const hiddenRates = new Set(loadJson(HIDDEN_RATES_KEY, []));
-      const previousCustomRates = { ...customRates };
+      const previousCustomRates = { ...storedCustomRates };
       const previousHiddenRates = [...hiddenRates];
       const previousPresets = loadJson(PRESETS_KEY, []);
       const previousRateType = rateTypeInput.value;
       const rateLabel = getRates()[rateType]?.label || "交換率";
       if (RATE_CONFIGS[rateType]) hiddenRates.add(rateType);
       const result = deleteRateType({
-        customRates,
+        customRates: storedCustomRates,
         currentRateType: rateTypeInput.value,
         presets: loadJson(PRESETS_KEY, []),
         rateType,
@@ -1333,14 +1451,11 @@
     });
 
     medalsInput.addEventListener("input", renderExchange);
-    rateTypeInput.addEventListener("input", () => {
-      markCustomSettings();
-      renderExchange();
+    mainRateCategoryInput.addEventListener("change", () => {
+      renderMainRateOptions();
+      syncMainRateToHidden();
     });
-    rateTypeInput.addEventListener("change", () => {
-      markCustomSettings();
-      renderExchange();
-    });
+    mainRateOptionInput.addEventListener("change", () => syncMainRateToHidden());
     prizeChoices.addEventListener("change", () => {
       markCustomSettings();
       renderPrizeChoices(currentPrizes());
