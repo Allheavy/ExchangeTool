@@ -6,7 +6,7 @@ export const RATE_CONFIGS = {
   slot5_112: { label: "5円スロット 112枚", medalsPerYen: 112 / 100, unitLabel: "枚" },
 };
 
-export const DEFAULT_PRIZES = [200, 500, 1000, 5000];
+export const DEFAULT_PRIZES = [500, 1000, 5000];
 export const GROUP_MODES = {
   none: { label: "比重なし", strength: 0 },
   A: { label: "比重A", strength: 0.18 },
