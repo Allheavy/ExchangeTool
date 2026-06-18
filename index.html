@@ -131,6 +131,11 @@
       align-items: end;
     }
 
+    .rate-builder {
+      display: grid;
+      gap: 10px;
+    }
+
     .primary-input {
       padding: 12px;
       border: 1px solid var(--line);
@@ -584,21 +589,36 @@
 
         <div class="setting-block">
           <h3>交換率を追加</h3>
-          <input id="newRateName" type="text" placeholder="交換率名 例: 21.73円スロット" />
-          <div class="row-3">
-            <input id="newRateValue" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="100円あたり数量" />
-            <select id="newRateUnit">
-              <option value="枚">枚</option>
-              <option value="玉">玉</option>
+          <div class="rate-builder">
+            <label for="newRateCategory">種類</label>
+            <select id="newRateCategory">
+              <option value="pachi4">4円パチンコ</option>
+              <option value="pachi1">1円パチンコ</option>
+              <option value="slot20">20円スロ</option>
+              <option value="slot5">5円スロ</option>
+              <option value="custom">カスタム</option>
             </select>
+
+            <div id="presetRateFields">
+              <label for="newRateOption">交換率</label>
+              <select id="newRateOption"></select>
+            </div>
+
+            <div id="customRateFields" class="hidden">
+              <input id="newRateName" type="text" placeholder="交換率名 例: 21.73円スロット" />
+              <div class="row-3">
+                <input id="newRateValue" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="100円あたり数量" />
+                <select id="newRateUnit">
+                  <option value="枚">枚</option>
+                  <option value="玉">玉</option>
+                </select>
+                <span></span>
+              </div>
+              <div id="rateUnitHint" class="field-help">100円あたりの枚数</div>
+            </div>
+
             <button id="addRateBtn" type="button">追加</button>
           </div>
-          <div id="rateUnitHint" class="field-help">100円あたりの枚数</div>
-          <ul class="examples small">
-            <li>4円パチンコ: 28玉</li>
-            <li>1円パチンコ: 112玉</li>
-            <li>21.73円スロット: 5.2枚</li>
-          </ul>
           <div id="rateTypeList" class="manage-list"></div>
         </div>
 
@@ -722,6 +742,7 @@
       DEFAULT_PRIZES,
       RATE_CONFIGS,
       activePresetStatusText,
+      buildRateConfigFromOption,
       calculateExchange,
       deletePrizeType,
       deleteRateType,
@@ -729,6 +750,7 @@
       exchangeCalloutText,
       formatNumber,
       nextMemberName,
+      rateCategoryOptions,
       rateUnitHintText,
       settleGroup,
       unitLabelFor,
@@ -850,6 +872,26 @@
         select.value = fallback || "";
       });
       document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
+    }
+
+    function renderRateBuilder() {
+      const category = document.getElementById("newRateCategory").value;
+      const isCustom = category === "custom";
+      document.getElementById("presetRateFields").classList.toggle("hidden", isCustom);
+      document.getElementById("customRateFields").classList.toggle("hidden", !isCustom);
+      if (isCustom) {
+        document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
+        return;
+      }
+
+      const optionSelect = document.getElementById("newRateOption");
+      optionSelect.innerHTML = "";
+      rateCategoryOptions(category).forEach((option) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = option.value;
+        optionEl.textContent = option.label;
+        optionSelect.appendChild(optionEl);
+      });
     }
 
     function renderPrizeChecks(root, name, selected) {
@@ -1117,16 +1159,27 @@
     });
 
     document.getElementById("addRateBtn").addEventListener("click", () => {
-      const name = document.getElementById("newRateName").value.trim();
-      const per100 = Number(document.getElementById("newRateValue").value);
-      const unitLabel = document.getElementById("newRateUnit").value;
-      if (!name || !Number.isFinite(per100) || per100 <= 0) {
-        showToast("交換率名と100円あたりの数量を入力してください。");
-        return;
+      const category = document.getElementById("newRateCategory").value;
+      let rateConfig = null;
+      if (category === "custom") {
+        const name = document.getElementById("newRateName").value.trim();
+        const per100 = Number(document.getElementById("newRateValue").value);
+        const unitLabel = document.getElementById("newRateUnit").value;
+        if (!name || !Number.isFinite(per100) || per100 <= 0) {
+          showToast("交換率名と100円あたりの数量を入力してください。");
+          return;
+        }
+        rateConfig = { label: name, medalsPerYen: per100 / 100, unitLabel };
+      } else {
+        rateConfig = buildRateConfigFromOption(category, document.getElementById("newRateOption").value);
+        if (!rateConfig) {
+          showToast("種類と交換率を選んでください。");
+          return;
+        }
       }
       const rates = loadJson(RATES_KEY, {});
       const id = `custom_${Date.now()}`;
-      rates[id] = { label: name, medalsPerYen: per100 / 100, unitLabel };
+      rates[id] = rateConfig;
       saveJson(RATES_KEY, rates);
       document.getElementById("newRateName").value = "";
       document.getElementById("newRateValue").value = "";
@@ -1134,7 +1187,7 @@
       renderManageLists();
       markCustomSettings();
       renderExchange();
-      showToast(`${name}を追加しました。`);
+      showToast(`${rateConfig.label}を追加しました。`);
     });
 
     document.getElementById("prizeTypeList").addEventListener("click", (event) => {
@@ -1296,6 +1349,7 @@
     presetPrizeChoices.addEventListener("change", () => {
       renderPrizeChecks(presetPrizeChoices, "presetPrize", checkedValues(presetPrizeChoices, "presetPrize"));
     });
+    document.getElementById("newRateCategory").addEventListener("change", renderRateBuilder);
     document.getElementById("newRateUnit").addEventListener("change", () => {
       document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
     });
@@ -1303,6 +1357,7 @@
 
     applyInitialSettings();
     renderPresets();
+    renderRateBuilder();
     renderMembers();
     renderCalc();
     renderExchange();

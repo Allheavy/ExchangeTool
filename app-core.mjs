@@ -13,6 +13,37 @@ export const GROUP_MODES = {
   B: { label: "比重B", strength: 0.34 },
 };
 
+export const RATE_CATEGORY_CONFIGS = {
+  pachi4: {
+    label: "4円パチンコ",
+    unitLabel: "玉",
+    yenPerUnit: 4,
+    yenBase: 100,
+    values: [25, 26, 27, 27.5, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+  },
+  pachi1: {
+    label: "1円パチンコ",
+    unitLabel: "玉",
+    yenPerUnit: 1,
+    yenBase: 100,
+    values: [100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 140, 150, 160],
+  },
+  slot20: {
+    label: "20円スロ",
+    unitLabel: "枚",
+    yenPerUnit: 20,
+    yenBase: 100,
+    values: [5, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6],
+  },
+  slot5: {
+    label: "5円スロ",
+    unitLabel: "枚",
+    yenPerUnit: 5,
+    yenBase: 1000,
+    values: [200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276, 280],
+  },
+};
+
 const fmt = new Intl.NumberFormat("ja-JP");
 
 export function formatNumber(value) {
@@ -136,6 +167,36 @@ export function activePresetStatusText(name) {
 
 export function rateUnitHintText(unit) {
   return `100円あたりの${unit || "玉/枚"}数`;
+}
+
+function optionValueLabel(value, unit) {
+  return `${formatNumber(value)}${unit}`;
+}
+
+function payoutLabel(value, config) {
+  const yen = (config.yenBase || 100) / value;
+  if (Math.abs(yen - config.yenPerUnit) < 0.001) return `${config.yenPerUnit}円等価`;
+  return `${Math.floor(yen * 100) / 100}円`;
+}
+
+export function rateCategoryOptions(category) {
+  const config = RATE_CATEGORY_CONFIGS[category];
+  if (!config) return [];
+  return config.values.map((value) => ({
+    value: String(value),
+    label: `${optionValueLabel(value, config.unitLabel)}（${payoutLabel(value, config)}）`,
+  }));
+}
+
+export function buildRateConfigFromOption(category, optionValue) {
+  const config = RATE_CATEGORY_CONFIGS[category];
+  const value = Number(optionValue);
+  if (!config || !Number.isFinite(value) || value <= 0) return null;
+  return {
+    label: `${config.label} ${optionValueLabel(value, config.unitLabel)}交換`,
+    medalsPerYen: value / (config.yenBase || 100),
+    unitLabel: config.unitLabel,
+  };
 }
 
 function buildCandidates(bestYen, reachable, prizes, rateType, medals, rates) {
