@@ -157,7 +157,7 @@ export function calculateExchange({ medals, rateType = "rate5152", prizes = DEFA
 export function exchangeCalloutText({ result, unit }) {
   if (!result.next.yen) return "景品を1つ以上選んでください。";
   if (result.best.left === 0) return `余りは0${unit}です。`;
-  return `あと${formatNumber(result.next.shortage)}${unit}で${formatNumber(result.next.yen)}円に届きます。`;
+  return `あと${formatNumber(result.next.shortage)}${unit}で次の交換に届きます。`;
 }
 
 export function activePresetStatusText(name) {

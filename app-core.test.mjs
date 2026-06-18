@@ -16,6 +16,8 @@ const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8")
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
 assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
+assert.match(indexHtml, /id="quickSavePresetBtn"/);
+assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -23,7 +25,7 @@ const yenText = exchangeCalloutText({
 });
 
 assert.ok(!yenText.includes("+100円"), "callout should not show confusing +100円 delta");
-assert.match(yenText, /1,500円/, "callout should show the next reachable exchange amount");
+assert.equal(yenText, "あと1枚で次の交換に届きます。");
 
 const exactText = exchangeCalloutText({
   result: calculateExchange({ medals: 104, rateType: "rate5152", prizes: [200] }),

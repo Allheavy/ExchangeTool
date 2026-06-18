@@ -117,6 +117,21 @@
       font-size: .86rem;
     }
 
+    .section-actions {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .section-actions button {
+      width: auto;
+      min-width: 72px;
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: .86rem;
+    }
+
     .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -226,6 +241,19 @@
       font-size: .78rem;
       font-weight: 800;
       overflow-wrap: anywhere;
+    }
+
+    .preset-save-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: end;
+      margin-top: 8px;
+    }
+
+    .preset-save-row button {
+      width: auto;
+      min-width: 128px;
     }
 
     .chip {
@@ -374,17 +402,6 @@
       margin: 0 auto;
     }
 
-    .calc-entry-row {
-      display: grid;
-      grid-template-columns: 1fr 96px;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .calc-entry-row button {
-      min-height: 58px;
-    }
-
     .calc-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -511,6 +528,10 @@
           <label>交換設定Preset</label>
           <div id="activePresetStatus" class="preset-status">未保存の設定</div>
           <div id="presetStrip" class="preset-strip"></div>
+          <div class="preset-save-row">
+            <input id="quickPresetName" type="text" placeholder="Preset名（店名）" />
+            <button id="quickSavePresetBtn" class="secondary" type="button">現在の設定を保存</button>
+          </div>
         </div>
 
         <div class="rate-builder">
@@ -635,19 +656,6 @@
         </div>
 
         <div class="setting-block">
-          <h3>交換設定Presetを保存</h3>
-          <input id="presetName" type="text" placeholder="Preset名（店名）" />
-          <div>
-            <label>現在の交換率</label>
-            <div id="presetRateSummary" class="field-help">-</div>
-            <select id="presetRate" class="hidden" aria-hidden="true"></select>
-          </div>
-          <label>景品額（円）</label>
-          <div id="presetPrizeChoices" class="chips"></div>
-          <button id="savePresetBtn" type="button">Preset保存</button>
-        </div>
-
-        <div class="setting-block">
           <h3>保存済みPreset</h3>
           <select id="presetManage"></select>
           <button id="deletePresetBtn" class="danger" type="button">選択Presetを削除</button>
@@ -720,12 +728,12 @@
     <div class="sheet-inner">
       <div class="section-title">
         <h2>電卓</h2>
-        <button id="closeCalcBtn" class="secondary" type="button">閉じる</button>
+        <div class="section-actions">
+          <button id="applyCalcBtn" type="button">反映して閉じる</button>
+          <button id="closeCalcBtn" class="secondary" type="button">閉じる</button>
+        </div>
       </div>
-      <div class="calc-entry-row">
-        <div id="calcDisplay" class="calc-display">0</div>
-        <button id="applyCalcBtn" type="button">反映</button>
-      </div>
+      <div id="calcDisplay" class="calc-display">0</div>
       <div class="calc-grid">
         <button class="calc-key secondary" data-key="7" type="button">7</button>
         <button class="calc-key secondary" data-key="8" type="button">8</button>
@@ -781,7 +789,6 @@
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
     const mainRateOptionInput = document.getElementById("mainRateOption");
     const prizeChoices = document.getElementById("prizeChoices");
-    const presetPrizeChoices = document.getElementById("presetPrizeChoices");
     const details = document.getElementById("exchangeDetails");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
@@ -856,12 +863,6 @@
       return [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((input) => Number(input.value));
     }
 
-    function sameNumberSet(left, right) {
-      const a = [...left].sort((x, y) => x - y);
-      const b = [...right].sort((x, y) => x - y);
-      return a.length === b.length && a.every((value, index) => value === b[index]);
-    }
-
     function currentPrizes() {
       return checkedValues(document, "prize");
     }
@@ -908,7 +909,7 @@
     function renderRates(selected = rateTypeInput.value) {
       const rates = getRates();
       const fallback = rates[selected] ? selected : Object.keys(rates)[0];
-      [rateTypeInput, document.getElementById("presetRate")].forEach((select) => {
+      [rateTypeInput].forEach((select) => {
         select.innerHTML = "";
         Object.entries(rates).forEach(([id, rate]) => {
           const option = document.createElement("option");
@@ -918,8 +919,6 @@
         });
         select.value = fallback || "";
       });
-      const summary = document.getElementById("presetRateSummary");
-      if (summary) summary.textContent = rates[fallback]?.label || "-";
       document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
     }
 
@@ -1019,7 +1018,6 @@
 
     function renderPrizeChoices(selected = currentPrizes().length ? currentPrizes() : getPrizeTypes()) {
       renderPrizeChecks(prizeChoices, "prize", selected);
-      renderPrizeChecks(presetPrizeChoices, "presetPrize", selected);
       renderManageLists();
     }
 
@@ -1385,22 +1383,20 @@
       });
     });
 
-    document.getElementById("savePresetBtn").addEventListener("click", () => {
-      const name = document.getElementById("presetName").value.trim();
-      const prizes = checkedValues(presetPrizeChoices, "presetPrize");
+    document.getElementById("quickSavePresetBtn").addEventListener("click", () => {
+      const name = document.getElementById("quickPresetName").value.trim();
+      const prizes = currentPrizes();
       if (!name || prizes.length === 0) {
         showToast("Preset名と景品額を選んでください。");
         return;
       }
       const presets = loadJson(PRESETS_KEY, []);
-      presets.push({ name, rateType: document.getElementById("presetRate").value, prizes });
+      presets.push({ name, rateType: rateTypeInput.value, prizes });
       saveJson(PRESETS_KEY, presets);
-      document.getElementById("presetName").value = "";
+      document.getElementById("quickPresetName").value = "";
       renderPresets();
-      if (document.getElementById("presetRate").value === rateTypeInput.value && sameNumberSet(prizes, currentPrizes())) {
-        activePresetName = name;
-        renderActivePresetStatus();
-      }
+      activePresetName = name;
+      renderActivePresetStatus();
       showToast(`${name}を保存しました。`);
     });
 
@@ -1460,9 +1456,6 @@
       markCustomSettings();
       renderPrizeChoices(currentPrizes());
       renderExchange();
-    });
-    presetPrizeChoices.addEventListener("change", () => {
-      renderPrizeChecks(presetPrizeChoices, "presetPrize", checkedValues(presetPrizeChoices, "presetPrize"));
     });
     document.getElementById("newRateCategory").addEventListener("change", renderRateBuilder);
     document.getElementById("newRateUnit").addEventListener("change", () => {
