@@ -208,10 +208,32 @@
       white-space: nowrap;
     }
 
+    .preset-status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
     .chip {
       display: inline-flex;
       gap: 7px;
       align-items: center;
+    }
+
+    .chip.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #064e3b;
+      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, .16);
     }
 
     .chip input {
@@ -381,6 +403,13 @@
       padding-left: 18px;
     }
 
+    .field-help {
+      margin-top: -5px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
     .setting-block {
       display: grid;
       gap: 10px;
@@ -418,6 +447,41 @@
     .hidden { display: none !important; }
     .good { color: #047857; }
     .warn { color: var(--warn); }
+
+    .toast {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: calc(78px + env(safe-area-inset-bottom));
+      z-index: 50;
+      display: none;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 10px 10px 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+    }
+
+    .toast.open {
+      display: grid;
+    }
+
+    .toast button {
+      width: auto;
+      min-width: 72px;
+      min-height: 34px;
+      padding: 5px 9px;
+      background: #fff;
+      color: var(--dark);
+      font-size: .84rem;
+    }
   </style>
 </head>
 <body>
@@ -440,6 +504,7 @@
 
         <div>
           <label>交換設定Preset</label>
+          <div id="activePresetStatus" class="preset-status">未保存の設定</div>
           <div id="presetStrip" class="preset-strip"></div>
         </div>
 
@@ -528,6 +593,7 @@
             </select>
             <button id="addRateBtn" type="button">追加</button>
           </div>
+          <div id="rateUnitHint" class="field-help">100円あたりの枚数</div>
           <ul class="examples small">
             <li>4円パチンコ: 28玉</li>
             <li>1円パチンコ: 112玉</li>
@@ -551,6 +617,7 @@
           <select id="presetManage"></select>
           <button id="deletePresetBtn" class="danger" type="button">選択Presetを削除</button>
         </div>
+        <p class="note">設定とPresetはこの端末のブラウザに保存されます。別端末や別ブラウザには共有されません。</p>
       </section>
     </section>
 
@@ -622,7 +689,7 @@
       </div>
       <div class="calc-entry-row">
         <div id="calcDisplay" class="calc-display">0</div>
-        <button id="applyCalcBtn" type="button">入れる</button>
+        <button id="applyCalcBtn" type="button">反映</button>
       </div>
       <div class="calc-grid">
         <button class="calc-key secondary" data-key="7" type="button">7</button>
@@ -645,10 +712,16 @@
     </div>
   </section>
 
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span id="toastMessage"></span>
+    <button id="toastActionBtn" class="hidden" type="button">元に戻す</button>
+  </div>
+
   <script type="module">
     import {
       DEFAULT_PRIZES,
       RATE_CONFIGS,
+      activePresetStatusText,
       calculateExchange,
       deletePrizeType,
       deleteRateType,
@@ -656,6 +729,7 @@
       exchangeCalloutText,
       formatNumber,
       nextMemberName,
+      rateUnitHintText,
       settleGroup,
       unitLabelFor,
     } from "./app-core.mjs";
@@ -672,8 +746,13 @@
     const details = document.getElementById("exchangeDetails");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
+    const toast = document.getElementById("toast");
+    const toastActionBtn = document.getElementById("toastActionBtn");
+    let activePresetName = "";
     let calcExpression = "";
     let calcResult = 0;
+    let toastTimer = 0;
+    let toastUndo = null;
     let members = [
       { name: "A", investment: "", recovery: "" },
       { name: "B", investment: "", recovery: "" },
@@ -708,6 +787,12 @@
       return [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((input) => Number(input.value));
     }
 
+    function sameNumberSet(left, right) {
+      const a = [...left].sort((x, y) => x - y);
+      const b = [...right].sort((x, y) => x - y);
+      return a.length === b.length && a.every((value, index) => value === b[index]);
+    }
+
     function currentPrizes() {
       return checkedValues(document, "prize");
     }
@@ -718,6 +803,28 @@
         prizes: currentPrizes(),
         detailsOpen: details.classList.contains("open"),
       });
+    }
+
+    function renderActivePresetStatus() {
+      document.getElementById("activePresetStatus").textContent = activePresetStatusText(activePresetName);
+    }
+
+    function markCustomSettings() {
+      activePresetName = "";
+      renderActivePresetStatus();
+    }
+
+    function showToast(message, undoAction = null, actionLabel = "元に戻す") {
+      window.clearTimeout(toastTimer);
+      toastUndo = undoAction;
+      document.getElementById("toastMessage").textContent = message;
+      toastActionBtn.textContent = actionLabel;
+      toastActionBtn.classList.toggle("hidden", !undoAction);
+      toast.classList.add("open");
+      toastTimer = window.setTimeout(() => {
+        toast.classList.remove("open");
+        toastUndo = null;
+      }, 5000);
     }
 
     function comboText(combo) {
@@ -742,13 +849,14 @@
         });
         select.value = fallback || "";
       });
+      document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
     }
 
     function renderPrizeChecks(root, name, selected) {
       root.innerHTML = "";
       getPrizeTypes().forEach((prize) => {
         const label = document.createElement("label");
-        label.className = "chip";
+        label.className = `chip ${selected.includes(prize) ? "selected" : ""}`;
         label.innerHTML = `<input type="checkbox" name="${name}" value="${prize}" ${selected.includes(prize) ? "checked" : ""} />${formatNumber(prize)}円`;
         root.appendChild(label);
       });
@@ -806,11 +914,13 @@
 
     function applyPreset(preset) {
       if (!preset) return;
+      activePresetName = preset.name;
       renderRates(preset.rateType);
       rateTypeInput.value = preset.rateType;
       const mergedPrizes = [...new Set([...getPrizeTypes(), ...preset.prizes])].sort((a, b) => a - b);
       saveJson(PRIZES_KEY, mergedPrizes);
       renderPrizeChoices(preset.prizes);
+      renderActivePresetStatus();
       renderExchange();
     }
 
@@ -928,6 +1038,7 @@
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
         ? "景品・金額を隠す"
         : "景品・金額を見る";
+      renderActivePresetStatus();
     }
 
     document.querySelectorAll(".tab").forEach((tab) => {
@@ -950,6 +1061,14 @@
 
     document.getElementById("openCalcBtn").addEventListener("click", () => calcSheet.classList.add("open"));
     document.getElementById("closeCalcBtn").addEventListener("click", () => calcSheet.classList.remove("open"));
+    toastActionBtn.addEventListener("click", () => {
+      if (!toastUndo) return;
+      const undo = toastUndo;
+      toast.classList.remove("open");
+      toastUndo = null;
+      window.clearTimeout(toastTimer);
+      undo();
+    });
 
     document.querySelectorAll(".calc-key").forEach((button) => {
       button.addEventListener("click", () => {
@@ -985,18 +1104,26 @@
 
     document.getElementById("addPrizeBtn").addEventListener("click", () => {
       const value = Math.floor(Number(document.getElementById("newPrizeValue").value || 0));
-      if (value <= 0) return;
+      if (value <= 0) {
+        showToast("景品額を入力してください。");
+        return;
+      }
       saveJson(PRIZES_KEY, [...new Set([...getPrizeTypes(), value])].sort((a, b) => a - b));
       document.getElementById("newPrizeValue").value = "";
       renderPrizeChoices(currentPrizes());
+      markCustomSettings();
       renderExchange();
+      showToast(`${formatNumber(value)}円の景品タイプを追加しました。`);
     });
 
     document.getElementById("addRateBtn").addEventListener("click", () => {
       const name = document.getElementById("newRateName").value.trim();
       const per100 = Number(document.getElementById("newRateValue").value);
       const unitLabel = document.getElementById("newRateUnit").value;
-      if (!name || !Number.isFinite(per100) || per100 <= 0) return;
+      if (!name || !Number.isFinite(per100) || per100 <= 0) {
+        showToast("交換率名と100円あたりの数量を入力してください。");
+        return;
+      }
       const rates = loadJson(RATES_KEY, {});
       const id = `custom_${Date.now()}`;
       rates[id] = { label: name, medalsPerYen: per100 / 100, unitLabel };
@@ -1005,34 +1132,60 @@
       document.getElementById("newRateValue").value = "";
       renderRates(id);
       renderManageLists();
+      markCustomSettings();
       renderExchange();
+      showToast(`${name}を追加しました。`);
     });
 
     document.getElementById("prizeTypeList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-delete-prize]");
       if (!button) return;
-      if (getPrizeTypes().length <= 1) return;
+      if (getPrizeTypes().length <= 1) {
+        showToast("景品タイプは1つ以上必要です。");
+        return;
+      }
+      const previousPrizeTypes = getPrizeTypes();
+      const previousSelectedPrizes = currentPrizes();
       const presets = loadJson(PRESETS_KEY, []);
+      const previousPresets = [...presets];
+      const deletedPrize = Number(button.dataset.deletePrize);
       const result = deletePrizeType({
         prizeTypes: getPrizeTypes(),
         selectedPrizes: currentPrizes(),
         presets,
-        prize: Number(button.dataset.deletePrize),
+        prize: deletedPrize,
       });
       saveJson(PRIZES_KEY, result.prizeTypes);
       saveJson(PRESETS_KEY, result.presets);
       renderPrizeChoices(result.selectedPrizes.length ? result.selectedPrizes : result.prizeTypes);
       renderPresets();
+      markCustomSettings();
       renderExchange();
+      showToast(`${formatNumber(deletedPrize)}円の景品タイプを削除しました。`, () => {
+        saveJson(PRIZES_KEY, previousPrizeTypes);
+        saveJson(PRESETS_KEY, previousPresets);
+        renderPrizeChoices(previousSelectedPrizes.length ? previousSelectedPrizes : previousPrizeTypes);
+        renderPresets();
+        renderExchange();
+        showToast("削除を取り消しました。");
+      });
     });
 
     document.getElementById("rateTypeList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-delete-rate]");
       if (!button) return;
       const rateType = button.dataset.deleteRate;
-      if (Object.keys(getRates()).length <= 1) return;
+      if (Object.keys(getRates()).length <= 1) {
+        showToast("交換率は1つ以上必要です。");
+        return;
+      }
       const customRates = loadJson(RATES_KEY, {});
       const hiddenRates = new Set(loadJson(HIDDEN_RATES_KEY, []));
+      const previousCustomRates = { ...customRates };
+      const previousHiddenRates = [...hiddenRates];
+      const previousPresets = loadJson(PRESETS_KEY, []);
+      const previousRateType = rateTypeInput.value;
+      const rateLabel = getRates()[rateType]?.label || "交換率";
       if (RATE_CONFIGS[rateType]) hiddenRates.add(rateType);
       const result = deleteRateType({
         customRates,
@@ -1047,33 +1200,63 @@
       renderRates(result.currentRateType);
       renderPresets();
       renderManageLists();
+      markCustomSettings();
       renderExchange();
+      showToast(`${rateLabel}を削除しました。`, () => {
+        saveJson(RATES_KEY, previousCustomRates);
+        saveJson(HIDDEN_RATES_KEY, previousHiddenRates);
+        saveJson(PRESETS_KEY, previousPresets);
+        renderRates(previousRateType);
+        renderPresets();
+        renderManageLists();
+        renderExchange();
+        showToast("削除を取り消しました。");
+      });
     });
 
     document.getElementById("savePresetBtn").addEventListener("click", () => {
       const name = document.getElementById("presetName").value.trim();
       const prizes = checkedValues(presetPrizeChoices, "presetPrize");
-      if (!name || prizes.length === 0) return;
+      if (!name || prizes.length === 0) {
+        showToast("Preset名と景品額を選んでください。");
+        return;
+      }
       const presets = loadJson(PRESETS_KEY, []);
       presets.push({ name, rateType: document.getElementById("presetRate").value, prizes });
       saveJson(PRESETS_KEY, presets);
       document.getElementById("presetName").value = "";
       renderPresets();
+      if (document.getElementById("presetRate").value === rateTypeInput.value && sameNumberSet(prizes, currentPrizes())) {
+        activePresetName = name;
+        renderActivePresetStatus();
+      }
+      showToast(`${name}を保存しました。`);
     });
 
     document.getElementById("deletePresetBtn").addEventListener("click", () => {
       const index = Number(document.getElementById("presetManage").value);
-      if (!Number.isInteger(index)) return;
+      if (!Number.isInteger(index)) {
+        showToast("削除するPresetを選んでください。");
+        return;
+      }
       const presets = loadJson(PRESETS_KEY, []);
-      presets.splice(index, 1);
+      const previousPresets = [...presets];
+      const deleted = presets.splice(index, 1)[0];
       saveJson(PRESETS_KEY, presets);
       renderPresets();
+      if (deleted?.name === activePresetName) markCustomSettings();
+      showToast(`${deleted?.name || "Preset"}を削除しました。`, () => {
+        saveJson(PRESETS_KEY, previousPresets);
+        renderPresets();
+        showToast("削除を取り消しました。");
+      });
     });
 
     document.getElementById("presetStrip").addEventListener("click", (event) => {
       const button = event.target.closest("[data-apply-preset]");
       if (!button) return;
       applyPreset(loadJson(PRESETS_KEY, [])[Number(button.dataset.applyPreset)]);
+      showToast("Presetを適用しました。");
     });
 
     document.getElementById("addMemberBtn").addEventListener("click", () => {
@@ -1096,10 +1279,26 @@
       renderMembers();
     });
 
-    [medalsInput, rateTypeInput].forEach((el) => el.addEventListener("input", renderExchange));
-    rateTypeInput.addEventListener("change", renderExchange);
-    prizeChoices.addEventListener("change", renderExchange);
-    presetPrizeChoices.addEventListener("change", () => {});
+    medalsInput.addEventListener("input", renderExchange);
+    rateTypeInput.addEventListener("input", () => {
+      markCustomSettings();
+      renderExchange();
+    });
+    rateTypeInput.addEventListener("change", () => {
+      markCustomSettings();
+      renderExchange();
+    });
+    prizeChoices.addEventListener("change", () => {
+      markCustomSettings();
+      renderPrizeChoices(currentPrizes());
+      renderExchange();
+    });
+    presetPrizeChoices.addEventListener("change", () => {
+      renderPrizeChecks(presetPrizeChoices, "presetPrize", checkedValues(presetPrizeChoices, "presetPrize"));
+    });
+    document.getElementById("newRateUnit").addEventListener("change", () => {
+      document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
+    });
     document.getElementById("groupMode").addEventListener("change", renderGroup);
 
     applyInitialSettings();
@@ -1110,7 +1309,17 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+        navigator.serviceWorker.register("./sw.js").then((registration) => {
+          registration.addEventListener("updatefound", () => {
+            const worker = registration.installing;
+            if (!worker) return;
+            worker.addEventListener("statechange", () => {
+              if (worker.state === "installed" && navigator.serviceWorker.controller) {
+                showToast("新しい版があります。", () => window.location.reload(), "更新");
+              }
+            });
+          });
+        }).catch(() => {});
       });
     }
   </script>

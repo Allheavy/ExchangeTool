@@ -129,6 +129,15 @@ export function exchangeCalloutText({ result, unit }) {
   return `あと${formatNumber(result.next.shortage)}${unit}で${formatNumber(result.next.yen)}円に届きます。`;
 }
 
+export function activePresetStatusText(name) {
+  const trimmed = String(name || "").trim();
+  return trimmed ? `${trimmed}を適用中` : "未保存の設定";
+}
+
+export function rateUnitHintText(unit) {
+  return `100円あたりの${unit || "玉/枚"}数`;
+}
+
 function buildCandidates(bestYen, reachable, prizes, rateType, medals, rates) {
   const candidates = [];
   for (let yen = bestYen; yen >= 0 && candidates.length < 10; yen--) {

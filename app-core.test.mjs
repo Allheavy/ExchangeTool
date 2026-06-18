@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
-import { calculateExchange, exchangeCalloutText } from "./app-core.mjs";
+import {
+  activePresetStatusText,
+  calculateExchange,
+  exchangeCalloutText,
+  rateUnitHintText,
+} from "./app-core.mjs";
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -15,3 +20,7 @@ const exactText = exchangeCalloutText({
 });
 
 assert.equal(exactText, "余りは0枚です。");
+
+assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
+assert.equal(activePresetStatusText(""), "未保存の設定");
+assert.equal(rateUnitHintText("枚"), "100円あたりの枚数");
