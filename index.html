@@ -59,7 +59,7 @@
 
     .tabs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 4px;
       padding: 4px;
       background: var(--soft);
@@ -347,6 +347,17 @@
       margin: 0 auto;
     }
 
+    .calc-entry-row {
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .calc-entry-row button {
+      min-height: 58px;
+    }
+
     .calc-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -419,6 +430,7 @@
       <nav class="tabs" aria-label="画面切替">
         <button class="tab active" data-tab="exchange" type="button">交換計算</button>
         <button class="tab" data-tab="group" type="button">ノリ打ち</button>
+        <button class="tab" data-tab="settings" type="button">設定</button>
       </nav>
     </div>
 
@@ -431,11 +443,6 @@
           <div id="presetStrip" class="preset-strip"></div>
         </div>
 
-        <div class="primary-input">
-          <label for="medals">持ち玉/枚数</label>
-          <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="155" />
-        </div>
-
         <div>
           <label for="rateType">交換率</label>
           <select id="rateType"></select>
@@ -444,6 +451,11 @@
         <div>
           <label>使う景品</label>
           <div id="prizeChoices" class="chips"></div>
+        </div>
+
+        <div class="primary-input">
+          <label for="medals">持ち玉/枚数</label>
+          <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="155" />
         </div>
 
         <div class="metric-line">
@@ -489,9 +501,11 @@
         </table>
       </section>
 
+    </section>
+
+    <section id="settingsTab" class="hidden">
       <section id="settingsPanel" class="panel">
         <h2>設定</h2>
-
         <div class="setting-block">
           <h3>景品タイプを追加</h3>
           <label for="newPrizeValue">景品額（円）</label>
@@ -606,7 +620,10 @@
         <h2>電卓</h2>
         <button id="closeCalcBtn" class="secondary" type="button">閉じる</button>
       </div>
-      <div id="calcDisplay" class="calc-display">0</div>
+      <div class="calc-entry-row">
+        <div id="calcDisplay" class="calc-display">0</div>
+        <button id="applyCalcBtn" type="button">入れる</button>
+      </div>
       <div class="calc-grid">
         <button class="calc-key secondary" data-key="7" type="button">7</button>
         <button class="calc-key secondary" data-key="8" type="button">8</button>
@@ -620,10 +637,10 @@
         <button class="calc-key secondary" data-key="2" type="button">2</button>
         <button class="calc-key secondary" data-key="3" type="button">3</button>
         <button class="calc-key secondary" data-key="-" type="button">-</button>
+        <button class="calc-key secondary" data-key="00" type="button">00</button>
         <button class="calc-key secondary" data-key="0" type="button">0</button>
         <button class="calc-key danger" data-key="clear" type="button">C</button>
         <button class="calc-key secondary" data-key="=" type="button">=</button>
-        <button id="applyCalcBtn" type="button">入れる</button>
       </div>
     </div>
   </section>
@@ -636,6 +653,7 @@
       deletePrizeType,
       deleteRateType,
       evaluateCalculatorExpression,
+      exchangeCalloutText,
       formatNumber,
       nextMemberName,
       settleGroup,
@@ -817,10 +835,8 @@
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
 
       const callout = document.getElementById("nextCallout");
-      callout.className = `callout ${shortage <= 10 ? "hot" : ""}`;
-      callout.textContent = result.next.yen
-        ? `あと${formatNumber(shortage)}${unit}で+${formatNumber(result.next.increaseYen)}円に届きます。`
-        : "景品を1つ以上選んでください。";
+      callout.className = `callout ${shortage > 0 && shortage <= 10 ? "hot" : ""}`;
+      callout.textContent = exchangeCalloutText({ result, unit });
 
       const rows = document.getElementById("candidateRows");
       rows.innerHTML = "";
@@ -919,6 +935,7 @@
         document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", item === tab));
         document.getElementById("exchangeTab").classList.toggle("hidden", tab.dataset.tab !== "exchange");
         document.getElementById("groupTab").classList.toggle("hidden", tab.dataset.tab !== "group");
+        document.getElementById("settingsTab").classList.toggle("hidden", tab.dataset.tab !== "settings");
         document.getElementById("bottomBar").classList.toggle("hidden", tab.dataset.tab !== "exchange");
       });
     });
