@@ -42,7 +42,7 @@
     main {
       max-width: 520px;
       margin: 0 auto;
-      padding: 14px 14px 92px;
+      padding: 14px 14px 78px;
     }
 
     h1, h2, h3, p { margin-top: 0; }
@@ -93,7 +93,7 @@
       box-shadow: var(--shadow);
     }
 
-    .panel > *, .row, .row-3, .section-title, .preset-strip, .chips, .save-settings-form {
+    .panel > *, .row, .row-3, .section-title, .preset-strip, .chips, .save-settings-form, .exchange-choices {
       min-width: 0;
       max-width: 100%;
     }
@@ -146,9 +146,37 @@
       align-items: end;
     }
 
-    .rate-builder {
+    .exchange-choices {
       display: grid;
       gap: 10px;
+    }
+
+    .exchange-category {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .exchange-category-title {
+      margin: 0;
+      color: var(--ink);
+      font-size: .94rem;
+      font-weight: 900;
+    }
+
+    .rate-builder {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rate-sub-fields {
+      display: grid;
+      gap: 10px;
+      padding-left: 10px;
+      border-left: 3px solid #d5e3e1;
     }
 
     .primary-input {
@@ -263,6 +291,10 @@
       overflow-wrap: anywhere;
     }
 
+    .preset-status:empty {
+      display: none;
+    }
+
     .preset-save-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -300,6 +332,48 @@
 
     .save-meta.hidden {
       display: none;
+    }
+
+    .manual-save-meta-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .manual-save-kind-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .manual-save-kind-field > label {
+      margin-bottom: 0;
+    }
+
+    .manual-save-kind {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .manual-save-kind button {
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .manual-save-kind button.active {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, .08);
     }
 
     .save-preview {
@@ -427,6 +501,22 @@
       overflow-wrap: anywhere;
     }
 
+    .target-medals {
+      display: inline-flex;
+      align-items: baseline;
+      max-width: 100%;
+      margin-top: 7px;
+      padding: 4px 8px;
+      border: 1px solid rgba(15, 118, 110, .26);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #064e3b;
+      font-size: .84rem;
+      font-weight: 900;
+      line-height: 1.25;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
+    }
+
     .callout {
       padding: 11px;
       border: 1px solid var(--line);
@@ -439,6 +529,12 @@
     .callout.hot {
       border-left-color: var(--warn);
       background: var(--warn-soft);
+    }
+
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
 
     .details, .sheet {
@@ -488,22 +584,84 @@
 
     .bottom-bar {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      left: 14px;
+      right: auto;
+      bottom: calc(14px + env(safe-area-inset-bottom));
       z-index: 20;
-      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(245, 241, 232, .94);
-      border-top: 1px solid var(--line);
-      backdrop-filter: blur(12px);
+      padding: 0;
+      background: transparent;
+      border: 0;
     }
 
     .bottom-inner {
+      display: flex;
+      gap: 0;
+    }
+
+    .fab {
+      display: inline-grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      min-height: 58px;
+      padding: 0;
+      border: 1px solid rgba(17, 24, 39, .12);
+      border-radius: 999px;
+      background: var(--dark);
+      color: #fff;
+      box-shadow: 0 16px 32px rgba(17, 24, 39, .24);
+    }
+
+    .fab svg {
+      display: block;
+      width: 28px;
+      height: 28px;
+    }
+
+    .update-banner {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: calc(72px + env(safe-area-inset-bottom));
+      z-index: 25;
+      padding: 0 14px;
+      pointer-events: none;
+    }
+
+    .update-banner.hidden {
+      display: none;
+    }
+
+    .update-banner-inner {
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 8px;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
       max-width: 520px;
       margin: 0 auto;
+      padding: 10px;
+      border: 1px solid #134e4a;
+      border-radius: 8px;
+      background: #0f766e;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(17, 24, 39, .22);
+      pointer-events: auto;
+    }
+
+    .update-banner-text {
+      min-width: 0;
+      font-size: .86rem;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .update-banner button {
+      width: auto;
+      min-width: 82px;
+      min-height: 36px;
+      padding: 7px 11px;
+      background: #fff;
+      color: #0f766e;
     }
 
     .sheet {
@@ -652,52 +810,52 @@
         <div class="saved-settings-panel">
           <div class="saved-settings-header">
             <label>保存した設定</label>
-            <div id="activePresetStatus" class="preset-status">カスタム設定</div>
+            <div id="activePresetStatus" class="preset-status"></div>
           </div>
           <div id="presetStrip" class="preset-strip"></div>
         </div>
 
-        <div class="rate-builder">
-          <div>
-            <label>交換率</label>
-            <div class="rate-mode" role="group" aria-label="交換率の入力方法">
-              <button id="rateModePreset" class="active" type="button" data-rate-mode="preset" aria-pressed="true">よく使う</button>
-              <button id="rateModeCustom" type="button" data-rate-mode="custom" aria-pressed="false">手入力</button>
+        <div class="exchange-choices" aria-label="交換条件">
+          <section class="exchange-category rate-builder" aria-labelledby="exchangeRateHeading">
+            <h3 id="exchangeRateHeading" class="exchange-category-title">交換率</h3>
+            <div class="rate-sub-fields">
+              <div>
+                <label>入力方法</label>
+                <div class="rate-mode" role="group" aria-label="交換率の入力方法">
+                  <button id="rateModePreset" class="active" type="button" data-rate-mode="preset" aria-pressed="true">よく使う</button>
+                  <button id="rateModeCustom" type="button" data-rate-mode="custom" aria-pressed="false">手入力</button>
+                </div>
+              </div>
+              <div id="mainRateCategoryField">
+                <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
+                <select id="mainRateCategory">
+                  <option value="pachi4">4円パチンコ</option>
+                  <option value="pachi1">1円パチンコ</option>
+                  <option value="slot20">20円スロ</option>
+                  <option value="slot5">5円スロ</option>
+                </select>
+              </div>
+              <div id="guidedExchangeRateFields" class="rate-option-fields">
+                <label for="mainRateOption">よく使う交換率</label>
+                <select id="mainRateOption"></select>
+              </div>
+              <div id="customExchangeRateFields" class="custom-rate-fields hidden">
+                <label for="customExchangeRate">交換率を手入力</label>
+                <div class="inline-unit">
+                  <input id="customExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal" placeholder="5.152" />
+                  <span id="customExchangeRateUnit">玉/枚 / 100円</span>
+                </div>
+                <div id="customExchangeRatePayout" class="field-help">= -円 / 玉/枚</div>
+                <div id="customExchangeRateError" class="field-error hidden"></div>
+              </div>
+              <select id="rateType" class="hidden" aria-hidden="true"></select>
             </div>
-          </div>
-          <div id="mainRateCategoryField">
-            <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
-            <select id="mainRateCategory">
-              <option value="pachi4">4円パチンコ</option>
-              <option value="pachi1">1円パチンコ</option>
-              <option value="slot20">20円スロ</option>
-              <option value="slot5">5円スロ</option>
-            </select>
-          </div>
-          <div id="guidedExchangeRateFields" class="rate-option-fields">
-            <label for="mainRateOption">よく使う交換率</label>
-            <select id="mainRateOption"></select>
-          </div>
-          <div id="customExchangeRateFields" class="custom-rate-fields hidden">
-            <label for="manualRateUnit">単位</label>
-            <select id="manualRateUnit">
-              <option value="枚">枚</option>
-              <option value="玉">玉</option>
-            </select>
-            <label for="customExchangeRate">交換率を手入力</label>
-            <div class="inline-unit">
-              <input id="customExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal" placeholder="5.152" />
-              <span id="customExchangeRateUnit">枚 / 100円</span>
-            </div>
-            <div id="customExchangeRatePayout" class="field-help">= -円 / 枚</div>
-            <div id="customExchangeRateError" class="field-error hidden"></div>
-          </div>
-          <select id="rateType" class="hidden" aria-hidden="true"></select>
-        </div>
+          </section>
 
-        <div>
-          <label>使う景品</label>
-          <div id="prizeChoices" class="chips"></div>
+          <section class="exchange-category" aria-labelledby="prizeChoiceHeading">
+            <h3 id="prizeChoiceHeading" class="exchange-category-title">使う景品</h3>
+            <div id="prizeChoices" class="chips"></div>
+          </section>
         </div>
 
         <button
@@ -715,17 +873,21 @@
           </div>
           <div id="saveManualRateMeta" class="save-meta hidden">
             <label>保存名用</label>
-            <div class="row">
+            <div class="manual-save-meta-row">
               <div>
-                <label for="manualSaveKind">種別</label>
-                <select id="manualSaveKind">
-                  <option value="slot">スロット</option>
-                  <option value="pachi">パチンコ</option>
-                </select>
+                <label for="manualSaveLendingRate">貸し出しレート</label>
+                <div class="inline-unit">
+                  <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="5" />
+                  <span>円</span>
+                </div>
               </div>
-              <div>
-                <label for="manualSaveLendingRate">貸出レート（円）</label>
-                <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="任意" />
+              <div class="manual-save-kind-field">
+                <label id="manualSaveKindLabel">種別</label>
+                <input id="manualSaveKind" type="hidden" value="slot" />
+                <div id="manualSaveKindButtons" class="manual-save-kind" role="group" aria-labelledby="manualSaveKindLabel">
+                  <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">スロット</button>
+                  <button type="button" data-manual-save-kind="pachi" aria-pressed="false">パチンコ</button>
+                </div>
               </div>
             </div>
           </div>
@@ -745,16 +907,19 @@
           <div class="status-item">
             <div class="status-label">余り</div>
             <div id="leftMedals" class="status-value">0枚</div>
-            <div id="leftTargetMedals" class="status-subvalue">目標 0枚</div>
+            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
           </div>
           <div class="status-item">
             <div class="status-label">あと</div>
             <div id="nextShortage" class="status-value">0枚</div>
-            <div id="nextTargetMedals" class="status-subvalue">目標 0枚</div>
+            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
           </div>
         </div>
 
         <div id="nextCallout" class="callout"></div>
+        <div class="result-actions">
+          <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
+        </div>
       </section>
 
       <section id="exchangeDetails" class="panel details">
@@ -806,6 +971,11 @@
           <h3>保存した設定</h3>
           <select id="presetManage"></select>
           <button id="deletePresetBtn" class="danger" type="button">選択した設定を削除</button>
+        </div>
+        <div class="setting-block">
+          <h3>アプリ更新</h3>
+          <button id="checkUpdateBtn" class="secondary" type="button">更新を確認</button>
+          <p id="updateStatus" class="note">新しい版がある時は画面下に更新ボタンが表示されます。</p>
         </div>
         <p class="note">交換率は交換計算画面で選択または手入力できます。保存した設定と景品タイプはこの端末のブラウザに保存されます。</p>
       </section>
@@ -864,10 +1034,30 @@
     </section>
   </main>
 
+  <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
+    <div class="update-banner-inner">
+      <div class="update-banner-text">新しい版があります。</div>
+      <button id="reloadUpdateBtn" type="button">更新</button>
+    </div>
+  </div>
+
   <div id="bottomBar" class="bottom-bar">
     <div class="bottom-inner">
-      <button id="openCalcBtn" class="secondary" type="button">電卓</button>
-      <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
+      <button id="openCalcBtn" class="fab" type="button" aria-label="電卓を開く" title="電卓">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="6" y="3" width="12" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="8.5" y="5.5" width="7" height="3" rx=".7" fill="currentColor"/>
+          <circle cx="9" cy="12" r="1.1" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+          <circle cx="15" cy="12" r="1.1" fill="currentColor"/>
+          <circle cx="9" cy="15" r="1.1" fill="currentColor"/>
+          <circle cx="12" cy="15" r="1.1" fill="currentColor"/>
+          <circle cx="15" cy="15" r="1.1" fill="currentColor"/>
+          <circle cx="9" cy="18" r="1.1" fill="currentColor"/>
+          <circle cx="12" cy="18" r="1.1" fill="currentColor"/>
+          <circle cx="15" cy="18" r="1.1" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -928,6 +1118,7 @@
     const PRIZES_KEY = "exchangeTool.prizes.v6";
     const RATES_KEY = "exchangeTool.rates.v5";
     const HIDDEN_RATES_KEY = "exchangeTool.hiddenRates.v5";
+    const CUSTOM_RATE_UNIT_LABEL = "玉/枚";
     const RATE_CATEGORY_UI_CONFIGS = {
       pachi4: { label: "4円パチンコ", shortLabel: "4パチ", unitLabel: "玉", yenBase: 100 },
       pachi1: { label: "1円パチンコ", shortLabel: "1パチ", unitLabel: "玉", yenBase: 100 },
@@ -940,13 +1131,13 @@
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
     const mainRateOptionInput = document.getElementById("mainRateOption");
     const guidedExchangeRateFields = document.getElementById("guidedExchangeRateFields");
-    const manualRateUnitInput = document.getElementById("manualRateUnit");
     const customExchangeRateInput = document.getElementById("customExchangeRate");
     const customExchangeRateFields = document.getElementById("customExchangeRateFields");
     const customExchangeRateError = document.getElementById("customExchangeRateError");
     const rateModeButtons = [...document.querySelectorAll("[data-rate-mode]")];
     const saveManualRateMeta = document.getElementById("saveManualRateMeta");
     const manualSaveKindInput = document.getElementById("manualSaveKind");
+    const manualSaveKindButtons = [...document.querySelectorAll("[data-manual-save-kind]")];
     const manualSaveLendingRateInput = document.getElementById("manualSaveLendingRate");
     const prizeChoices = document.getElementById("prizeChoices");
     const details = document.getElementById("exchangeDetails");
@@ -954,6 +1145,10 @@
     const memberRows = document.getElementById("memberRows");
     const toast = document.getElementById("toast");
     const toastActionBtn = document.getElementById("toastActionBtn");
+    const updateBanner = document.getElementById("updateBanner");
+    const reloadUpdateBtn = document.getElementById("reloadUpdateBtn");
+    const checkUpdateBtn = document.getElementById("checkUpdateBtn");
+    const updateStatus = document.getElementById("updateStatus");
     let activePresetName = "";
     let mainRateId = "";
     let activeCustomRateId = "";
@@ -961,6 +1156,8 @@
     let calcResult = 0;
     let toastTimer = 0;
     let toastUndo = null;
+    let serviceWorkerRegistration = null;
+    let updateReady = false;
     let members = [
       { name: "A", investment: "", recovery: "" },
       { name: "B", investment: "", recovery: "" },
@@ -980,7 +1177,7 @@
 
     function activePresetStatusText(name) {
       const trimmed = String(name || "").trim();
-      return trimmed ? `${trimmed}を適用中` : "カスタム設定";
+      return trimmed ? `${trimmed}を適用中` : "";
     }
 
     function getPrizeTypes() {
@@ -1041,7 +1238,6 @@
         rateCategory: isCustomRateMode() ? "manual" : mainRateCategoryInput.value,
         exchangeRate: currentExchangeRateValue(),
         isCustomExchangeRate: isCustomRateMode(),
-        manualRateUnit: isCustomRateMode() ? manualRateUnitInput.value : "",
         prizes: currentPrizes(),
         detailsOpen: details.classList.contains("open"),
       });
@@ -1067,6 +1263,38 @@
         toast.classList.remove("open");
         toastUndo = null;
       }, 5000);
+    }
+
+    function setUpdateReady() {
+      updateReady = true;
+      updateBanner.classList.remove("hidden");
+      updateStatus.textContent = "新しい版があります。画面下の更新ボタンを押すと反映されます。";
+    }
+
+    function handleServiceWorkerUpdate(worker) {
+      if (!worker) return;
+      worker.addEventListener("statechange", () => {
+        if (worker.state === "installed" && navigator.serviceWorker.controller) {
+          setUpdateReady();
+          showToast("新しい版があります。", () => window.location.reload(), "更新");
+        }
+      });
+    }
+
+    function checkForAppUpdate() {
+      if (!serviceWorkerRegistration) {
+        updateStatus.textContent = "更新確認はPWA対応ブラウザで使えます。";
+        return;
+      }
+      updateStatus.textContent = "更新を確認しています。";
+      serviceWorkerRegistration.update()
+        .then(() => {
+          if (updateReady) return;
+          updateStatus.textContent = "今は最新版です。";
+        })
+        .catch(() => {
+          updateStatus.textContent = "更新を確認できませんでした。通信状態を確認してください。";
+        });
     }
 
     function comboText(combo) {
@@ -1109,8 +1337,8 @@
     function currentRateCategoryConfig() {
       if (isCustomRateMode()) {
         return {
-          label: manualRateUnitInput.value === "玉" ? "パチンコ" : "スロット",
-          unitLabel: manualRateUnitInput.value,
+          label: "カスタム",
+          unitLabel: CUSTOM_RATE_UNIT_LABEL,
           yenBase: 100,
         };
       }
@@ -1150,7 +1378,21 @@
       const lendingRate = Number(manualSaveLendingRateInput.value);
       if (!Number.isFinite(lendingRate) || lendingRate <= 0) return "カスタム";
       const rateText = formatExchangeRateValue(lendingRate);
-      return manualSaveKindInput.value === "pachi" ? `${rateText}円パチ` : `${rateText}円スロ`;
+      return manualSaveKindInput.value === "pachi" ? `${rateText}円パチンコ` : `${rateText}円スロット`;
+    }
+
+    function renderManualSaveKindButtons() {
+      manualSaveKindButtons.forEach((button) => {
+        const selected = button.dataset.manualSaveKind === manualSaveKindInput.value;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+    }
+
+    function setManualSaveKind(kind) {
+      manualSaveKindInput.value = kind === "pachi" ? "pachi" : "slot";
+      renderManualSaveKindButtons();
+      renderSavePreview();
     }
 
     function selectedCustomRateConfig() {
@@ -1216,7 +1458,7 @@
         ? `${formatExchangeRateValue(rate)}${config?.unitLabel || "玉/枚"}交換`
         : "交換率未入力";
       const typeText = isCustomRateMode() ? manualSaveRateLabel() : rateTypeLabel();
-      return [name, typeText, rateText].filter(Boolean).join("｜");
+      return name || [typeText, rateText].filter(Boolean).join("｜");
     }
 
     function renderSavePreview() {
@@ -1239,17 +1481,19 @@
 
     function displayNameForPreset(preset) {
       if (!preset) return "保存した設定";
+      const savedStoreName = String(preset.storeName || "").trim();
+      if (savedStoreName) return savedStoreName;
       if (preset.displayName) return preset.displayName;
       if (Number.isFinite(Number(preset.exchangeRate))) {
         const category = preset.rateCategory || preset.category || "slot20";
         const config = RATE_CATEGORY_UI_CONFIGS[category];
-        const storeName = preset.storeName || preset.name || "";
+        const storeName = savedStoreName || preset.name || "";
         const unitLabel = preset.manualRateUnit || preset.unitLabel || config?.unitLabel || "玉/枚";
         const rateText = `${formatExchangeRateValue(preset.exchangeRate)}${unitLabel}交換`;
         let typeText = rateTypeLabel(category);
         if (category === "manual") {
           if (Number.isFinite(Number(preset.manualLendingRate)) && Number(preset.manualLendingRate) > 0) {
-            const suffix = preset.manualRateKind === "pachi" ? "パチ" : "スロ";
+            const suffix = preset.manualRateKind === "pachi" ? "パチンコ" : "スロット";
             typeText = `${formatExchangeRateValue(preset.manualLendingRate)}円${suffix}`;
           } else {
             typeText = "カスタム";
@@ -1258,7 +1502,7 @@
         return [storeName, typeText, rateText].filter(Boolean).join("｜");
       }
       const rate = getRates()[preset.rateType];
-      const storeName = preset.storeName || preset.name || "";
+      const storeName = savedStoreName || preset.name || "";
       const selection = findGuidedRateSelection(rate);
       if (rate && selection) {
         const config = RATE_CATEGORY_UI_CONFIGS[selection.category];
@@ -1397,9 +1641,11 @@
       if (!preset) return;
       activePresetName = displayNameForPreset(preset);
       if (preset.isCustomExchangeRate && Number.isFinite(Number(preset.exchangeRate))) {
-        const savedUnit = preset.manualRateUnit || preset.unitLabel || RATE_CATEGORY_UI_CONFIGS[preset.rateCategory || preset.category]?.unitLabel || "枚";
-        manualRateUnitInput.value = savedUnit === "玉" ? "玉" : "枚";
-        if (preset.manualRateKind) manualSaveKindInput.value = preset.manualRateKind;
+        if (preset.manualRateKind) {
+          setManualSaveKind(preset.manualRateKind);
+        } else if (preset.manualRateUnit || preset.unitLabel) {
+          setManualSaveKind((preset.manualRateUnit || preset.unitLabel) === "玉" ? "pachi" : "slot");
+        }
         if (Number.isFinite(Number(preset.manualLendingRate))) {
           manualSaveLendingRateInput.value = formatExchangeRateValue(preset.manualLendingRate);
         }
@@ -1552,7 +1798,6 @@
       });
       renderMainRateOptions();
       if (settings.isCustomExchangeRate && Number.isFinite(Number(settings.exchangeRate))) {
-        manualRateUnitInput.value = settings.manualRateUnit === "玉" ? "玉" : "枚";
         customExchangeRateInput.value = formatExchangeRateValue(settings.exchangeRate);
         renderMainRateOptions();
         setRateMode("custom", { custom: false });
@@ -1597,6 +1842,8 @@
       window.clearTimeout(toastTimer);
       undo();
     });
+    reloadUpdateBtn.addEventListener("click", () => window.location.reload());
+    checkUpdateBtn.addEventListener("click", checkForAppUpdate);
 
     document.querySelectorAll(".calc-key").forEach((button) => {
       button.addEventListener("click", () => {
@@ -1688,7 +1935,9 @@
     });
 
     document.getElementById("quickPresetName").addEventListener("input", renderSavePreview);
-    manualSaveKindInput.addEventListener("change", renderSavePreview);
+    manualSaveKindButtons.forEach((button) => {
+      button.addEventListener("click", () => setManualSaveKind(button.dataset.manualSaveKind));
+    });
     manualSaveLendingRateInput.addEventListener("input", renderSavePreview);
 
     document.getElementById("quickSavePresetBtn").addEventListener("click", () => {
@@ -1713,7 +1962,6 @@
         rateCategory: isCustomRateMode() ? "manual" : mainRateCategoryInput.value,
         exchangeRate: currentExchangeRateValue(),
         isCustomExchangeRate: isCustomRateMode(),
-        manualRateUnit: isCustomRateMode() ? manualRateUnitInput.value : "",
         manualRateKind: isCustomRateMode() ? manualSaveKindInput.value : "",
         manualLendingRate: isCustomRateMode() ? Number(manualSaveLendingRateInput.value) || null : null,
         prizes,
@@ -1785,10 +2033,6 @@
     rateModeButtons.forEach((button) => {
       button.addEventListener("click", () => setRateMode(button.dataset.rateMode));
     });
-    manualRateUnitInput.addEventListener("change", () => {
-      manualSaveKindInput.value = manualRateUnitInput.value === "玉" ? "pachi" : "slot";
-      syncMainRateToHidden();
-    });
     customExchangeRateInput.addEventListener("input", () => syncMainRateToHidden());
     prizeChoices.addEventListener("change", () => {
       markCustomSettings();
@@ -1806,17 +2050,17 @@
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js").then((registration) => {
+          serviceWorkerRegistration = registration;
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            setUpdateReady();
+          }
           registration.addEventListener("updatefound", () => {
-            const worker = registration.installing;
-            if (!worker) return;
-            worker.addEventListener("statechange", () => {
-              if (worker.state === "installed" && navigator.serviceWorker.controller) {
-                showToast("新しい版があります。", () => window.location.reload(), "更新");
-              }
-            });
+            handleServiceWorkerUpdate(registration.installing);
           });
         }).catch(() => {});
       });
+    } else {
+      updateStatus.textContent = "このブラウザではPWA更新確認を使えません。";
     }
   </script>
 </body>

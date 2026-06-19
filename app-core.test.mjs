@@ -15,30 +15,42 @@ import { readFileSync } from "node:fs";
 assert.deepEqual(DEFAULT_PRIZES, [500, 1000, 5000]);
 
 const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8");
+const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
 assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
+assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="mainRateCategory"[\s\S]*id="mainRateOption"/);
+assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="prizeChoiceHeading"[^>]*>使う景品<\/h3>/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
+assert.match(indexHtml, /id="updateBanner"/);
+assert.match(indexHtml, /id="reloadUpdateBtn"/);
+assert.match(indexHtml, /id="checkUpdateBtn"/);
 assert.match(indexHtml, /手入力/);
 assert.match(indexHtml, /data-rate-mode="preset"/);
 assert.match(indexHtml, /data-rate-mode="custom"/);
-assert.match(indexHtml, /id="manualRateUnit"/);
+assert.doesNotMatch(indexHtml, /id="manualRateUnit"/);
 assert.match(indexHtml, /id="saveManualRateMeta"/);
 assert.match(indexHtml, /id="manualSaveKind"/);
+assert.doesNotMatch(indexHtml, /<select id="manualSaveKind"/);
+assert.match(indexHtml, /data-manual-save-kind="slot"[^>]*>スロット<\/button>/);
+assert.match(indexHtml, /data-manual-save-kind="pachi"[^>]*>パチンコ<\/button>/);
 assert.match(indexHtml, /id="manualSaveLendingRate"/);
+assert.match(indexHtml, /貸し出しレート/);
+assert.match(indexHtml, /manualSaveKindInput\.value === "pachi" \? `\$\{rateText\}円パチンコ` : `\$\{rateText\}円スロット`/);
 assert.doesNotMatch(indexHtml, /表示用の種類/);
 assert.match(indexHtml, /id="customExchangeRate"[^>]*step="0\.001"/);
 assert.match(indexHtml, /＋ この設定を保存/);
 assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
 assert.match(indexHtml, /data-save-toggle-label="open"/);
 assert.match(indexHtml, /data-save-toggle-label="close"/);
-assert.match(indexHtml, /設定名・店名/);
+assert.match(indexHtml, /設定名/);
 assert.match(indexHtml, />管理<\/button>/);
 assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
 assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
+assert.match(serviceWorker, /exchange-tool-pwa-v21/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -46,7 +58,7 @@ const yenText = exchangeCalloutText({
 });
 
 assert.ok(!yenText.includes("+100円"), "callout should not show confusing +100円 delta");
-assert.equal(yenText, "あと1枚で次の交換に届きます。");
+assert.equal(yenText, "あと1枚");
 
 const exactText = exchangeCalloutText({
   result: calculateExchange({ medals: 104, rateType: "rate5152", prizes: [200] }),
@@ -56,7 +68,7 @@ const exactText = exchangeCalloutText({
 assert.equal(exactText, "余りは0枚です。");
 
 assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
-assert.equal(activePresetStatusText(""), "カスタム設定");
+assert.equal(activePresetStatusText(""), "");
 assert.equal(rateUnitHintText("枚"), "100円あたりの枚数");
 assert.equal(payoutYenPerUnit(5.152), 100 / 5.152);
 assert.equal(formatExchangeRateValue(5.1524), "5.152");
