@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f4efe5" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#151813" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f4efe5" />
   <meta name="application-name" content="交換枚数 計算ツール" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
@@ -279,6 +278,7 @@
       display: grid;
       gap: 2px;
       max-width: 168px;
+      border-radius: 12px;
       text-align: left;
       white-space: normal;
     }
@@ -304,7 +304,7 @@
       width: fit-content;
       max-width: 100%;
       padding: 6px 9px;
-      border-radius: 999px;
+      border-radius: 10px;
       background: var(--surface);
       color: var(--ink);
       font-size: .8rem;
@@ -421,6 +421,7 @@
       display: block;
     }
 
+    .guided-rate-fields,
     .custom-rate-fields {
       display: grid;
       gap: 6px;
@@ -429,6 +430,13 @@
       background: var(--surface-soft);
     }
 
+    #mainRateCategoryField,
+    .rate-option-fields {
+      display: grid;
+      gap: 6px;
+    }
+
+    .guided-rate-fields.hidden,
     .custom-rate-fields.hidden {
       display: none;
     }
@@ -799,66 +807,6 @@
       font-size: .84rem;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        color-scheme: dark;
-        --bg: #151813;
-        --panel: #20251c;
-        --surface: #151813;
-        --surface-soft: #2a3024;
-        --ink: #f4f0df;
-        --muted: #a8ad9c;
-        --line: rgba(244, 240, 223, .12);
-        --soft: #303629;
-        --dark: #d9a21b;
-        --button-ink: #151813;
-        --accent: #f1d071;
-        --accent-ink: #151813;
-        --accent-soft: #313a2b;
-        --warn: #fbbf24;
-        --warn-soft: #3d2f16;
-        --danger: #fca5a5;
-        --danger-soft: #3d2323;
-        --shadow: none;
-      }
-
-      .tab.active,
-      .manual-save-kind button.active,
-      .rate-mode button.active {
-        background: var(--accent);
-        color: var(--accent-ink);
-        box-shadow: none;
-      }
-
-      .saved-settings-panel {
-        background: var(--surface-soft);
-      }
-
-      .preset-chip,
-      .chip,
-      input,
-      select,
-      .preset-status,
-      .calc-display {
-        box-shadow: none;
-      }
-
-      .update-banner-inner {
-        background: var(--accent);
-        color: var(--accent-ink);
-      }
-
-      .update-banner button,
-      .toast button {
-        background: var(--surface);
-        color: var(--ink);
-      }
-
-      .toast {
-        background: var(--ink);
-        color: var(--surface);
-      }
-    }
   </style>
 </head>
 <body>
@@ -898,26 +846,28 @@
                   <button id="rateModeCustom" type="button" data-rate-mode="custom" aria-pressed="false">手入力</button>
                 </div>
               </div>
-              <div id="mainRateCategoryField">
-                <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
-                <select id="mainRateCategory">
-                  <option value="pachi4">4円パチンコ</option>
-                  <option value="pachi1">1円パチンコ</option>
-                  <option value="slot20">20円スロ</option>
-                  <option value="slot5">5円スロ</option>
-                </select>
-              </div>
-              <div id="guidedExchangeRateFields" class="rate-option-fields">
-                <label for="mainRateOption">よく使う交換率</label>
-                <select id="mainRateOption"></select>
+              <div id="guidedRateFieldsGroup" class="guided-rate-fields">
+                <div id="mainRateCategoryField">
+                  <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
+                  <select id="mainRateCategory">
+                    <option value="pachi4">4円パチンコ</option>
+                    <option value="pachi1">1円パチンコ</option>
+                    <option value="slot20">20円スロ</option>
+                    <option value="slot5">5円スロ</option>
+                  </select>
+                </div>
+                <div id="guidedExchangeRateFields" class="rate-option-fields">
+                  <label for="mainRateOption">よく使う交換率</label>
+                  <select id="mainRateOption"></select>
+                </div>
               </div>
               <div id="customExchangeRateFields" class="custom-rate-fields hidden">
                 <label for="customExchangeRate">交換率を手入力</label>
                 <div class="inline-unit">
                   <input id="customExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal" placeholder="5.152" />
-                  <span id="customExchangeRateUnit">玉/枚 / 100円</span>
+                  <span id="customExchangeRateUnit">数（100円あたり）</span>
                 </div>
-                <div id="customExchangeRatePayout" class="field-help">= -円 / 玉/枚</div>
+                <div id="customExchangeRatePayout" class="field-help">1単位 = -円</div>
                 <div id="customExchangeRateError" class="field-error hidden"></div>
               </div>
               <select id="rateType" class="hidden" aria-hidden="true"></select>
@@ -1205,10 +1155,9 @@
     };
     const medalsInput = document.getElementById("medals");
     const rateTypeInput = document.getElementById("rateType");
-    const mainRateCategoryField = document.getElementById("mainRateCategoryField");
+    const guidedRateFieldsGroup = document.getElementById("guidedRateFieldsGroup");
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
     const mainRateOptionInput = document.getElementById("mainRateOption");
-    const guidedExchangeRateFields = document.getElementById("guidedExchangeRateFields");
     const customExchangeRateInput = document.getElementById("customExchangeRate");
     const customExchangeRateFields = document.getElementById("customExchangeRateFields");
     const customExchangeRateError = document.getElementById("customExchangeRateError");
@@ -1524,18 +1473,19 @@
     function renderCustomRateFields() {
       const isCustom = isCustomRateMode();
       const config = currentRateCategoryConfig();
+      const unitLabel = config.unitLabel === CUSTOM_RATE_UNIT_LABEL ? "数" : config.unitLabel;
       customExchangeRateFields.classList.toggle("hidden", !isCustom);
-      guidedExchangeRateFields.classList.toggle("hidden", isCustom);
-      mainRateCategoryField.classList.toggle("hidden", isCustom);
+      guidedRateFieldsGroup.classList.toggle("hidden", isCustom);
       saveManualRateMeta.classList.toggle("hidden", !isCustom || document.getElementById("saveSettingsForm").classList.contains("hidden"));
       document.getElementById("mainRateCategoryLabel").textContent = "種類";
       if (!config) return;
-      document.getElementById("customExchangeRateUnit").textContent = `${config.unitLabel} / ${formatNumber(config.yenBase || 100)}円`;
+      document.getElementById("customExchangeRateUnit").textContent = `${unitLabel}（${formatNumber(config.yenBase || 100)}円あたり）`;
       const value = Number(customExchangeRateInput.value);
       const payout = payoutYenPerUnit(value, config.yenBase || 100);
+      const payoutUnitLabel = config.unitLabel === CUSTOM_RATE_UNIT_LABEL ? "単位" : config.unitLabel;
       document.getElementById("customExchangeRatePayout").textContent = payout
-        ? `= ${payout.toFixed(2)}円 / ${config.unitLabel}`
-        : `= -円 / ${config.unitLabel}`;
+        ? `1${payoutUnitLabel} = ${payout.toFixed(2)}円`
+        : `1${payoutUnitLabel} = -円`;
       validateCurrentRate();
       renderSavePreview();
     }
