@@ -502,19 +502,12 @@
     }
 
     .target-medals {
-      display: inline-flex;
-      align-items: baseline;
+      display: block;
       max-width: 100%;
-      margin-top: 7px;
-      padding: 4px 8px;
-      border: 1px solid rgba(15, 118, 110, .26);
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: #064e3b;
-      font-size: .84rem;
+      margin-top: 4px;
+      font-size: .86rem;
       font-weight: 900;
       line-height: 1.25;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
     }
 
     .callout {
@@ -916,7 +909,7 @@
           </div>
         </div>
 
-        <div id="nextCallout" class="callout"></div>
+        <div id="nextCallout" class="callout hidden"></div>
         <div class="result-actions">
           <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
         </div>
@@ -1709,8 +1702,8 @@
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
 
       const callout = document.getElementById("nextCallout");
-      callout.className = `callout ${shortage > 0 && shortage <= 10 ? "hot" : ""}`;
-      callout.textContent = exchangeCalloutText({ result, unit });
+      callout.className = "callout hidden";
+      callout.textContent = "";
 
       const rows = document.getElementById("candidateRows");
       rows.innerHTML = "";
