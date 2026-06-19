@@ -15,6 +15,7 @@
   <style>
     :root {
       color-scheme: light;
+      /* Base: warm paper surfaces. Accent: selected state and primary actions only. */
       --bg: #f4efe5;
       --panel: #fffaf0;
       --surface: #fffdf8;
@@ -23,11 +24,12 @@
       --muted: #6b6458;
       --line: rgba(45, 37, 26, .12);
       --soft: #e5dccb;
-      --dark: #0f766e;
-      --button-ink: #fff;
       --accent: #0f766e;
       --accent-ink: #064e3b;
-      --accent-soft: #e8f3ee;
+      --accent-soft: #dceee8;
+      --action: var(--accent);
+      --button-ink: #fff;
+      --state-saved: rgba(107, 100, 88, .07);
       --warn: #b45309;
       --warn-soft: #fff2cc;
       --danger: #b91c1c;
@@ -56,6 +58,7 @@
     h2 { font-size: 1rem; margin-bottom: 10px; }
     h3 { font-size: .92rem; margin-bottom: 8px; }
     .note, .small { color: var(--muted); font-size: .86rem; }
+    .note:empty { display: none; }
 
     .top {
       display: grid;
@@ -218,7 +221,7 @@
     button {
       padding: 9px 12px;
       border: 0;
-      background: var(--dark);
+      background: var(--action);
       color: var(--button-ink);
       font-weight: 800;
       cursor: pointer;
@@ -237,9 +240,9 @@
     .saved-settings-panel {
       display: grid;
       gap: 8px;
-      padding: 10px;
-      border-radius: 14px;
-      background: var(--accent-soft);
+      padding: 9px 0 9px 12px;
+      border-left: 3px solid var(--accent);
+      background: transparent;
     }
 
     .saved-settings-header {
@@ -251,6 +254,8 @@
 
     .saved-settings-header label {
       margin-bottom: 0;
+      color: var(--muted);
+      font-size: .76rem;
     }
 
     .preset-strip, .chips {
@@ -278,9 +283,13 @@
       display: grid;
       gap: 2px;
       max-width: 168px;
-      border-radius: 12px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 9px;
+      background: var(--surface);
       text-align: left;
       white-space: normal;
+      box-shadow: inset 0 0 0 1px var(--line);
     }
 
     .preset-chip-main {
@@ -303,11 +312,11 @@
       gap: 1px;
       width: fit-content;
       max-width: 100%;
-      padding: 6px 9px;
+      padding: 0;
       border-radius: 10px;
-      background: var(--surface);
-      color: var(--ink);
-      font-size: .8rem;
+      background: transparent;
+      color: var(--muted);
+      font-size: .74rem;
       font-weight: 800;
       overflow-wrap: anywhere;
     }
@@ -490,19 +499,32 @@
 
     .chip {
       display: inline-flex;
-      gap: 7px;
+      gap: 0;
       align-items: center;
     }
 
     .chip.selected {
-      background: var(--accent);
-      color: var(--button-ink);
-      box-shadow: none;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, .18);
     }
 
     .chip input {
-      width: auto;
-      min-height: auto;
+      appearance: none;
+      -webkit-appearance: none;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+      min-height: 1px;
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .chip input:checked {
+      box-shadow: none;
     }
 
     .metric-line {
@@ -631,7 +653,7 @@
       min-height: 58px;
       padding: 0;
       border-radius: 999px;
-      background: var(--dark);
+      background: var(--action);
       color: #fff;
       box-shadow: 0 16px 32px rgba(17, 24, 39, .24);
     }
@@ -803,7 +825,7 @@
       min-height: 34px;
       padding: 5px 9px;
       background: #fff;
-      color: var(--dark);
+      color: var(--action);
       font-size: .84rem;
     }
 
@@ -814,7 +836,6 @@
     <div class="top">
       <div>
         <h1>交換枚数 計算ツール</h1>
-        <p class="note">スマホ用。余り、あと何玉/枚、景品・金額、ノリ打ち精算。</p>
       </div>
       <nav class="tabs" aria-label="画面切替">
         <button class="tab active" data-tab="exchange" type="button">交換計算</button>
@@ -946,12 +967,12 @@
 
         <div id="nextCallout" class="callout hidden"></div>
         <div class="result-actions">
-          <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
+          <button id="toggleDetailsBtn" type="button">結果を見る</button>
         </div>
       </section>
 
       <section id="exchangeDetails" class="panel details">
-        <h2>景品・金額</h2>
+        <h2>結果</h2>
         <div class="status-line">
           <div class="status-item">
             <div class="status-label">交換額</div>
@@ -1003,9 +1024,8 @@
         <div class="setting-block">
           <h3>アプリ更新</h3>
           <button id="checkUpdateBtn" class="secondary" type="button">更新を確認</button>
-          <p id="updateStatus" class="note">新しい版がある時は画面下に更新ボタンが表示されます。</p>
+          <p id="updateStatus" class="note"></p>
         </div>
-        <p class="note">交換率は交換計算画面で選択または手入力できます。保存した設定と景品タイプはこの端末のブラウザに保存されます。</p>
       </section>
     </section>
 
@@ -1015,10 +1035,10 @@
         <label for="groupMode">比重モード</label>
         <select id="groupMode">
           <option value="none">比重なし</option>
-          <option value="A">比重A（優遇）</option>
-          <option value="B">比重B（強めに優遇）</option>
+          <option value="A">比重A（差を少し反映）</option>
+          <option value="B">比重B（差を大きく反映）</option>
         </select>
-        <p class="note">比重Aは成績が良い人へ軽く寄せます。比重BはAより強く寄せます。投資・回収が1000円単位なら、目標収支と受け渡しも1000円単位にします。</p>
+        <p class="note">成績が良い人に目標収支を寄せます。Aは控えめ、Bは強めです。</p>
       </section>
 
       <section class="panel">
@@ -1064,7 +1084,7 @@
 
   <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
     <div class="update-banner-inner">
-      <div class="update-banner-text">新しい版があります。</div>
+      <div class="update-banner-text">新しいバージョンがあります。</div>
       <button id="reloadUpdateBtn" type="button">更新</button>
     </div>
   </div>
@@ -1307,7 +1327,7 @@
     function setUpdateReady() {
       updateReady = true;
       updateBanner.classList.remove("hidden");
-      updateStatus.textContent = "新しい版があります。画面下の更新ボタンを押すと反映されます。";
+      updateStatus.textContent = "新しいバージョンがあります。";
     }
 
     function handleServiceWorkerUpdate(worker) {
@@ -1315,7 +1335,7 @@
       worker.addEventListener("statechange", () => {
         if (worker.state === "installed" && navigator.serviceWorker.controller) {
           setUpdateReady();
-          showToast("新しい版があります。", () => window.location.reload(), "更新");
+          showToast("新しいバージョンがあります。", () => window.location.reload(), "更新");
         }
       });
     }
@@ -1524,7 +1544,6 @@
       saveManualRateMeta.classList.toggle("hidden", !open || !isCustomRateMode());
       if (clearName) document.getElementById("quickPresetName").value = "";
       renderSavePreview();
-      if (open) document.getElementById("quickPresetName").focus();
     }
 
     function displayNameForPreset(preset) {
@@ -1690,7 +1709,7 @@
       strip.innerHTML = "";
       manage.innerHTML = `<option value="">設定を選択</option>`;
       if (presets.length === 0) {
-        strip.innerHTML = `<span class="note">保存した設定はここに表示されます。</span>`;
+        strip.innerHTML = `<span class="note">保存なし</span>`;
       }
       presets.forEach((preset, index) => {
         const displayName = displayNameForPreset(preset);
@@ -1881,8 +1900,8 @@
       renderPrizeChoices(settings.prizes);
       details.classList.toggle("open", !!settings.detailsOpen);
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "景品・金額を隠す"
-        : "景品・金額を見る";
+        ? "結果を隠す"
+        : "結果を見る";
       renderActivePresetStatus();
     }
 
@@ -1899,8 +1918,8 @@
     document.getElementById("toggleDetailsBtn").addEventListener("click", () => {
       details.classList.toggle("open");
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "景品・金額を隠す"
-        : "景品・金額を見る";
+        ? "結果を隠す"
+        : "結果を見る";
       renderExchange();
     });
 
@@ -2042,6 +2061,7 @@
         rateLabel: rateConfig?.label || "",
       });
       saveJson(PRESETS_KEY, presets);
+      document.activeElement?.blur();
       setSaveSettingsOpen(false, { clearName: true });
       renderPresets();
       activePresetName = displayName;
