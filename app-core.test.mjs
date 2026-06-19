@@ -17,6 +17,8 @@ assert.deepEqual(DEFAULT_PRIZES, [500, 1000, 5000]);
 const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
+assert.match(indexHtml, /function selectInitialZeroOnFocus/);
+assert.match(indexHtml, /medalsInput\.addEventListener\("focus", selectInitialZeroOnFocus\)/);
 assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
 assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="mainRateCategory"[\s\S]*id="mainRateOption"/);

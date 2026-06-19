@@ -1818,6 +1818,13 @@
       saveSettings();
     }
 
+    function selectInitialZeroOnFocus() {
+      if (medalsInput.value !== "0") return;
+      window.requestAnimationFrame(() => {
+        if (document.activeElement === medalsInput && medalsInput.value === "0") medalsInput.select();
+      });
+    }
+
     function renderCalc() {
       document.getElementById("calcDisplay").textContent = calcExpression || String(calcResult || 0);
     }
@@ -2116,6 +2123,13 @@
       renderMembers();
     });
 
+    medalsInput.addEventListener("focus", selectInitialZeroOnFocus);
+    medalsInput.addEventListener("pointerup", (event) => {
+      if (document.activeElement === medalsInput && medalsInput.value === "0") {
+        event.preventDefault();
+        selectInitialZeroOnFocus();
+      }
+    });
     medalsInput.addEventListener("input", renderExchange);
     mainRateCategoryInput.addEventListener("change", () => {
       renderMainRateOptions();
