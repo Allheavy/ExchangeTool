@@ -5,6 +5,8 @@ import {
   buildRateConfigFromOption,
   calculateExchange,
   exchangeCalloutText,
+  formatExchangeRateValue,
+  payoutYenPerUnit,
   rateCategoryOptions,
   rateUnitHintText,
 } from "./app-core.mjs";
@@ -17,6 +19,25 @@ assert.match(indexHtml, /id="medals"[^>]*value="0"/);
 assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
+assert.match(indexHtml, /id="leftTargetMedals"/);
+assert.match(indexHtml, /id="nextTargetMedals"/);
+assert.match(indexHtml, /手入力/);
+assert.match(indexHtml, /data-rate-mode="preset"/);
+assert.match(indexHtml, /data-rate-mode="custom"/);
+assert.match(indexHtml, /id="manualRateUnit"/);
+assert.match(indexHtml, /id="saveManualRateMeta"/);
+assert.match(indexHtml, /id="manualSaveKind"/);
+assert.match(indexHtml, /id="manualSaveLendingRate"/);
+assert.doesNotMatch(indexHtml, /表示用の種類/);
+assert.match(indexHtml, /id="customExchangeRate"[^>]*step="0\.001"/);
+assert.match(indexHtml, /＋ この設定を保存/);
+assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
+assert.match(indexHtml, /data-save-toggle-label="open"/);
+assert.match(indexHtml, /data-save-toggle-label="close"/);
+assert.match(indexHtml, /設定名・店名/);
+assert.match(indexHtml, />管理<\/button>/);
+assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
+assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 
 const yenText = exchangeCalloutText({
@@ -35,8 +56,10 @@ const exactText = exchangeCalloutText({
 assert.equal(exactText, "余りは0枚です。");
 
 assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
-assert.equal(activePresetStatusText(""), "未保存の設定");
+assert.equal(activePresetStatusText(""), "カスタム設定");
 assert.equal(rateUnitHintText("枚"), "100円あたりの枚数");
+assert.equal(payoutYenPerUnit(5.152), 100 / 5.152);
+assert.equal(formatExchangeRateValue(5.1524), "5.152");
 
 const pachi4Options = rateCategoryOptions("pachi4");
 assert.equal(pachi4Options[0].label, "25玉（4円等価）");
@@ -47,4 +70,7 @@ assert.deepEqual(slot20Rate, {
   label: "20円スロ 5.2枚交換",
   medalsPerYen: 5.2 / 100,
   unitLabel: "枚",
+  category: "slot20",
+  exchangeRate: 5.2,
+  yenBase: 100,
 });

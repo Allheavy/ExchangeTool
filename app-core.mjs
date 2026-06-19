@@ -162,7 +162,7 @@ export function exchangeCalloutText({ result, unit }) {
 
 export function activePresetStatusText(name) {
   const trimmed = String(name || "").trim();
-  return trimmed ? `${trimmed}を適用中` : "未保存の設定";
+  return trimmed ? `${trimmed}を適用中` : "カスタム設定";
 }
 
 export function rateUnitHintText(unit) {
@@ -177,6 +177,19 @@ function payoutLabel(value, config) {
   const yen = (config.yenBase || 100) / value;
   if (Math.abs(yen - config.yenPerUnit) < 0.001) return `${config.yenPerUnit}円等価`;
   return `${Math.floor(yen * 100) / 100}円`;
+}
+
+export function payoutYenPerUnit(value, yenBase = 100) {
+  const rate = Number(value);
+  const base = Number(yenBase) || 100;
+  if (!Number.isFinite(rate) || rate <= 0) return null;
+  return base / rate;
+}
+
+export function formatExchangeRateValue(value) {
+  const rate = Number(value);
+  if (!Number.isFinite(rate)) return "";
+  return String(Math.round(rate * 1000) / 1000);
 }
 
 export function rateCategoryOptions(category) {
@@ -196,6 +209,9 @@ export function buildRateConfigFromOption(category, optionValue) {
     label: `${config.label} ${optionValueLabel(value, config.unitLabel)}交換`,
     medalsPerYen: value / (config.yenBase || 100),
     unitLabel: config.unitLabel,
+    category,
+    exchangeRate: value,
+    yenBase: config.yenBase || 100,
   };
 }
 

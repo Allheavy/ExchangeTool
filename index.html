@@ -93,7 +93,7 @@
       box-shadow: var(--shadow);
     }
 
-    .panel > *, .row, .row-3, .section-title, .preset-strip, .chips {
+    .panel > *, .row, .row-3, .section-title, .preset-strip, .chips, .save-settings-form {
       min-width: 0;
       max-width: 100%;
     }
@@ -208,6 +208,26 @@
       border: 1px solid #fecaca;
     }
 
+    .saved-settings-panel {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #d5e3e1;
+      border-radius: 8px;
+      background: #f3faf9;
+    }
+
+    .saved-settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .saved-settings-header label {
+      margin-bottom: 0;
+    }
+
     .preset-strip, .chips {
       display: flex;
       gap: 8px;
@@ -256,6 +276,104 @@
       min-width: 128px;
     }
 
+    .save-settings-form {
+      display: grid;
+      gap: 9px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .save-settings-form.hidden {
+      display: none;
+    }
+
+    .save-meta {
+      display: grid;
+      gap: 8px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffaf0;
+    }
+
+    .save-meta.hidden {
+      display: none;
+    }
+
+    .save-preview {
+      padding: 9px 10px;
+      border-radius: 7px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: .84rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .custom-rate-fields {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .custom-rate-fields.hidden {
+      display: none;
+    }
+
+    .rate-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .rate-mode button {
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .rate-mode button.active {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, .08);
+    }
+
+    .rate-option-fields.hidden {
+      display: none;
+    }
+
+    .inline-unit {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .inline-unit span {
+      color: var(--muted);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .field-error {
+      color: var(--danger);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
     .chip {
       display: inline-flex;
       gap: 7px;
@@ -301,6 +419,13 @@
     .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 0; }
     .status-label { color: var(--muted); font-size: .72rem; font-weight: 800; }
     .status-value { font-size: 1.04rem; font-weight: 900; overflow-wrap: anywhere; }
+    .status-subvalue {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
 
     .callout {
       padding: 11px;
@@ -516,7 +641,7 @@
       <nav class="tabs" aria-label="画面切替">
         <button class="tab active" data-tab="exchange" type="button">交換計算</button>
         <button class="tab" data-tab="group" type="button">ノリ打ち</button>
-        <button class="tab" data-tab="settings" type="button">設定</button>
+        <button class="tab" data-tab="settings" type="button">管理</button>
       </nav>
     </div>
 
@@ -524,19 +649,24 @@
       <section class="panel">
         <h2>交換計算</h2>
 
-        <div>
-          <label>交換設定Preset</label>
-          <div id="activePresetStatus" class="preset-status">未保存の設定</div>
-          <div id="presetStrip" class="preset-strip"></div>
-          <div class="preset-save-row">
-            <input id="quickPresetName" type="text" placeholder="Preset名（店名）" />
-            <button id="quickSavePresetBtn" class="secondary" type="button">現在の設定を保存</button>
+        <div class="saved-settings-panel">
+          <div class="saved-settings-header">
+            <label>保存した設定</label>
+            <div id="activePresetStatus" class="preset-status">カスタム設定</div>
           </div>
+          <div id="presetStrip" class="preset-strip"></div>
         </div>
 
         <div class="rate-builder">
           <div>
-            <label for="mainRateCategory">種類</label>
+            <label>交換率</label>
+            <div class="rate-mode" role="group" aria-label="交換率の入力方法">
+              <button id="rateModePreset" class="active" type="button" data-rate-mode="preset" aria-pressed="true">よく使う</button>
+              <button id="rateModeCustom" type="button" data-rate-mode="custom" aria-pressed="false">手入力</button>
+            </div>
+          </div>
+          <div id="mainRateCategoryField">
+            <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
             <select id="mainRateCategory">
               <option value="pachi4">4円パチンコ</option>
               <option value="pachi1">1円パチンコ</option>
@@ -544,9 +674,23 @@
               <option value="slot5">5円スロ</option>
             </select>
           </div>
-          <div>
-            <label for="mainRateOption">交換率</label>
+          <div id="guidedExchangeRateFields" class="rate-option-fields">
+            <label for="mainRateOption">よく使う交換率</label>
             <select id="mainRateOption"></select>
+          </div>
+          <div id="customExchangeRateFields" class="custom-rate-fields hidden">
+            <label for="manualRateUnit">単位</label>
+            <select id="manualRateUnit">
+              <option value="枚">枚</option>
+              <option value="玉">玉</option>
+            </select>
+            <label for="customExchangeRate">交換率を手入力</label>
+            <div class="inline-unit">
+              <input id="customExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal" placeholder="5.152" />
+              <span id="customExchangeRateUnit">枚 / 100円</span>
+            </div>
+            <div id="customExchangeRatePayout" class="field-help">= -円 / 枚</div>
+            <div id="customExchangeRateError" class="field-error hidden"></div>
           </div>
           <select id="rateType" class="hidden" aria-hidden="true"></select>
         </div>
@@ -554,6 +698,42 @@
         <div>
           <label>使う景品</label>
           <div id="prizeChoices" class="chips"></div>
+        </div>
+
+        <button
+          id="showSaveSettingsBtn"
+          class="secondary"
+          type="button"
+          aria-expanded="false"
+          aria-controls="saveSettingsForm"
+          data-save-toggle-label="open"
+        >＋ この設定を保存</button>
+        <div id="saveSettingsForm" class="save-settings-form hidden">
+          <div>
+            <label for="quickPresetName">設定名</label>
+            <input id="quickPresetName" type="text" placeholder="例: 交換設定A" />
+          </div>
+          <div id="saveManualRateMeta" class="save-meta hidden">
+            <label>保存名用</label>
+            <div class="row">
+              <div>
+                <label for="manualSaveKind">種別</label>
+                <select id="manualSaveKind">
+                  <option value="slot">スロット</option>
+                  <option value="pachi">パチンコ</option>
+                </select>
+              </div>
+              <div>
+                <label for="manualSaveLendingRate">貸出レート（円）</label>
+                <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="任意" />
+              </div>
+            </div>
+          </div>
+          <div id="savePresetPreview" class="save-preview">保存後の表示：20スロ｜5.2枚交換</div>
+          <div class="preset-save-row">
+            <button id="quickSavePresetBtn" type="button">設定を保存</button>
+            <button id="cancelSaveSettingsBtn" class="secondary" type="button" data-save-toggle-label="close">閉じる</button>
+          </div>
         </div>
 
         <div class="primary-input">
@@ -565,10 +745,12 @@
           <div class="status-item">
             <div class="status-label">余り</div>
             <div id="leftMedals" class="status-value">0枚</div>
+            <div id="leftTargetMedals" class="status-subvalue">目標 0枚</div>
           </div>
           <div class="status-item">
             <div class="status-label">あと</div>
             <div id="nextShortage" class="status-value">0枚</div>
+            <div id="nextTargetMedals" class="status-subvalue">目標 0枚</div>
           </div>
         </div>
 
@@ -608,9 +790,9 @@
 
     <section id="settingsTab" class="hidden">
       <section id="settingsPanel" class="panel">
-        <h2>設定</h2>
+        <h2>管理</h2>
         <div class="setting-block">
-          <h3>景品タイプを追加</h3>
+          <h3>景品タイプの管理</h3>
           <label for="newPrizeValue">景品額（円）</label>
           <div class="row-3">
             <input id="newPrizeValue" type="number" min="1" step="1" inputmode="numeric" placeholder="例: 100" />
@@ -621,46 +803,11 @@
         </div>
 
         <div class="setting-block">
-          <h3>交換率を追加</h3>
-          <div class="rate-builder">
-            <label for="newRateCategory">種類</label>
-            <select id="newRateCategory">
-              <option value="pachi4">4円パチンコ</option>
-              <option value="pachi1">1円パチンコ</option>
-              <option value="slot20">20円スロ</option>
-              <option value="slot5">5円スロ</option>
-              <option value="custom">カスタム</option>
-            </select>
-
-            <div id="presetRateFields">
-              <label for="newRateOption">交換率</label>
-              <select id="newRateOption"></select>
-            </div>
-
-            <div id="customRateFields" class="hidden">
-              <input id="newRateName" type="text" placeholder="交換率名 例: 21.73円スロット" />
-              <div class="row-3">
-                <input id="newRateValue" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="100円あたり数量" />
-                <select id="newRateUnit">
-                  <option value="枚">枚</option>
-                  <option value="玉">玉</option>
-                </select>
-                <span></span>
-              </div>
-              <div id="rateUnitHint" class="field-help">100円あたりの枚数</div>
-            </div>
-
-            <button id="addRateBtn" type="button">追加</button>
-          </div>
-          <div id="rateTypeList" class="manage-list"></div>
-        </div>
-
-        <div class="setting-block">
-          <h3>保存済みPreset</h3>
+          <h3>保存した設定</h3>
           <select id="presetManage"></select>
-          <button id="deletePresetBtn" class="danger" type="button">選択Presetを削除</button>
+          <button id="deletePresetBtn" class="danger" type="button">選択した設定を削除</button>
         </div>
-        <p class="note">設定とPresetはこの端末のブラウザに保存されます。別端末や別ブラウザには共有されません。</p>
+        <p class="note">交換率は交換計算画面で選択または手入力できます。保存した設定と景品タイプはこの端末のブラウザに保存されます。</p>
       </section>
     </section>
 
@@ -764,17 +911,14 @@
     import {
       DEFAULT_PRIZES,
       RATE_CONFIGS,
-      activePresetStatusText,
       buildRateConfigFromOption,
       calculateExchange,
       deletePrizeType,
-      deleteRateType,
       evaluateCalculatorExpression,
       exchangeCalloutText,
       formatNumber,
       nextMemberName,
       rateCategoryOptions,
-      rateUnitHintText,
       settleGroup,
       unitLabelFor,
     } from "./app-core.mjs";
@@ -784,10 +928,26 @@
     const PRIZES_KEY = "exchangeTool.prizes.v6";
     const RATES_KEY = "exchangeTool.rates.v5";
     const HIDDEN_RATES_KEY = "exchangeTool.hiddenRates.v5";
+    const RATE_CATEGORY_UI_CONFIGS = {
+      pachi4: { label: "4円パチンコ", shortLabel: "4パチ", unitLabel: "玉", yenBase: 100 },
+      pachi1: { label: "1円パチンコ", shortLabel: "1パチ", unitLabel: "玉", yenBase: 100 },
+      slot20: { label: "20円スロ", shortLabel: "20スロ", unitLabel: "枚", yenBase: 100 },
+      slot5: { label: "5円スロ", shortLabel: "5スロ", unitLabel: "枚", yenBase: 1000 },
+    };
     const medalsInput = document.getElementById("medals");
     const rateTypeInput = document.getElementById("rateType");
+    const mainRateCategoryField = document.getElementById("mainRateCategoryField");
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
     const mainRateOptionInput = document.getElementById("mainRateOption");
+    const guidedExchangeRateFields = document.getElementById("guidedExchangeRateFields");
+    const manualRateUnitInput = document.getElementById("manualRateUnit");
+    const customExchangeRateInput = document.getElementById("customExchangeRate");
+    const customExchangeRateFields = document.getElementById("customExchangeRateFields");
+    const customExchangeRateError = document.getElementById("customExchangeRateError");
+    const rateModeButtons = [...document.querySelectorAll("[data-rate-mode]")];
+    const saveManualRateMeta = document.getElementById("saveManualRateMeta");
+    const manualSaveKindInput = document.getElementById("manualSaveKind");
+    const manualSaveLendingRateInput = document.getElementById("manualSaveLendingRate");
     const prizeChoices = document.getElementById("prizeChoices");
     const details = document.getElementById("exchangeDetails");
     const calcSheet = document.getElementById("calcSheet");
@@ -796,6 +956,7 @@
     const toastActionBtn = document.getElementById("toastActionBtn");
     let activePresetName = "";
     let mainRateId = "";
+    let activeCustomRateId = "";
     let calcExpression = "";
     let calcResult = 0;
     let toastTimer = 0;
@@ -817,6 +978,11 @@
       localStorage.setItem(key, JSON.stringify(value));
     }
 
+    function activePresetStatusText(name) {
+      const trimmed = String(name || "").trim();
+      return trimmed ? `${trimmed}を適用中` : "カスタム設定";
+    }
+
     function getPrizeTypes() {
       return [...new Set(loadJson(PRIZES_KEY, DEFAULT_PRIZES).map(Number).filter((value) => value > 0))]
         .sort((a, b) => a - b);
@@ -831,21 +997,17 @@
     function getRates() {
       const hidden = new Set(loadJson(HIDDEN_RATES_KEY, []));
       return Object.fromEntries(
-        Object.entries({ ...RATE_CONFIGS, ...guidedRateConfigs(), ...customRates() })
-          .filter(([id]) => !hidden.has(id))
-      );
-    }
-
-    function manageableRates() {
-      const hidden = new Set(loadJson(HIDDEN_RATES_KEY, []));
-      return Object.fromEntries(
-        Object.entries({ ...RATE_CONFIGS, ...customRates() })
+        Object.entries({ ...RATE_CONFIGS, ...guidedRateConfigs(), ...customRates(), ...activeCustomRateConfigEntry() })
           .filter(([id]) => !hidden.has(id))
       );
     }
 
     function guidedRateId(category, value) {
       return `guided_${category}_${String(value).replace(".", "_")}`;
+    }
+
+    function customGuidedRateId(category, value) {
+      return `guided_${category}_custom_${String(value).replace(".", "_")}`;
     }
 
     function guidedRateConfigs() {
@@ -859,6 +1021,12 @@
       return entries;
     }
 
+    function activeCustomRateConfigEntry() {
+      const rateConfig = selectedCustomRateConfig();
+      if (!rateConfig || !activeCustomRateId) return {};
+      return { [activeCustomRateId]: rateConfig };
+    }
+
     function checkedValues(root, name) {
       return [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((input) => Number(input.value));
     }
@@ -870,6 +1038,10 @@
     function saveSettings() {
       saveJson(SETTINGS_KEY, {
         rateType: rateTypeInput.value,
+        rateCategory: isCustomRateMode() ? "manual" : mainRateCategoryInput.value,
+        exchangeRate: currentExchangeRateValue(),
+        isCustomExchangeRate: isCustomRateMode(),
+        manualRateUnit: isCustomRateMode() ? manualRateUnitInput.value : "",
         prizes: currentPrizes(),
         detailsOpen: details.classList.contains("open"),
       });
@@ -919,11 +1091,181 @@
         });
         select.value = fallback || "";
       });
-      document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
+    }
+
+    function payoutYenPerUnit(value, yenBase = 100) {
+      const rate = Number(value);
+      const base = Number(yenBase) || 100;
+      if (!Number.isFinite(rate) || rate <= 0) return null;
+      return base / rate;
+    }
+
+    function formatExchangeRateValue(value) {
+      const rate = Number(value);
+      if (!Number.isFinite(rate)) return "";
+      return String(Math.round(rate * 1000) / 1000);
+    }
+
+    function currentRateCategoryConfig() {
+      if (isCustomRateMode()) {
+        return {
+          label: manualRateUnitInput.value === "玉" ? "パチンコ" : "スロット",
+          unitLabel: manualRateUnitInput.value,
+          yenBase: 100,
+        };
+      }
+      return RATE_CATEGORY_UI_CONFIGS[mainRateCategoryInput.value];
+    }
+
+    function isCustomRateMode() {
+      return rateModeButtons.some((button) => button.dataset.rateMode === "custom" && button.classList.contains("active"));
+    }
+
+    function setRateMode(mode, { custom = true } = {}) {
+      const nextMode = mode === "custom" ? "custom" : "preset";
+      rateModeButtons.forEach((button) => {
+        const active = button.dataset.rateMode === nextMode;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      renderCustomRateFields();
+      if (custom) syncMainRateToHidden();
+    }
+
+    function currentExchangeRateValue() {
+      if (isCustomRateMode()) return Number(customExchangeRateInput.value);
+      return Number(mainRateOptionInput.value);
+    }
+
+    function rateTypeLabel(category = mainRateCategoryInput.value) {
+      return {
+        pachi4: "4パチ",
+        pachi1: "1パチ",
+        slot20: "20スロ",
+        slot5: "5スロ",
+      }[category] || RATE_CATEGORY_UI_CONFIGS[category]?.label || "設定";
+    }
+
+    function manualSaveRateLabel() {
+      const lendingRate = Number(manualSaveLendingRateInput.value);
+      if (!Number.isFinite(lendingRate) || lendingRate <= 0) return "カスタム";
+      const rateText = formatExchangeRateValue(lendingRate);
+      return manualSaveKindInput.value === "pachi" ? `${rateText}円パチ` : `${rateText}円スロ`;
+    }
+
+    function selectedCustomRateConfig() {
+      if (!isCustomRateMode()) return null;
+      const config = currentRateCategoryConfig();
+      const value = Number(customExchangeRateInput.value);
+      if (!config || !Number.isFinite(value) || value <= 0) return null;
+      return {
+        label: `${formatExchangeRateValue(value)}${config.unitLabel}交換`,
+        medalsPerYen: value / (config.yenBase || 100),
+        unitLabel: config.unitLabel,
+        category: "manual",
+        exchangeRate: value,
+        yenBase: config.yenBase || 100,
+        isCustomExchangeRate: true,
+      };
     }
 
     function selectedGuidedRateConfig() {
+      if (isCustomRateMode()) return selectedCustomRateConfig();
       return buildRateConfigFromOption(mainRateCategoryInput.value, mainRateOptionInput.value);
+    }
+
+    function validateCurrentRate() {
+      if (!isCustomRateMode()) return true;
+      const config = currentRateCategoryConfig();
+      const value = Number(customExchangeRateInput.value);
+      const min = Number(customExchangeRateInput.min) || 0;
+      const max = Number(customExchangeRateInput.max) || Infinity;
+      if (!config || !Number.isFinite(value) || value < min || value > max) {
+        customExchangeRateError.textContent = `交換率は${min}以上${max}以下で入力してください。`;
+        customExchangeRateError.classList.remove("hidden");
+        return false;
+      }
+      customExchangeRateError.classList.add("hidden");
+      return true;
+    }
+
+    function renderCustomRateFields() {
+      const isCustom = isCustomRateMode();
+      const config = currentRateCategoryConfig();
+      customExchangeRateFields.classList.toggle("hidden", !isCustom);
+      guidedExchangeRateFields.classList.toggle("hidden", isCustom);
+      mainRateCategoryField.classList.toggle("hidden", isCustom);
+      saveManualRateMeta.classList.toggle("hidden", !isCustom || document.getElementById("saveSettingsForm").classList.contains("hidden"));
+      document.getElementById("mainRateCategoryLabel").textContent = "種類";
+      if (!config) return;
+      document.getElementById("customExchangeRateUnit").textContent = `${config.unitLabel} / ${formatNumber(config.yenBase || 100)}円`;
+      const value = Number(customExchangeRateInput.value);
+      const payout = payoutYenPerUnit(value, config.yenBase || 100);
+      document.getElementById("customExchangeRatePayout").textContent = payout
+        ? `= ${payout.toFixed(2)}円 / ${config.unitLabel}`
+        : `= -円 / ${config.unitLabel}`;
+      validateCurrentRate();
+      renderSavePreview();
+    }
+
+    function currentSavedDisplayName(storeName = document.getElementById("quickPresetName").value) {
+      const name = String(storeName || "").trim();
+      const rate = currentExchangeRateValue();
+      const config = currentRateCategoryConfig();
+      const rateText = Number.isFinite(rate) && rate > 0
+        ? `${formatExchangeRateValue(rate)}${config?.unitLabel || "玉/枚"}交換`
+        : "交換率未入力";
+      const typeText = isCustomRateMode() ? manualSaveRateLabel() : rateTypeLabel();
+      return [name, typeText, rateText].filter(Boolean).join("｜");
+    }
+
+    function renderSavePreview() {
+      const preview = document.getElementById("savePresetPreview");
+      if (preview) preview.textContent = `保存後の表示：${currentSavedDisplayName()}`;
+    }
+
+    function setSaveSettingsOpen(open, { clearName = false } = {}) {
+      const form = document.getElementById("saveSettingsForm");
+      const toggle = document.getElementById("showSaveSettingsBtn");
+      form.classList.toggle("hidden", !open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.dataset.saveToggleLabel = open ? "close" : "open";
+      toggle.textContent = open ? "− 保存フォームを閉じる" : "＋ この設定を保存";
+      saveManualRateMeta.classList.toggle("hidden", !open || !isCustomRateMode());
+      if (clearName) document.getElementById("quickPresetName").value = "";
+      renderSavePreview();
+      if (open) document.getElementById("quickPresetName").focus();
+    }
+
+    function displayNameForPreset(preset) {
+      if (!preset) return "保存した設定";
+      if (preset.displayName) return preset.displayName;
+      if (Number.isFinite(Number(preset.exchangeRate))) {
+        const category = preset.rateCategory || preset.category || "slot20";
+        const config = RATE_CATEGORY_UI_CONFIGS[category];
+        const storeName = preset.storeName || preset.name || "";
+        const unitLabel = preset.manualRateUnit || preset.unitLabel || config?.unitLabel || "玉/枚";
+        const rateText = `${formatExchangeRateValue(preset.exchangeRate)}${unitLabel}交換`;
+        let typeText = rateTypeLabel(category);
+        if (category === "manual") {
+          if (Number.isFinite(Number(preset.manualLendingRate)) && Number(preset.manualLendingRate) > 0) {
+            const suffix = preset.manualRateKind === "pachi" ? "パチ" : "スロ";
+            typeText = `${formatExchangeRateValue(preset.manualLendingRate)}円${suffix}`;
+          } else {
+            typeText = "カスタム";
+          }
+        }
+        return [storeName, typeText, rateText].filter(Boolean).join("｜");
+      }
+      const rate = getRates()[preset.rateType];
+      const storeName = preset.storeName || preset.name || "";
+      const selection = findGuidedRateSelection(rate);
+      if (rate && selection) {
+        const config = RATE_CATEGORY_UI_CONFIGS[selection.category];
+        const rateText = `${formatExchangeRateValue(selection.option)}${config?.unitLabel || "玉/枚"}交換`;
+        return [storeName, rateTypeLabel(selection.category), rateText].filter(Boolean).join("｜");
+      }
+      return preset.name || "保存した設定";
     }
 
     function findGuidedRateSelection(rate) {
@@ -944,6 +1286,10 @@
     }
 
     function ensureMainRateId(rateConfig) {
+      if (isCustomRateMode()) {
+        activeCustomRateId = customGuidedRateId(mainRateCategoryInput.value, rateConfig.exchangeRate);
+        return activeCustomRateId;
+      }
       const existing = Object.entries({ ...RATE_CONFIGS, ...guidedRateConfigs(), ...customRates() })
         .find(([, rate]) => rate.label === rateConfig.label && Math.abs(rate.medalsPerYen - rateConfig.medalsPerYen) < 1e-9);
       if (existing) return existing[0];
@@ -952,7 +1298,9 @@
 
     function renderMainRateOptions(selected = mainRateOptionInput.value) {
       const options = rateCategoryOptions(mainRateCategoryInput.value);
-      const fallback = options.some((option) => option.value === selected) ? selected : options[0]?.value || "";
+      const fallback = options.some((option) => option.value === selected)
+        ? selected
+        : options[0]?.value || "";
       mainRateOptionInput.innerHTML = "";
       options.forEach((option) => {
         const optionEl = document.createElement("option");
@@ -961,9 +1309,16 @@
         mainRateOptionInput.appendChild(optionEl);
       });
       mainRateOptionInput.value = fallback;
+      renderCustomRateFields();
     }
 
     function syncMainRateToHidden({ custom = true } = {}) {
+      renderCustomRateFields();
+      if (!validateCurrentRate()) {
+        if (custom) markCustomSettings();
+        renderExchange();
+        return;
+      }
       const rateConfig = selectedGuidedRateConfig();
       if (!rateConfig) return;
       mainRateId = ensureMainRateId(rateConfig);
@@ -980,30 +1335,11 @@
       mainRateCategoryInput.value = selection.category;
       renderMainRateOptions(selection.option);
       mainRateOptionInput.value = selection.option;
+      setRateMode("preset", { custom: false });
       mainRateId = rateType;
       renderRates(rateType);
       rateTypeInput.value = rateType;
       return true;
-    }
-
-    function renderRateBuilder() {
-      const category = document.getElementById("newRateCategory").value;
-      const isCustom = category === "custom";
-      document.getElementById("presetRateFields").classList.toggle("hidden", isCustom);
-      document.getElementById("customRateFields").classList.toggle("hidden", !isCustom);
-      if (isCustom) {
-        document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
-        return;
-      }
-
-      const optionSelect = document.getElementById("newRateOption");
-      optionSelect.innerHTML = "";
-      rateCategoryOptions(category).forEach((option) => {
-        const optionEl = document.createElement("option");
-        optionEl.value = option.value;
-        optionEl.textContent = option.label;
-        optionSelect.appendChild(optionEl);
-      });
     }
 
     function renderPrizeChecks(root, name, selected) {
@@ -1030,15 +1366,6 @@
         row.innerHTML = `<span>${formatNumber(prize)}円</span><button class="danger" type="button" data-delete-prize="${prize}">削除</button>`;
         prizeList.appendChild(row);
       });
-
-      const rateList = document.getElementById("rateTypeList");
-      rateList.innerHTML = "";
-      Object.entries(manageableRates()).forEach(([id, rate]) => {
-        const row = document.createElement("div");
-        row.className = "manage-row";
-        row.innerHTML = `<span>${rate.label}</span><button class="danger" type="button" data-delete-rate="${id}">削除</button>`;
-        rateList.appendChild(row);
-      });
     }
 
     function renderPresets() {
@@ -1046,44 +1373,76 @@
       const strip = document.getElementById("presetStrip");
       const manage = document.getElementById("presetManage");
       strip.innerHTML = "";
-      manage.innerHTML = `<option value="">Presetを選択</option>`;
+      manage.innerHTML = `<option value="">設定を選択</option>`;
       if (presets.length === 0) {
-        strip.innerHTML = `<span class="note">下の設定からPresetを保存できます。</span>`;
+        strip.innerHTML = `<span class="note">保存した設定はここに表示されます。</span>`;
       }
       presets.forEach((preset, index) => {
+        const displayName = displayNameForPreset(preset);
         const button = document.createElement("button");
         button.className = "preset-chip";
         button.type = "button";
         button.dataset.applyPreset = String(index);
-        button.textContent = preset.name;
+        button.textContent = displayName;
         strip.appendChild(button);
 
         const option = document.createElement("option");
         option.value = String(index);
-        option.textContent = preset.name;
+        option.textContent = displayName;
         manage.appendChild(option);
       });
     }
 
     function applyPreset(preset) {
       if (!preset) return;
-      activePresetName = preset.name;
-      if (!applyRateToMainControls(preset.rateType)) {
+      activePresetName = displayNameForPreset(preset);
+      if (preset.isCustomExchangeRate && Number.isFinite(Number(preset.exchangeRate))) {
+        const savedUnit = preset.manualRateUnit || preset.unitLabel || RATE_CATEGORY_UI_CONFIGS[preset.rateCategory || preset.category]?.unitLabel || "枚";
+        manualRateUnitInput.value = savedUnit === "玉" ? "玉" : "枚";
+        if (preset.manualRateKind) manualSaveKindInput.value = preset.manualRateKind;
+        if (Number.isFinite(Number(preset.manualLendingRate))) {
+          manualSaveLendingRateInput.value = formatExchangeRateValue(preset.manualLendingRate);
+        }
+        customExchangeRateInput.value = formatExchangeRateValue(preset.exchangeRate);
+        renderMainRateOptions();
+        setRateMode("custom", { custom: false });
+        syncMainRateToHidden({ custom: false });
+      } else if (!applyRateToMainControls(preset.rateType)) {
+        setRateMode("preset", { custom: false });
         renderRates(preset.rateType);
         rateTypeInput.value = preset.rateType;
       }
-      const mergedPrizes = [...new Set([...getPrizeTypes(), ...preset.prizes])].sort((a, b) => a - b);
+      const presetPrizes = Array.isArray(preset.prizes) ? preset.prizes : getPrizeTypes();
+      const mergedPrizes = [...new Set([...getPrizeTypes(), ...presetPrizes])].sort((a, b) => a - b);
       saveJson(PRIZES_KEY, mergedPrizes);
-      renderPrizeChoices(preset.prizes);
+      renderPrizeChoices(presetPrizes);
       renderActivePresetStatus();
       renderExchange();
     }
 
     function currentUnit() {
+      if (isCustomRateMode()) {
+        return currentRateCategoryConfig()?.unitLabel || "玉/枚";
+      }
       return unitLabelFor(rateTypeInput.value, getRates());
     }
 
     function renderExchange() {
+      renderCustomRateFields();
+      if (!validateCurrentRate()) {
+        const unit = currentUnit();
+        document.getElementById("leftMedals").textContent = `-${unit}`;
+        document.getElementById("nextShortage").textContent = `-${unit}`;
+        document.getElementById("leftTargetMedals").textContent = "目標 -";
+        document.getElementById("nextTargetMedals").textContent = "目標 -";
+        document.getElementById("bestYen").textContent = "-円";
+        document.getElementById("bestRequired").textContent = `-${unit}`;
+        document.getElementById("bestCombo").textContent = "-";
+        document.getElementById("nextCallout").className = "callout hot";
+        document.getElementById("nextCallout").textContent = "交換率を正しく入力してください。";
+        document.getElementById("candidateRows").innerHTML = "";
+        return;
+      }
       const rates = getRates();
       const result = calculateExchange({
         medals: medalsInput.value,
@@ -1095,6 +1454,10 @@
       const shortage = result.next.shortage;
       document.getElementById("leftMedals").textContent = `${formatNumber(result.best.left)}${unit}`;
       document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
+      document.getElementById("leftTargetMedals").textContent = `目標 ${formatNumber(result.best.requiredMedals)}${unit}`;
+      document.getElementById("nextTargetMedals").textContent = result.next.yen
+        ? `目標 ${formatNumber(result.next.requiredMedals)}${unit}`
+        : "目標 -";
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
@@ -1188,7 +1551,14 @@
         detailsOpen: false,
       });
       renderMainRateOptions();
-      if (!applyRateToMainControls(settings.rateType)) {
+      if (settings.isCustomExchangeRate && Number.isFinite(Number(settings.exchangeRate))) {
+        manualRateUnitInput.value = settings.manualRateUnit === "玉" ? "玉" : "枚";
+        customExchangeRateInput.value = formatExchangeRateValue(settings.exchangeRate);
+        renderMainRateOptions();
+        setRateMode("custom", { custom: false });
+        syncMainRateToHidden({ custom: false });
+      } else if (!applyRateToMainControls(settings.rateType)) {
+        setRateMode("preset", { custom: false });
         syncMainRateToHidden({ custom: false });
       }
       renderPrizeChoices(settings.prizes);
@@ -1274,38 +1644,6 @@
       showToast(`${formatNumber(value)}円の景品タイプを追加しました。`);
     });
 
-    document.getElementById("addRateBtn").addEventListener("click", () => {
-      const category = document.getElementById("newRateCategory").value;
-      let rateConfig = null;
-      if (category === "custom") {
-        const name = document.getElementById("newRateName").value.trim();
-        const per100 = Number(document.getElementById("newRateValue").value);
-        const unitLabel = document.getElementById("newRateUnit").value;
-        if (!name || !Number.isFinite(per100) || per100 <= 0) {
-          showToast("交換率名と100円あたりの数量を入力してください。");
-          return;
-        }
-        rateConfig = { label: name, medalsPerYen: per100 / 100, unitLabel };
-      } else {
-        rateConfig = buildRateConfigFromOption(category, document.getElementById("newRateOption").value);
-        if (!rateConfig) {
-          showToast("種類と交換率を選んでください。");
-          return;
-        }
-      }
-      const rates = customRates();
-      const id = `custom_${Date.now()}`;
-      rates[id] = rateConfig;
-      saveJson(RATES_KEY, rates);
-      document.getElementById("newRateName").value = "";
-      document.getElementById("newRateValue").value = "";
-      renderRates(id);
-      renderManageLists();
-      markCustomSettings();
-      renderExchange();
-      showToast(`${rateConfig.label}を追加しました。`);
-    });
-
     document.getElementById("prizeTypeList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-delete-prize]");
       if (!button) return;
@@ -1340,70 +1678,61 @@
       });
     });
 
-    document.getElementById("rateTypeList").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-delete-rate]");
-      if (!button) return;
-      const rateType = button.dataset.deleteRate;
-      if (Object.keys(getRates()).length <= 1) {
-        showToast("交換率は1つ以上必要です。");
-        return;
-      }
-      const storedCustomRates = customRates();
-      const hiddenRates = new Set(loadJson(HIDDEN_RATES_KEY, []));
-      const previousCustomRates = { ...storedCustomRates };
-      const previousHiddenRates = [...hiddenRates];
-      const previousPresets = loadJson(PRESETS_KEY, []);
-      const previousRateType = rateTypeInput.value;
-      const rateLabel = getRates()[rateType]?.label || "交換率";
-      if (RATE_CONFIGS[rateType]) hiddenRates.add(rateType);
-      const result = deleteRateType({
-        customRates: storedCustomRates,
-        currentRateType: rateTypeInput.value,
-        presets: loadJson(PRESETS_KEY, []),
-        rateType,
-        fallbackRateType: "rate5152",
-      });
-      saveJson(RATES_KEY, result.customRates);
-      saveJson(HIDDEN_RATES_KEY, [...hiddenRates]);
-      saveJson(PRESETS_KEY, result.presets);
-      renderRates(result.currentRateType);
-      renderPresets();
-      renderManageLists();
-      markCustomSettings();
-      renderExchange();
-      showToast(`${rateLabel}を削除しました。`, () => {
-        saveJson(RATES_KEY, previousCustomRates);
-        saveJson(HIDDEN_RATES_KEY, previousHiddenRates);
-        saveJson(PRESETS_KEY, previousPresets);
-        renderRates(previousRateType);
-        renderPresets();
-        renderManageLists();
-        renderExchange();
-        showToast("削除を取り消しました。");
-      });
+    document.getElementById("showSaveSettingsBtn").addEventListener("click", () => {
+      const isOpen = document.getElementById("showSaveSettingsBtn").getAttribute("aria-expanded") === "true";
+      setSaveSettingsOpen(!isOpen, { clearName: isOpen });
     });
 
+    document.getElementById("cancelSaveSettingsBtn").addEventListener("click", () => {
+      setSaveSettingsOpen(false, { clearName: true });
+    });
+
+    document.getElementById("quickPresetName").addEventListener("input", renderSavePreview);
+    manualSaveKindInput.addEventListener("change", renderSavePreview);
+    manualSaveLendingRateInput.addEventListener("input", renderSavePreview);
+
     document.getElementById("quickSavePresetBtn").addEventListener("click", () => {
-      const name = document.getElementById("quickPresetName").value.trim();
-      const prizes = currentPrizes();
-      if (!name || prizes.length === 0) {
-        showToast("Preset名と景品額を選んでください。");
+      if (!validateCurrentRate()) {
+        showToast("交換率を正しく入力してください。");
         return;
       }
+      const storeName = document.getElementById("quickPresetName").value.trim();
+      const prizes = currentPrizes();
+      if (prizes.length === 0) {
+        showToast("景品額を選んでください。");
+        return;
+      }
+      const rateConfig = selectedGuidedRateConfig();
+      const displayName = currentSavedDisplayName(storeName);
       const presets = loadJson(PRESETS_KEY, []);
-      presets.push({ name, rateType: rateTypeInput.value, prizes });
+      presets.push({
+        name: displayName,
+        storeName,
+        displayName,
+        rateType: rateTypeInput.value,
+        rateCategory: isCustomRateMode() ? "manual" : mainRateCategoryInput.value,
+        exchangeRate: currentExchangeRateValue(),
+        isCustomExchangeRate: isCustomRateMode(),
+        manualRateUnit: isCustomRateMode() ? manualRateUnitInput.value : "",
+        manualRateKind: isCustomRateMode() ? manualSaveKindInput.value : "",
+        manualLendingRate: isCustomRateMode() ? Number(manualSaveLendingRateInput.value) || null : null,
+        prizes,
+        prizeValues: prizes,
+        unitLabel: rateConfig?.unitLabel || currentUnit(),
+        rateLabel: rateConfig?.label || "",
+      });
       saveJson(PRESETS_KEY, presets);
-      document.getElementById("quickPresetName").value = "";
+      setSaveSettingsOpen(false, { clearName: true });
       renderPresets();
-      activePresetName = name;
+      activePresetName = displayName;
       renderActivePresetStatus();
-      showToast(`${name}を保存しました。`);
+      showToast(`${displayName}を保存しました。`);
     });
 
     document.getElementById("deletePresetBtn").addEventListener("click", () => {
       const index = Number(document.getElementById("presetManage").value);
       if (!Number.isInteger(index)) {
-        showToast("削除するPresetを選んでください。");
+        showToast("削除する設定を選んでください。");
         return;
       }
       const presets = loadJson(PRESETS_KEY, []);
@@ -1411,8 +1740,9 @@
       const deleted = presets.splice(index, 1)[0];
       saveJson(PRESETS_KEY, presets);
       renderPresets();
-      if (deleted?.name === activePresetName) markCustomSettings();
-      showToast(`${deleted?.name || "Preset"}を削除しました。`, () => {
+      const deletedName = displayNameForPreset(deleted);
+      if (deletedName === activePresetName) markCustomSettings();
+      showToast(`${deletedName}を削除しました。`, () => {
         saveJson(PRESETS_KEY, previousPresets);
         renderPresets();
         showToast("削除を取り消しました。");
@@ -1423,7 +1753,7 @@
       const button = event.target.closest("[data-apply-preset]");
       if (!button) return;
       applyPreset(loadJson(PRESETS_KEY, [])[Number(button.dataset.applyPreset)]);
-      showToast("Presetを適用しました。");
+      showToast("保存した設定を適用しました。");
     });
 
     document.getElementById("addMemberBtn").addEventListener("click", () => {
@@ -1452,20 +1782,23 @@
       syncMainRateToHidden();
     });
     mainRateOptionInput.addEventListener("change", () => syncMainRateToHidden());
+    rateModeButtons.forEach((button) => {
+      button.addEventListener("click", () => setRateMode(button.dataset.rateMode));
+    });
+    manualRateUnitInput.addEventListener("change", () => {
+      manualSaveKindInput.value = manualRateUnitInput.value === "玉" ? "pachi" : "slot";
+      syncMainRateToHidden();
+    });
+    customExchangeRateInput.addEventListener("input", () => syncMainRateToHidden());
     prizeChoices.addEventListener("change", () => {
       markCustomSettings();
       renderPrizeChoices(currentPrizes());
       renderExchange();
     });
-    document.getElementById("newRateCategory").addEventListener("change", renderRateBuilder);
-    document.getElementById("newRateUnit").addEventListener("change", () => {
-      document.getElementById("rateUnitHint").textContent = rateUnitHintText(document.getElementById("newRateUnit").value);
-    });
     document.getElementById("groupMode").addEventListener("change", renderGroup);
 
     applyInitialSettings();
     renderPresets();
-    renderRateBuilder();
     renderMembers();
     renderCalc();
     renderExchange();
