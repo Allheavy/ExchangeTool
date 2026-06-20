@@ -24,6 +24,10 @@ assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
 assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="mainRateCategory"[\s\S]*id="mainRateOption"/);
 assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="prizeChoiceHeading"[^>]*>使う景品<\/h3>/);
+assert.match(indexHtml, /class="chip-mark" aria-hidden="true"/);
+assert.match(indexHtml, /\.chip\.selected[\s\S]*background: var\(--accent\)/);
+assert.match(indexHtml, /\.chip\.selected\s*\{[^}]*box-shadow: none/);
+assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: rgba\(15, 118, 110/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
 assert.match(indexHtml, /id="presetEditForm"/);
 assert.match(indexHtml, /id="editPresetName"/);
@@ -50,7 +54,11 @@ assert.match(indexHtml, /貸し出しレート/);
 assert.match(indexHtml, /manualSaveKindInput\.value === "pachi" \? `\$\{rateText\}円パチンコ` : `\$\{rateText\}円スロット`/);
 assert.doesNotMatch(indexHtml, /表示用の種類/);
 assert.match(indexHtml, /id="customExchangeRate"[^>]*step="0\.001"/);
+assert.match(indexHtml, /class="secondary save-toggle-btn"/);
+assert.match(indexHtml, /button\.save-toggle-btn[\s\S]*width: auto/);
 assert.match(indexHtml, /＋ この設定を保存/);
+assert.match(indexHtml, /景品・金額を見る/);
+assert.doesNotMatch(indexHtml, /結果を見る/);
 assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
 assert.match(indexHtml, /data-save-toggle-label="open"/);
 assert.match(indexHtml, /data-save-toggle-label="close"/);
@@ -75,6 +83,8 @@ const exactText = exchangeCalloutText({
 });
 
 assert.equal(exactText, "余りは0枚です。");
+
+assert.equal(calculateExchange({ medals: 0, rateType: "pachi4_28", prizes: [500] }).best.requiredMedals, 0);
 
 assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
 assert.equal(activePresetStatusText(""), "");

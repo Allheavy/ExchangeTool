@@ -59,7 +59,7 @@ export function unitLabelFor(rateType, rates = RATE_CONFIGS) {
 }
 
 export function requiredMedalsForYen(yen, rateType, rates = RATE_CONFIGS) {
-  return Math.ceil(yen * rateConfigFor(rateType, rates).medalsPerYen - 1e-9);
+  return Math.max(0, Math.ceil(yen * rateConfigFor(rateType, rates).medalsPerYen - 1e-9));
 }
 
 export function normalizePrizes(prizes) {
