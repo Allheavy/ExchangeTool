@@ -9,6 +9,7 @@ import {
   payoutYenPerUnit,
   rateCategoryOptions,
   rateUnitHintText,
+  updatePresetAtIndex,
 } from "./app-core.mjs";
 import { readFileSync } from "node:fs";
 
@@ -24,6 +25,12 @@ assert.match(indexHtml, /id="mainRateOption"/);
 assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="mainRateCategory"[\s\S]*id="mainRateOption"/);
 assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="prizeChoiceHeading"[^>]*>使う景品<\/h3>/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
+assert.match(indexHtml, /id="presetEditForm"/);
+assert.match(indexHtml, /id="editPresetName"/);
+assert.match(indexHtml, /id="editPresetRateCategory"/);
+assert.match(indexHtml, /id="editPresetRateOption"/);
+assert.match(indexHtml, /id="editPresetPrizes"/);
+assert.match(indexHtml, /id="savePresetEditBtn"/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
 assert.match(indexHtml, /id="updateBanner"/);
@@ -52,7 +59,7 @@ assert.match(indexHtml, />管理<\/button>/);
 assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
 assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
-assert.match(serviceWorker, /exchange-tool-pwa-v21/);
+assert.match(serviceWorker, /exchange-tool-pwa-v22/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -88,3 +95,35 @@ assert.deepEqual(slot20Rate, {
   exchangeRate: 5.2,
   yenBase: 100,
 });
+
+const presetUpdate = updatePresetAtIndex({
+  presets: [
+    { displayName: "A店｜20スロ｜5.2枚交換", storeName: "A店", exchangeRate: 5.2, prizes: [500] },
+    { displayName: "B店｜20スロ｜5.6枚交換", storeName: "B店", exchangeRate: 5.6, prizes: [500, 1000] },
+  ],
+  index: 1,
+  updates: {
+    displayName: "B店新｜20スロ｜5.3枚交換",
+    storeName: "B店新",
+    rateType: "custom-slot20-5.3",
+    rateCategory: "slot20",
+    exchangeRate: 5.3,
+    isCustomExchangeRate: false,
+    manualRateKind: "",
+    manualLendingRate: null,
+    prizes: [1000, 500, 1000],
+    prizeValues: [1000, 500, 1000],
+    unitLabel: "枚",
+    rateLabel: "20円スロ 5.3枚交換",
+  },
+});
+
+assert.equal(presetUpdate.updated.displayName, "B店新｜20スロ｜5.3枚交換");
+assert.deepEqual(presetUpdate.updated.prizes, [500, 1000]);
+assert.deepEqual(presetUpdate.presets[0], {
+  displayName: "A店｜20スロ｜5.2枚交換",
+  storeName: "A店",
+  exchangeRate: 5.2,
+  prizes: [500],
+});
+assert.equal(presetUpdate.presets[1].exchangeRate, 5.3);

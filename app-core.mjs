@@ -391,6 +391,26 @@ export function deletePrizeType({ prizeTypes, selectedPrizes, presets, prize }) 
   };
 }
 
+export function updatePresetAtIndex({ presets, index, updates }) {
+  const selectedIndex = Number(index);
+  const list = Array.isArray(presets) ? presets : [];
+  if (!Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex >= list.length) {
+    return { presets: list, updated: null };
+  }
+  const cleanedUpdates = { ...(updates || {}) };
+  if ("prizes" in cleanedUpdates) cleanedUpdates.prizes = normalizePrizes(cleanedUpdates.prizes);
+  if ("prizeValues" in cleanedUpdates) cleanedUpdates.prizeValues = normalizePrizes(cleanedUpdates.prizeValues);
+  const next = [...list];
+  next[selectedIndex] = {
+    ...next[selectedIndex],
+    ...cleanedUpdates,
+  };
+  return {
+    presets: next,
+    updated: next[selectedIndex],
+  };
+}
+
 export function deleteRateType({ customRates, currentRateType, presets, rateType, fallbackRateType = "rate5152" }) {
   const nextRates = { ...(customRates || {}) };
   delete nextRates[rateType];

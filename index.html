@@ -356,6 +356,25 @@
       display: none;
     }
 
+    .preset-edit-form {
+      display: grid;
+      gap: 9px;
+      padding: 10px;
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .preset-edit-form.hidden {
+      display: none;
+    }
+
+    .preset-edit-prizes {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
     .save-meta {
       display: grid;
       gap: 8px;
@@ -1019,6 +1038,28 @@
         <div class="setting-block">
           <h3>保存した設定</h3>
           <select id="presetManage"></select>
+          <div id="presetEditForm" class="preset-edit-form hidden">
+            <label for="editPresetName">保存名</label>
+            <input id="editPresetName" type="text" placeholder="例: 駅前店" />
+            <div class="row">
+              <div>
+                <label for="editPresetRateCategory">種類</label>
+                <select id="editPresetRateCategory">
+                  <option value="pachi4">4パチ</option>
+                  <option value="pachi1">1パチ</option>
+                  <option value="slot20">20スロ</option>
+                  <option value="slot5">5スロ</option>
+                </select>
+              </div>
+              <div>
+                <label for="editPresetRateOption">交換率</label>
+                <input id="editPresetRateOption" type="number" min="0.001" max="10000" step="0.001" inputmode="decimal" />
+              </div>
+            </div>
+            <label>景品</label>
+            <div id="editPresetPrizes" class="preset-edit-prizes"></div>
+            <button id="savePresetEditBtn" type="button">選択した設定を更新</button>
+          </div>
           <button id="deletePresetBtn" class="danger" type="button">選択した設定を削除</button>
         </div>
         <div class="setting-block">
@@ -1159,7 +1200,8 @@
       rateCategoryOptions,
       settleGroup,
       unitLabelFor,
-    } from "./app-core.mjs";
+      updatePresetAtIndex,
+    } from "./app-core.mjs?v=22";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1187,6 +1229,12 @@
     const manualSaveKindButtons = [...document.querySelectorAll("[data-manual-save-kind]")];
     const manualSaveLendingRateInput = document.getElementById("manualSaveLendingRate");
     const prizeChoices = document.getElementById("prizeChoices");
+    const presetManage = document.getElementById("presetManage");
+    const presetEditForm = document.getElementById("presetEditForm");
+    const editPresetName = document.getElementById("editPresetName");
+    const editPresetRateCategory = document.getElementById("editPresetRateCategory");
+    const editPresetRateOption = document.getElementById("editPresetRateOption");
+    const editPresetPrizes = document.getElementById("editPresetPrizes");
     const details = document.getElementById("exchangeDetails");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
@@ -1431,6 +1479,50 @@
         slot20: "20スロ",
         slot5: "5スロ",
       }[category] || RATE_CATEGORY_UI_CONFIGS[category]?.label || "設定";
+    }
+
+    function rateCategoryForPreset(preset) {
+      const category = preset?.rateCategory || preset?.category;
+      if (RATE_CATEGORY_UI_CONFIGS[category]) return category;
+      const rate = getRates()[preset?.rateType];
+      const selection = findGuidedRateSelection(rate);
+      if (selection) return selection.category;
+      if (preset?.manualRateKind === "pachi" || preset?.unitLabel === "玉") return "pachi4";
+      return "slot20";
+    }
+
+    function rateValueForPreset(preset, category) {
+      const directValue = Number(preset?.exchangeRate);
+      if (Number.isFinite(directValue) && directValue > 0) return directValue;
+      const rate = getRates()[preset?.rateType];
+      const selection = findGuidedRateSelection(rate);
+      if (selection) return Number(selection.option);
+      return Number(rateCategoryOptions(category)[0]?.value) || 5.2;
+    }
+
+    function presetRateConfig(category, value) {
+      const config = RATE_CATEGORY_UI_CONFIGS[category];
+      const rate = Number(value);
+      if (!config || !Number.isFinite(rate) || rate <= 0) return null;
+      return {
+        label: `${rateTypeLabel(category)} ${formatExchangeRateValue(rate)}${config.unitLabel}交換`,
+        medalsPerYen: rate / (config.yenBase || 100),
+        unitLabel: config.unitLabel,
+        category,
+        exchangeRate: rate,
+        yenBase: config.yenBase || 100,
+      };
+    }
+
+    function isGuidedPresetRate(category, value) {
+      const rate = Number(value);
+      return rateCategoryOptions(category).some((option) => Math.abs(Number(option.value) - rate) < 1e-9);
+    }
+
+    function presetEditDisplayName(storeName, category, value) {
+      const config = RATE_CATEGORY_UI_CONFIGS[category];
+      const rateText = `${formatExchangeRateValue(value)}${config?.unitLabel || "玉/枚"}交換`;
+      return [String(storeName || "").trim(), rateTypeLabel(category), rateText].filter(Boolean).join("｜");
     }
 
     function manualSaveRateLabel() {
@@ -1691,6 +1783,28 @@
       renderManageLists();
     }
 
+    function currentEditPrizes() {
+      return checkedValues(document, "editPresetPrize");
+    }
+
+    function renderPresetEditForm() {
+      const presets = loadJson(PRESETS_KEY, []);
+      const index = Number(presetManage.value);
+      const preset = Number.isInteger(index) ? presets[index] : null;
+      presetEditForm.classList.toggle("hidden", !preset);
+      if (!preset) {
+        editPresetPrizes.innerHTML = "";
+        return;
+      }
+      const category = rateCategoryForPreset(preset);
+      const rateValue = rateValueForPreset(preset, category);
+      const fallbackName = splitPresetDisplayName(displayNameForPreset(preset)).primary;
+      editPresetName.value = String(preset.storeName || (fallbackName === "保存した設定" ? "" : fallbackName)).trim();
+      editPresetRateCategory.value = category;
+      editPresetRateOption.value = formatExchangeRateValue(rateValue);
+      renderPrizeChecks(editPresetPrizes, "editPresetPrize", Array.isArray(preset.prizes) ? preset.prizes : getPrizeTypes());
+    }
+
     function renderManageLists() {
       const prizeList = document.getElementById("prizeTypeList");
       prizeList.innerHTML = "";
@@ -1705,7 +1819,8 @@
     function renderPresets() {
       const presets = loadJson(PRESETS_KEY, []);
       const strip = document.getElementById("presetStrip");
-      const manage = document.getElementById("presetManage");
+      const manage = presetManage;
+      const previousManageValue = manage.value;
       strip.innerHTML = "";
       manage.innerHTML = `<option value="">設定を選択</option>`;
       if (presets.length === 0) {
@@ -1726,6 +1841,8 @@
         option.textContent = displayName;
         manage.appendChild(option);
       });
+      if (presets[Number(previousManageValue)]) manage.value = previousManageValue;
+      renderPresetEditForm();
     }
 
     function applyPreset(preset) {
@@ -2076,8 +2193,69 @@
       showToast(`${displayName}を保存しました。`);
     });
 
+    presetManage.addEventListener("change", renderPresetEditForm);
+
+    editPresetPrizes.addEventListener("change", (event) => {
+      const input = event.target.closest("input[type='checkbox']");
+      if (!input) return;
+      input.closest(".chip")?.classList.toggle("selected", input.checked);
+    });
+
+    document.getElementById("savePresetEditBtn").addEventListener("click", () => {
+      const index = Number(presetManage.value);
+      if (!Number.isInteger(index)) {
+        showToast("編集する設定を選んでください。");
+        return;
+      }
+      const category = editPresetRateCategory.value;
+      const exchangeRate = Number(editPresetRateOption.value);
+      const rateConfig = presetRateConfig(category, exchangeRate);
+      if (!rateConfig) {
+        showToast("交換率を正しく入力してください。");
+        return;
+      }
+      const prizes = currentEditPrizes();
+      if (prizes.length === 0) {
+        showToast("景品額を選んでください。");
+        return;
+      }
+      const presets = loadJson(PRESETS_KEY, []);
+      const previousName = displayNameForPreset(presets[index]);
+      const storeName = editPresetName.value.trim();
+      const displayName = presetEditDisplayName(storeName, category, exchangeRate);
+      const guidedRate = isGuidedPresetRate(category, exchangeRate);
+      const result = updatePresetAtIndex({
+        presets,
+        index,
+        updates: {
+          name: displayName,
+          storeName,
+          displayName,
+          rateType: guidedRate ? guidedRateId(category, formatExchangeRateValue(exchangeRate)) : customGuidedRateId(category, exchangeRate),
+          rateCategory: category,
+          exchangeRate,
+          isCustomExchangeRate: !guidedRate,
+          manualRateKind: category.startsWith("pachi") ? "pachi" : "slot",
+          manualLendingRate: RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || null,
+          prizes,
+          prizeValues: prizes,
+          unitLabel: rateConfig.unitLabel,
+          rateLabel: rateConfig.label,
+        },
+      });
+      saveJson(PRESETS_KEY, result.presets);
+      renderPresets();
+      presetManage.value = String(index);
+      renderPresetEditForm();
+      if (activePresetName === previousName) {
+        activePresetName = displayName;
+        renderActivePresetStatus();
+      }
+      showToast(`${displayName}を更新しました。`);
+    });
+
     document.getElementById("deletePresetBtn").addEventListener("click", () => {
-      const index = Number(document.getElementById("presetManage").value);
+      const index = Number(presetManage.value);
       if (!Number.isInteger(index)) {
         showToast("削除する設定を選んでください。");
         return;

@@ -1,0 +1,171 @@
+<style>
+  .prize-demo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .prize-demo {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    background: #fff;
+  }
+  .demo-panel {
+    border: 1px solid #eadfcb;
+    border-radius: 10px;
+    padding: 14px;
+    background: #fffaf2;
+  }
+  .demo-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .demo-title-row h4 {
+    margin: 0;
+    color: #1f2937;
+  }
+  .demo-count {
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f766e;
+  }
+  .demo-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .demo-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #ddd6c7;
+    border-radius: 999px;
+    background: #fff;
+    color: #374151;
+    font-weight: 800;
+  }
+  .a .demo-chip.on {
+    border-color: #0f766e;
+    background: #ccfbf1;
+    color: #115e59;
+    box-shadow: inset 0 0 0 2px #0f766e;
+  }
+  .a .demo-chip.on::before {
+    content: "✓";
+    margin-right: 7px;
+    color: #0f766e;
+  }
+  .b .demo-chip {
+    border-radius: 8px;
+  }
+  .b .demo-chip.on {
+    border-color: #0f766e;
+    background: #0f766e;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, .22);
+  }
+  .b .demo-chip.off {
+    opacity: .58;
+  }
+  .c .demo-chip {
+    position: relative;
+    padding-left: 32px;
+  }
+  .c .demo-chip::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b8ad9b;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .c .demo-chip.on {
+    border-color: #0f766e;
+    background: #f0fdfa;
+    color: #115e59;
+  }
+  .c .demo-chip.on::before {
+    content: "✓";
+    display: grid;
+    place-items: center;
+    border-color: #0f766e;
+    background: #0f766e;
+    color: #fff;
+    font-size: 11px;
+    line-height: 14px;
+  }
+  .note {
+    min-height: 58px;
+    color: #4b5563;
+  }
+  @media (max-width: 900px) {
+    .prize-demo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<h2>使う景品の選択状態をどう見せるか</h2>
+<p class="subtitle">未選択との差が一目でわかる案を3つ並べています。画面上で好みに近い案をクリックして選べます。</p>
+
+<div class="prize-demo-grid">
+  <div class="card" data-choice="a-check-strong-border" onclick="toggleSelect(this)">
+    <div class="prize-demo a">
+      <h3>A. チェック + 太い枠</h3>
+      <p class="note">今の丸いチップ感は残しつつ、選択済みにチェック記号と太めの枠を追加します。</p>
+      <div class="demo-panel">
+        <div class="demo-title-row">
+          <h4>使う景品</h4>
+          <span class="demo-count">2件選択中</span>
+        </div>
+        <div class="demo-chips">
+          <span class="demo-chip on">200円</span>
+          <span class="demo-chip on">500円</span>
+          <span class="demo-chip">1000円</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b-filled-selected" onclick="toggleSelect(this)">
+    <div class="prize-demo b">
+      <h3>B. 選択済みを塗りつぶし</h3>
+      <p class="note">選択済みだけ濃い色にして、未選択を少し薄くします。最も強く差が出ます。</p>
+      <div class="demo-panel">
+        <div class="demo-title-row">
+          <h4>使う景品</h4>
+          <span class="demo-count">2件選択中</span>
+        </div>
+        <div class="demo-chips">
+          <span class="demo-chip on">200円</span>
+          <span class="demo-chip on">500円</span>
+          <span class="demo-chip off">1000円</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c-visible-checkbox" onclick="toggleSelect(this)">
+    <div class="prize-demo c">
+      <h3>C. 小さいチェックボックスを表示</h3>
+      <p class="note">チップ内にチェックボックス風の四角を出します。複数選択UIだと直感的に伝わります。</p>
+      <div class="demo-panel">
+        <div class="demo-title-row">
+          <h4>使う景品</h4>
+          <span class="demo-count">2件選択中</span>
+        </div>
+        <div class="demo-chips">
+          <span class="demo-chip on">200円</span>
+          <span class="demo-chip on">500円</span>
+          <span class="demo-chip">1000円</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
