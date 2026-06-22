@@ -868,6 +868,16 @@
       font-size: .82rem;
     }
 
+    .preset-order-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .preset-order-actions button {
+      min-height: 36px;
+    }
+
     .hidden { display: none !important; }
     .good { color: #047857; }
     .warn { color: var(--warn); }
@@ -1096,6 +1106,10 @@
         <div class="setting-block">
           <h3>保存した設定</h3>
           <select id="presetManage"></select>
+          <div class="preset-order-actions">
+            <button id="movePresetUpBtn" class="secondary" type="button">上へ</button>
+            <button id="movePresetDownBtn" class="secondary" type="button">下へ</button>
+          </div>
           <div id="presetEditForm" class="preset-edit-form hidden">
             <label for="editPresetName">保存名</label>
             <input id="editPresetName" type="text" placeholder="例: 駅前店" />
@@ -1254,12 +1268,14 @@
       evaluateCalculatorExpression,
       exchangeCalloutText,
       formatNumber,
+      movePreset,
       nextMemberName,
       rateCategoryOptions,
+      selectedPresetIndex,
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=22";
+    } from "./app-core.mjs?v=23";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1288,6 +1304,8 @@
     const manualSaveLendingRateInput = document.getElementById("manualSaveLendingRate");
     const prizeChoices = document.getElementById("prizeChoices");
     const presetManage = document.getElementById("presetManage");
+    const movePresetUpBtn = document.getElementById("movePresetUpBtn");
+    const movePresetDownBtn = document.getElementById("movePresetDownBtn");
     const presetEditForm = document.getElementById("presetEditForm");
     const editPresetName = document.getElementById("editPresetName");
     const editPresetRateCategory = document.getElementById("editPresetRateCategory");
@@ -1846,10 +1864,17 @@
       return checkedValues(document, "editPresetPrize");
     }
 
+    function syncPresetMoveButtons(presets, index) {
+      const hasSelection = index !== null;
+      movePresetUpBtn.disabled = !hasSelection || index <= 0;
+      movePresetDownBtn.disabled = !hasSelection || index >= presets.length - 1;
+    }
+
     function renderPresetEditForm() {
       const presets = loadJson(PRESETS_KEY, []);
-      const index = Number(presetManage.value);
-      const preset = Number.isInteger(index) ? presets[index] : null;
+      const index = selectedPresetIndex(presetManage.value, presets);
+      const preset = index === null ? null : presets[index];
+      syncPresetMoveButtons(presets, index);
       presetEditForm.classList.toggle("hidden", !preset);
       if (!preset) {
         editPresetPrizes.innerHTML = "";
@@ -1900,7 +1925,8 @@
         option.textContent = displayName;
         manage.appendChild(option);
       });
-      if (presets[Number(previousManageValue)]) manage.value = previousManageValue;
+      const previousIndex = selectedPresetIndex(previousManageValue, presets);
+      manage.value = previousIndex === null ? "" : String(previousIndex);
       renderPresetEditForm();
     }
 
@@ -2254,6 +2280,24 @@
 
     presetManage.addEventListener("change", renderPresetEditForm);
 
+    function moveSelectedPreset(direction) {
+      const presets = loadJson(PRESETS_KEY, []);
+      const index = selectedPresetIndex(presetManage.value, presets);
+      if (index === null) {
+        showToast("並び替える設定を選んでください。");
+        return;
+      }
+      const result = movePreset({ presets, index, direction });
+      if (result.index === index) return;
+      saveJson(PRESETS_KEY, result.presets);
+      renderPresets();
+      presetManage.value = String(result.index);
+      renderPresetEditForm();
+    }
+
+    movePresetUpBtn.addEventListener("click", () => moveSelectedPreset(-1));
+    movePresetDownBtn.addEventListener("click", () => moveSelectedPreset(1));
+
     editPresetPrizes.addEventListener("change", (event) => {
       const input = event.target.closest("input[type='checkbox']");
       if (!input) return;
@@ -2261,8 +2305,9 @@
     });
 
     document.getElementById("savePresetEditBtn").addEventListener("click", () => {
-      const index = Number(presetManage.value);
-      if (!Number.isInteger(index)) {
+      const presets = loadJson(PRESETS_KEY, []);
+      const index = selectedPresetIndex(presetManage.value, presets);
+      if (index === null) {
         showToast("編集する設定を選んでください。");
         return;
       }
@@ -2278,7 +2323,6 @@
         showToast("景品額を選んでください。");
         return;
       }
-      const presets = loadJson(PRESETS_KEY, []);
       const previousName = displayNameForPreset(presets[index]);
       const storeName = editPresetName.value.trim();
       const displayName = presetEditDisplayName(storeName, category, exchangeRate);
@@ -2314,12 +2358,12 @@
     });
 
     document.getElementById("deletePresetBtn").addEventListener("click", () => {
-      const index = Number(presetManage.value);
-      if (!Number.isInteger(index)) {
+      const presets = loadJson(PRESETS_KEY, []);
+      const index = selectedPresetIndex(presetManage.value, presets);
+      if (index === null) {
         showToast("削除する設定を選んでください。");
         return;
       }
-      const presets = loadJson(PRESETS_KEY, []);
       const previousPresets = [...presets];
       const deleted = presets.splice(index, 1)[0];
       saveJson(PRESETS_KEY, presets);

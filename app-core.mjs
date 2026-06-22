@@ -411,6 +411,26 @@ export function updatePresetAtIndex({ presets, index, updates }) {
   };
 }
 
+export function selectedPresetIndex(value, presets = null) {
+  if (value === "") return null;
+  const selectedIndex = Number(value);
+  if (!Number.isInteger(selectedIndex) || selectedIndex < 0) return null;
+  if (Array.isArray(presets) && selectedIndex >= presets.length) return null;
+  return selectedIndex;
+}
+
+export function movePreset({ presets, index, direction }) {
+  const list = Array.isArray(presets) ? presets : [];
+  const selectedIndex = selectedPresetIndex(String(index), list);
+  const step = Math.sign(Number(direction) || 0);
+  if (selectedIndex === null || step === 0) return { presets: list, index: selectedIndex };
+  const nextIndex = selectedIndex + step;
+  if (nextIndex < 0 || nextIndex >= list.length) return { presets: list, index: selectedIndex };
+  const next = [...list];
+  [next[selectedIndex], next[nextIndex]] = [next[nextIndex], next[selectedIndex]];
+  return { presets: next, index: nextIndex };
+}
+
 export function deleteRateType({ customRates, currentRateType, presets, rateType, fallbackRateType = "rate5152" }) {
   const nextRates = { ...(customRates || {}) };
   delete nextRates[rateType];

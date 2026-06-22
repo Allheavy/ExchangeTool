@@ -9,6 +9,8 @@ import {
   payoutYenPerUnit,
   rateCategoryOptions,
   rateUnitHintText,
+  selectedPresetIndex,
+  movePreset,
   updatePresetAtIndex,
 } from "./app-core.mjs";
 import { readFileSync } from "node:fs";
@@ -35,6 +37,10 @@ assert.match(indexHtml, /id="editPresetRateCategory"/);
 assert.match(indexHtml, /id="editPresetRateOption"/);
 assert.match(indexHtml, /id="editPresetPrizes"/);
 assert.match(indexHtml, /id="savePresetEditBtn"/);
+assert.match(indexHtml, /id="movePresetUpBtn"/);
+assert.match(indexHtml, /id="movePresetDownBtn"/);
+assert.match(indexHtml, /selectedPresetIndex\(presetManage\.value, presets\)/);
+assert.match(indexHtml, /movePreset\(\{ presets, index, direction \}\)/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
 assert.match(indexHtml, /id="updateBanner"/);
@@ -67,7 +73,7 @@ assert.match(indexHtml, />管理<\/button>/);
 assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
 assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
-assert.match(serviceWorker, /exchange-tool-pwa-v22/);
+assert.match(serviceWorker, /exchange-tool-pwa-v23/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -137,3 +143,32 @@ assert.deepEqual(presetUpdate.presets[0], {
   prizes: [500],
 });
 assert.equal(presetUpdate.presets[1].exchangeRate, 5.3);
+
+assert.equal(selectedPresetIndex(""), null);
+assert.equal(selectedPresetIndex("0", [{ name: "A" }]), 0);
+assert.equal(selectedPresetIndex("1", [{ name: "A" }]), null);
+assert.equal(selectedPresetIndex("abc", [{ name: "A" }]), null);
+
+const movedDown = movePreset({
+  presets: [{ name: "A" }, { name: "B" }, { name: "C" }],
+  index: 0,
+  direction: 1,
+});
+assert.deepEqual(movedDown.presets.map((preset) => preset.name), ["B", "A", "C"]);
+assert.equal(movedDown.index, 1);
+
+const movedUp = movePreset({
+  presets: [{ name: "A" }, { name: "B" }, { name: "C" }],
+  index: 2,
+  direction: -1,
+});
+assert.deepEqual(movedUp.presets.map((preset) => preset.name), ["A", "C", "B"]);
+assert.equal(movedUp.index, 1);
+
+const notMoved = movePreset({
+  presets: [{ name: "A" }, { name: "B" }],
+  index: 0,
+  direction: -1,
+});
+assert.deepEqual(notMoved.presets.map((preset) => preset.name), ["A", "B"]);
+assert.equal(notMoved.index, 0);
