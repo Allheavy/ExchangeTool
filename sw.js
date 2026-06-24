@@ -1,8 +1,8 @@
-const CACHE_NAME = "exchange-tool-pwa-v23";
+const CACHE_NAME = "exchange-tool-pwa-v24";
 const ASSETS = [
   "./",
   "./index.html",
-  "./app-core.mjs?v=23",
+  "./app-core.mjs?v=24",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png"

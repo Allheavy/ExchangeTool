@@ -39,10 +39,14 @@ assert.match(indexHtml, /id="editPresetPrizes"/);
 assert.match(indexHtml, /id="savePresetEditBtn"/);
 assert.match(indexHtml, /id="movePresetUpBtn"/);
 assert.match(indexHtml, /id="movePresetDownBtn"/);
+assert.match(indexHtml, /選択中の設定を上へ・下へ移動/);
 assert.match(indexHtml, /selectedPresetIndex\(presetManage\.value, presets\)/);
 assert.match(indexHtml, /movePreset\(\{ presets, index, direction \}\)/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
+assert.match(indexHtml, /class="target-medals-number"/);
+assert.match(indexHtml, /id="exchangeDetails"[\s\S]*必要枚数[\s\S]*id="bestRequired"[\s\S]*交換額[\s\S]*id="bestYen"[\s\S]*景品[\s\S]*id="bestCombo"/);
+assert.match(indexHtml, /<th>必要枚数<\/th>[\s\S]*<th>交換額<\/th>[\s\S]*<th>景品<\/th>/);
 assert.match(indexHtml, /id="updateBanner"/);
 assert.match(indexHtml, /id="reloadUpdateBtn"/);
 assert.match(indexHtml, /id="checkUpdateBtn"/);
@@ -64,7 +68,9 @@ assert.match(indexHtml, /class="secondary save-toggle-btn"/);
 assert.match(indexHtml, /button\.save-toggle-btn[\s\S]*width: auto/);
 assert.match(indexHtml, /＋ この設定を保存/);
 assert.match(indexHtml, /景品・金額を見る/);
+assert.match(indexHtml, /景品・金額を隠す/);
 assert.doesNotMatch(indexHtml, /結果を見る/);
+assert.doesNotMatch(indexHtml, /結果を隠す/);
 assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
 assert.match(indexHtml, /data-save-toggle-label="open"/);
 assert.match(indexHtml, /data-save-toggle-label="close"/);
@@ -73,7 +79,9 @@ assert.match(indexHtml, />管理<\/button>/);
 assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
 assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
-assert.match(serviceWorker, /exchange-tool-pwa-v23/);
+assert.match(indexHtml, /manualPresetCategory\(preset\)/);
+assert.match(indexHtml, /mainRateCategoryInput\.value = category/);
+assert.match(serviceWorker, /exchange-tool-pwa-v24/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),

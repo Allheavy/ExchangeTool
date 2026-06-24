@@ -644,6 +644,11 @@
       line-height: 1.25;
     }
 
+    .target-medals-number,
+    .target-medals-unit {
+      color: var(--ink);
+    }
+
     .callout {
       padding: 11px;
       border-left: 5px solid var(--accent);
@@ -1062,12 +1067,12 @@
         <h2>結果</h2>
         <div class="status-line">
           <div class="status-item">
-            <div class="status-label">交換額</div>
-            <div id="bestYen" class="status-value">0円</div>
+            <div class="status-label">必要枚数</div>
+            <div id="bestRequired" class="status-value">0枚</div>
           </div>
           <div class="status-item">
-            <div class="status-label">必要</div>
-            <div id="bestRequired" class="status-value">0枚</div>
+            <div class="status-label">交換額</div>
+            <div id="bestYen" class="status-value">0円</div>
           </div>
           <div class="status-item">
             <div class="status-label">景品</div>
@@ -1077,9 +1082,8 @@
         <table>
           <thead>
             <tr>
+              <th>必要枚数</th>
               <th>交換額</th>
-              <th>必要</th>
-              <th>余り</th>
               <th>景品</th>
             </tr>
           </thead>
@@ -1106,9 +1110,10 @@
         <div class="setting-block">
           <h3>保存した設定</h3>
           <select id="presetManage"></select>
+          <p class="note">選択中の設定を上へ・下へ移動して、表示順を並び替えます。</p>
           <div class="preset-order-actions">
-            <button id="movePresetUpBtn" class="secondary" type="button">上へ</button>
-            <button id="movePresetDownBtn" class="secondary" type="button">下へ</button>
+            <button id="movePresetUpBtn" class="secondary" type="button">選択中を上へ</button>
+            <button id="movePresetDownBtn" class="secondary" type="button">選択中を下へ</button>
           </div>
           <div id="presetEditForm" class="preset-edit-form hidden">
             <label for="editPresetName">保存名</label>
@@ -1275,7 +1280,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=23";
+    } from "./app-core.mjs?v=24";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1564,6 +1569,13 @@
       const selection = findGuidedRateSelection(rate);
       if (selection) return selection.category;
       if (preset?.manualRateKind === "pachi" || preset?.unitLabel === "玉") return "pachi4";
+      return "slot20";
+    }
+
+    function manualPresetCategory(preset) {
+      const category = preset?.rateCategory || preset?.category;
+      if (RATE_CATEGORY_UI_CONFIGS[category]) return category;
+      if (preset?.manualRateKind === "pachi" || preset?.manualRateUnit === "玉" || preset?.unitLabel === "玉") return "pachi4";
       return "slot20";
     }
 
@@ -1934,16 +1946,14 @@
       if (!preset) return;
       activePresetName = displayNameForPreset(preset);
       if (preset.isCustomExchangeRate && Number.isFinite(Number(preset.exchangeRate))) {
-        if (preset.manualRateKind) {
-          setManualSaveKind(preset.manualRateKind);
-        } else if (preset.manualRateUnit || preset.unitLabel) {
-          setManualSaveKind((preset.manualRateUnit || preset.unitLabel) === "玉" ? "pachi" : "slot");
-        }
+        const category = manualPresetCategory(preset);
+        mainRateCategoryInput.value = category;
+        renderMainRateOptions();
+        setManualSaveKind(category.startsWith("pachi") ? "pachi" : "slot");
         if (Number.isFinite(Number(preset.manualLendingRate))) {
           manualSaveLendingRateInput.value = formatExchangeRateValue(preset.manualLendingRate);
         }
         customExchangeRateInput.value = formatExchangeRateValue(preset.exchangeRate);
-        renderMainRateOptions();
         setRateMode("custom", { custom: false });
         syncMainRateToHidden({ custom: false });
       } else if (!applyRateToMainControls(preset.rateType)) {
@@ -1966,14 +1976,22 @@
       return unitLabelFor(rateTypeInput.value, getRates());
     }
 
+    function renderTargetMedals(element, value, unit) {
+      if (!Number.isFinite(Number(value))) {
+        element.textContent = "目標 -";
+        return;
+      }
+      element.innerHTML = `目標 <span class="target-medals-number">${formatNumber(value)}</span><span class="target-medals-unit">${unit}</span>`;
+    }
+
     function renderExchange() {
       renderCustomRateFields();
       if (!validateCurrentRate()) {
         const unit = currentUnit();
         document.getElementById("leftMedals").textContent = `-${unit}`;
         document.getElementById("nextShortage").textContent = `-${unit}`;
-        document.getElementById("leftTargetMedals").textContent = "目標 -";
-        document.getElementById("nextTargetMedals").textContent = "目標 -";
+        renderTargetMedals(document.getElementById("leftTargetMedals"), null, unit);
+        renderTargetMedals(document.getElementById("nextTargetMedals"), null, unit);
         document.getElementById("bestYen").textContent = "-円";
         document.getElementById("bestRequired").textContent = `-${unit}`;
         document.getElementById("bestCombo").textContent = "-";
@@ -1993,10 +2011,8 @@
       const shortage = result.next.shortage;
       document.getElementById("leftMedals").textContent = `${formatNumber(result.best.left)}${unit}`;
       document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
-      document.getElementById("leftTargetMedals").textContent = `目標 ${formatNumber(result.best.requiredMedals)}${unit}`;
-      document.getElementById("nextTargetMedals").textContent = result.next.yen
-        ? `目標 ${formatNumber(result.next.requiredMedals)}${unit}`
-        : "目標 -";
+      renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
+      renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
@@ -2010,9 +2026,8 @@
       result.candidates.forEach((candidate) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${formatNumber(candidate.yen)}円</td>
           <td>${formatNumber(candidate.requiredMedals)}${unit}</td>
-          <td>${formatNumber(candidate.left)}${unit}</td>
+          <td>${formatNumber(candidate.yen)}円</td>
           <td>${comboText(candidate.combo)}</td>
         `;
         rows.appendChild(tr);
@@ -2109,7 +2124,7 @@
       renderPrizeChoices(settings.prizes);
       details.classList.toggle("open", !!settings.detailsOpen);
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "結果を隠す"
+        ? "景品・金額を隠す"
         : "景品・金額を見る";
       renderActivePresetStatus();
     }
@@ -2127,7 +2142,7 @@
     document.getElementById("toggleDetailsBtn").addEventListener("click", () => {
       details.classList.toggle("open");
       document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "結果を隠す"
+        ? "景品・金額を隠す"
         : "景品・金額を見る";
       renderExchange();
     });
