@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="交換枚数 計算ツール">
+  <rect width="192" height="192" fill="#f4efe5"/>
+  <circle cx="96" cy="96" r="70" fill="#f59e0b"/>
+  <path d="M56 78h76m0 0-18-18m18 18-18 18" fill="none" stroke="#fffaf0" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M136 114H60m0 0 18-18m-18 18 18 18" fill="none" stroke="#fffaf0" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

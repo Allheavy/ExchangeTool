@@ -29,14 +29,14 @@ export const RATE_CATEGORY_CONFIGS = {
     values: [100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 140, 150, 160],
   },
   slot20: {
-    label: "20円スロ",
+    label: "20円スロット",
     unitLabel: "枚",
     yenPerUnit: 20,
     yenBase: 100,
     values: [5, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6],
   },
   slot5: {
-    label: "5円スロ",
+    label: "5円スロット",
     unitLabel: "枚",
     yenPerUnit: 5,
     yenBase: 1000,

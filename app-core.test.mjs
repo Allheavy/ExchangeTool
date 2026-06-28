@@ -13,13 +13,24 @@ import {
   movePreset,
   updatePresetAtIndex,
 } from "./app-core.mjs";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 assert.deepEqual(DEFAULT_PRIZES, [500, 1000, 5000]);
 
 const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
+const localServer = readFileSync(new URL("./serve-local.js", import.meta.url), "utf8");
+const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
+assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=25" \/>/);
+assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=25" \/>/);
+assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
+assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
+const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
+assert.doesNotMatch(faviconSvg, /51\.52/);
+assert.doesNotMatch(faviconSvg, /#111827/);
+assert.match(faviconSvg, /fill="#f4efe5"/);
+assert.match(localServer, /"\.svg": "image\/svg\+xml; charset=utf-8"/);
 assert.match(indexHtml, /function selectInitialZeroOnFocus/);
 assert.match(indexHtml, /medalsInput\.addEventListener\("focus", selectInitialZeroOnFocus\)/);
 assert.match(indexHtml, /id="mainRateCategory"/);
@@ -57,7 +68,7 @@ assert.doesNotMatch(indexHtml, /id="manualRateUnit"/);
 assert.match(indexHtml, /id="saveManualRateMeta"/);
 assert.match(indexHtml, /id="manualSaveKind"/);
 assert.doesNotMatch(indexHtml, /<select id="manualSaveKind"/);
-assert.match(indexHtml, /data-manual-save-kind="slot"[^>]*>スロット<\/button>/);
+assert.match(indexHtml, /data-manual-save-kind="slot"[^>]*>パチスロ<\/button>/);
 assert.match(indexHtml, /data-manual-save-kind="pachi"[^>]*>パチンコ<\/button>/);
 assert.match(indexHtml, /id="manualSaveLendingRate"/);
 assert.match(indexHtml, /貸し出しレート/);
@@ -75,13 +86,24 @@ assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
 assert.match(indexHtml, /data-save-toggle-label="open"/);
 assert.match(indexHtml, /data-save-toggle-label="close"/);
 assert.match(indexHtml, /設定名/);
+assert.match(indexHtml, /placeholder="例: 駅前店"/);
+assert.match(indexHtml, /任意です。空欄の場合は交換率から自動で表示名を作ります。/);
+assert.doesNotMatch(indexHtml, /例: 交換設定A/);
+assert.doesNotMatch(indexHtml, /<select id="editPresetRateCategory"/);
+assert.match(indexHtml, /id="editPresetLendingRate"/);
+assert.match(indexHtml, /data-edit-preset-kind="slot"[^>]*>パチスロ<\/button>/);
+assert.match(indexHtml, /data-edit-preset-kind="pachi"[^>]*>パチンコ<\/button>/);
+assert.match(indexHtml, /function categoryFromLendingRate/);
+assert.match(indexHtml, /syncEditPresetCategoryFromInputs\(\);/);
 assert.match(indexHtml, />管理<\/button>/);
 assert.doesNotMatch(indexHtml, /<h3>交換率を追加<\/h3>/);
 assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 assert.match(indexHtml, /manualPresetCategory\(preset\)/);
 assert.match(indexHtml, /mainRateCategoryInput\.value = category/);
-assert.match(serviceWorker, /exchange-tool-pwa-v24/);
+assert.match(serviceWorker, /exchange-tool-pwa-v25/);
+assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=25/);
+assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=25/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -112,7 +134,7 @@ assert.ok(pachi4Options.some((option) => option.label === "26玉（3.84円）"))
 
 const slot20Rate = buildRateConfigFromOption("slot20", "5.2");
 assert.deepEqual(slot20Rate, {
-  label: "20円スロ 5.2枚交換",
+  label: "20円スロット 5.2枚交換",
   medalsPerYen: 5.2 / 100,
   unitLabel: "枚",
   category: "slot20",
@@ -138,7 +160,7 @@ const presetUpdate = updatePresetAtIndex({
     prizes: [1000, 500, 1000],
     prizeValues: [1000, 500, 1000],
     unitLabel: "枚",
-    rateLabel: "20円スロ 5.3枚交換",
+    rateLabel: "20円スロット 5.3枚交換",
   },
 });
 

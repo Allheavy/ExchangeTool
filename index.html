@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=25" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=25" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -965,8 +965,8 @@
                   <select id="mainRateCategory">
                     <option value="pachi4">4円パチンコ</option>
                     <option value="pachi1">1円パチンコ</option>
-                    <option value="slot20">20円スロ</option>
-                    <option value="slot5">5円スロ</option>
+                    <option value="slot20">20円スロット</option>
+                    <option value="slot5">5円スロット</option>
                   </select>
                 </div>
                 <div id="guidedExchangeRateFields" class="rate-option-fields">
@@ -1004,7 +1004,8 @@
         <div id="saveSettingsForm" class="save-settings-form hidden">
           <div>
             <label for="quickPresetName">設定名</label>
-            <input id="quickPresetName" type="text" placeholder="例: 交換設定A" />
+            <input id="quickPresetName" type="text" placeholder="例: 駅前店" />
+            <p class="field-help">任意です。空欄の場合は交換率から自動で表示名を作ります。</p>
           </div>
           <div id="saveManualRateMeta" class="save-meta hidden">
             <label>保存名用</label>
@@ -1020,7 +1021,7 @@
                 <label id="manualSaveKindLabel">種別</label>
                 <input id="manualSaveKind" type="hidden" value="slot" />
                 <div id="manualSaveKindButtons" class="manual-save-kind" role="group" aria-labelledby="manualSaveKindLabel">
-                  <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">スロット</button>
+                  <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">パチスロ</button>
                   <button type="button" data-manual-save-kind="pachi" aria-pressed="false">パチンコ</button>
                 </div>
               </div>
@@ -1118,16 +1119,24 @@
           <div id="presetEditForm" class="preset-edit-form hidden">
             <label for="editPresetName">保存名</label>
             <input id="editPresetName" type="text" placeholder="例: 駅前店" />
-            <div class="row">
+            <div class="manual-save-meta-row">
               <div>
-                <label for="editPresetRateCategory">種類</label>
-                <select id="editPresetRateCategory">
-                  <option value="pachi4">4パチ</option>
-                  <option value="pachi1">1パチ</option>
-                  <option value="slot20">20スロ</option>
-                  <option value="slot5">5スロ</option>
-                </select>
+                <label for="editPresetLendingRate">貸し出しレート</label>
+                <div class="inline-unit">
+                  <input id="editPresetLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="20" />
+                  <span>円</span>
+                </div>
               </div>
+              <div class="manual-save-kind-field">
+                <label id="editPresetKindLabel">種別</label>
+                <input id="editPresetRateCategory" type="hidden" value="slot20" />
+                <div id="editPresetKindButtons" class="manual-save-kind" role="group" aria-labelledby="editPresetKindLabel">
+                  <button type="button" class="active" data-edit-preset-kind="slot" aria-pressed="true">パチスロ</button>
+                  <button type="button" data-edit-preset-kind="pachi" aria-pressed="false">パチンコ</button>
+                </div>
+              </div>
+            </div>
+            <div>
               <div>
                 <label for="editPresetRateOption">交換率</label>
                 <input id="editPresetRateOption" type="number" min="0.001" max="10000" step="0.001" inputmode="decimal" />
@@ -1280,7 +1289,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=24";
+    } from "./app-core.mjs?v=25";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1289,10 +1298,10 @@
     const HIDDEN_RATES_KEY = "exchangeTool.hiddenRates.v5";
     const CUSTOM_RATE_UNIT_LABEL = "玉/枚";
     const RATE_CATEGORY_UI_CONFIGS = {
-      pachi4: { label: "4円パチンコ", shortLabel: "4パチ", unitLabel: "玉", yenBase: 100 },
-      pachi1: { label: "1円パチンコ", shortLabel: "1パチ", unitLabel: "玉", yenBase: 100 },
-      slot20: { label: "20円スロ", shortLabel: "20スロ", unitLabel: "枚", yenBase: 100 },
-      slot5: { label: "5円スロ", shortLabel: "5スロ", unitLabel: "枚", yenBase: 1000 },
+      pachi4: { label: "4円パチンコ", shortLabel: "4パチ", unitLabel: "玉", yenPerUnit: 4, yenBase: 100 },
+      pachi1: { label: "1円パチンコ", shortLabel: "1パチ", unitLabel: "玉", yenPerUnit: 1, yenBase: 100 },
+      slot20: { label: "20円スロット", shortLabel: "20スロ", unitLabel: "枚", yenPerUnit: 20, yenBase: 100 },
+      slot5: { label: "5円スロット", shortLabel: "5スロ", unitLabel: "枚", yenPerUnit: 5, yenBase: 1000 },
     };
     const medalsInput = document.getElementById("medals");
     const rateTypeInput = document.getElementById("rateType");
@@ -1314,6 +1323,8 @@
     const presetEditForm = document.getElementById("presetEditForm");
     const editPresetName = document.getElementById("editPresetName");
     const editPresetRateCategory = document.getElementById("editPresetRateCategory");
+    const editPresetLendingRate = document.getElementById("editPresetLendingRate");
+    const editPresetKindButtons = [...document.querySelectorAll("[data-edit-preset-kind]")];
     const editPresetRateOption = document.getElementById("editPresetRateOption");
     const editPresetPrizes = document.getElementById("editPresetPrizes");
     const details = document.getElementById("exchangeDetails");
@@ -1572,6 +1583,36 @@
       return "slot20";
     }
 
+    function editPresetKind() {
+      return editPresetRateCategory.value.startsWith("pachi") ? "pachi" : "slot";
+    }
+
+    function renderEditPresetKindButtons() {
+      const kind = editPresetKind();
+      editPresetKindButtons.forEach((button) => {
+        const selected = button.dataset.editPresetKind === kind;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+    }
+
+    function categoryFromLendingRate(kind, lendingRate) {
+      const rate = Number(lendingRate);
+      if (kind === "pachi") return Math.abs(rate - 1) < 0.001 ? "pachi1" : "pachi4";
+      return Math.abs(rate - 5) < 0.001 ? "slot5" : "slot20";
+    }
+
+    function setEditPresetKind(kind) {
+      const lendingRate = Number(editPresetLendingRate.value);
+      editPresetRateCategory.value = categoryFromLendingRate(kind === "pachi" ? "pachi" : "slot", lendingRate);
+      renderEditPresetKindButtons();
+    }
+
+    function syncEditPresetCategoryFromInputs() {
+      editPresetRateCategory.value = categoryFromLendingRate(editPresetKind(), editPresetLendingRate.value);
+      renderEditPresetKindButtons();
+    }
+
     function manualPresetCategory(preset) {
       const category = preset?.rateCategory || preset?.category;
       if (RATE_CATEGORY_UI_CONFIGS[category]) return category;
@@ -1739,7 +1780,7 @@
         let typeText = rateTypeLabel(category);
         if (category === "manual") {
           if (Number.isFinite(Number(preset.manualLendingRate)) && Number(preset.manualLendingRate) > 0) {
-            const suffix = preset.manualRateKind === "pachi" ? "パチンコ" : "スロット";
+            const suffix = preset.manualRateKind === "pachi" ? "パチンコ" : "スロ";
             typeText = `${formatExchangeRateValue(preset.manualLendingRate)}円${suffix}`;
           } else {
             typeText = "カスタム";
@@ -1897,6 +1938,8 @@
       const fallbackName = splitPresetDisplayName(displayNameForPreset(preset)).primary;
       editPresetName.value = String(preset.storeName || (fallbackName === "保存した設定" ? "" : fallbackName)).trim();
       editPresetRateCategory.value = category;
+      editPresetLendingRate.value = formatExchangeRateValue(RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || preset.manualLendingRate || 20);
+      renderEditPresetKindButtons();
       editPresetRateOption.value = formatExchangeRateValue(rateValue);
       renderPrizeChecks(editPresetPrizes, "editPresetPrize", Array.isArray(preset.prizes) ? preset.prizes : getPrizeTypes());
     }
@@ -2319,6 +2362,11 @@
       input.closest(".chip")?.classList.toggle("selected", input.checked);
     });
 
+    editPresetKindButtons.forEach((button) => {
+      button.addEventListener("click", () => setEditPresetKind(button.dataset.editPresetKind));
+    });
+    editPresetLendingRate.addEventListener("input", syncEditPresetCategoryFromInputs);
+
     document.getElementById("savePresetEditBtn").addEventListener("click", () => {
       const presets = loadJson(PRESETS_KEY, []);
       const index = selectedPresetIndex(presetManage.value, presets);
@@ -2326,6 +2374,7 @@
         showToast("編集する設定を選んでください。");
         return;
       }
+      syncEditPresetCategoryFromInputs();
       const category = editPresetRateCategory.value;
       const exchangeRate = Number(editPresetRateOption.value);
       const rateConfig = presetRateConfig(category, exchangeRate);
@@ -2354,7 +2403,7 @@
           exchangeRate,
           isCustomExchangeRate: !guidedRate,
           manualRateKind: category.startsWith("pachi") ? "pachi" : "slot",
-          manualLendingRate: RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || null,
+          manualLendingRate: Number(editPresetLendingRate.value) || RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || null,
           prizes,
           prizeValues: prizes,
           unitLabel: rateConfig.unitLabel,
