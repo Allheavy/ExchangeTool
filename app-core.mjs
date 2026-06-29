@@ -154,6 +154,14 @@ export function calculateExchange({ medals, rateType = "rate5152", prizes = DEFA
   };
 }
 
+export function nextExchangeMedalsTarget(result) {
+  if (!result || !result.best || !Array.isArray(result.candidates)) return null;
+  if (result.best.yen <= 0) return null;
+  if (result.best.left > 0) return result.best.requiredMedals;
+  const lowerCandidate = result.candidates.find((candidate) => candidate.yen < result.best.yen);
+  return lowerCandidate ? lowerCandidate.requiredMedals : null;
+}
+
 export function exchangeCalloutText({ result, unit }) {
   if (!result.next.yen) return "景品を1つ以上選んでください。";
   if (result.best.left === 0) return `余りは0${unit}です。`;

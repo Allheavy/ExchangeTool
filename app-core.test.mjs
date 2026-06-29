@@ -6,6 +6,7 @@ import {
   calculateExchange,
   exchangeCalloutText,
   formatExchangeRateValue,
+  nextExchangeMedalsTarget,
   payoutYenPerUnit,
   rateCategoryOptions,
   rateUnitHintText,
@@ -43,7 +44,7 @@ assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id=
 assert.match(indexHtml, /class="chip-mark" aria-hidden="true"/);
 assert.match(indexHtml, /\.chip\.selected[\s\S]*background: var\(--accent\)/);
 assert.match(indexHtml, /\.chip\.selected\s*\{[^}]*box-shadow: none/);
-assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: rgba\(15, 118, 110/);
+assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: rgba\(40, 84, 103/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
 assert.match(indexHtml, /id="presetEditForm"/);
 assert.match(indexHtml, /id="editPresetName"/);
@@ -58,6 +59,9 @@ assert.match(indexHtml, /selectedPresetIndex\(presetManage\.value, presets\)/);
 assert.match(indexHtml, /movePreset\(\{ presets, index, direction \}\)/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
+assert.match(indexHtml, /id="jumpExchangeTargetBtn"/);
+assert.match(indexHtml, /nextExchangeMedalsTarget\(result\)/);
+assert.match(indexHtml, /jumpExchangeTargetBtn\.addEventListener\("click"/);
 assert.match(indexHtml, /class="target-medals-number"/);
 assert.match(indexHtml, /id="exchangeDetails"[\s\S]*必要枚数[\s\S]*id="bestRequired"[\s\S]*交換額[\s\S]*id="bestYen"[\s\S]*景品[\s\S]*id="bestCombo"/);
 assert.match(indexHtml, /<th>必要枚数<\/th>[\s\S]*<th>交換額<\/th>[\s\S]*<th>景品<\/th>/);
@@ -124,6 +128,43 @@ const exactText = exchangeCalloutText({
 assert.equal(exactText, "余りは0枚です。");
 
 assert.equal(calculateExchange({ medals: 0, rateType: "pachi4_28", prizes: [500] }).best.requiredMedals, 0);
+
+const fiveHundredYenUnitRates = {
+  twentySixForFiveHundred: { label: "26 per 500", medalsPerYen: 26 / 500, unitLabel: "枚" },
+};
+
+const withLeftoverTarget = nextExchangeMedalsTarget(
+  calculateExchange({
+    medals: 80,
+    rateType: "twentySixForFiveHundred",
+    prizes: [500],
+    rates: fiveHundredYenUnitRates,
+  })
+);
+
+assert.equal(withLeftoverTarget, 78);
+
+const exactThresholdTarget = nextExchangeMedalsTarget(
+  calculateExchange({
+    medals: 78,
+    rateType: "twentySixForFiveHundred",
+    prizes: [500],
+    rates: fiveHundredYenUnitRates,
+  })
+);
+
+assert.equal(exactThresholdTarget, 52);
+
+const noLowerExchangeTarget = nextExchangeMedalsTarget(
+  calculateExchange({
+    medals: 20,
+    rateType: "twentySixForFiveHundred",
+    prizes: [500],
+    rates: fiveHundredYenUnitRates,
+  })
+);
+
+assert.equal(noLowerExchangeTarget, null);
 
 assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
 assert.equal(activePresetStatusText(""), "");
