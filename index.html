@@ -104,6 +104,10 @@
       box-shadow: var(--shadow);
     }
 
+    #exchangeTab > .panel > h2 {
+      display: none;
+    }
+
     .panel > *, .row, .row-3, .section-title, .preset-strip, .chips, .save-settings-form, .exchange-choices {
       min-width: 0;
       max-width: 100%;
@@ -158,11 +162,62 @@
     }
 
     .exchange-choices {
-      display: grid;
+      display: none;
       gap: 10px;
     }
 
+    .exchange-choices.open {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      display: grid;
+      max-height: min(82vh, 680px);
+      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+      overflow: auto;
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -18px 34px rgba(15, 23, 42, .18);
+    }
+
+    .exchange-choices.open::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(17, 24, 39, .24);
+    }
+
+    .condition-sheet-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .condition-sheet-title {
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .condition-sheet-close {
+      width: auto;
+      min-width: 64px;
+      min-height: 34px;
+      padding: 6px 10px;
+      background: var(--soft);
+      color: var(--ink);
+      box-shadow: none;
+    }
+
     .exchange-category {
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
       display: grid;
       gap: 8px;
       padding: 10px 0;
@@ -187,16 +242,43 @@
     }
 
     .primary-input {
+      order: -10;
+      display: grid;
+      gap: 8px;
       padding: 14px;
       border: 1px solid rgba(21, 34, 50, .08);
       border-radius: 12px;
       background: var(--surface-soft);
     }
 
+    .primary-input-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 58px;
+      gap: 8px;
+      align-items: end;
+    }
+
     .primary-input input {
       min-height: 52px;
       font-size: 1.35rem;
       font-weight: 900;
+    }
+
+    .inline-calc-btn {
+      display: grid;
+      place-items: center;
+      min-height: 52px;
+      padding: 0;
+      border-radius: 12px;
+      background: var(--action);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(40, 84, 103, .2);
+    }
+
+    .inline-calc-btn svg {
+      display: block;
+      width: 27px;
+      height: 27px;
     }
 
     label {
@@ -240,8 +322,10 @@
     }
 
     button.save-toggle-btn {
-      justify-self: start;
-      width: auto;
+      order: 32;
+      justify-self: center;
+      width: 100%;
+      max-width: 520px;
       min-height: 36px;
       padding: 7px 10px;
       background: transparent;
@@ -258,13 +342,13 @@
     }
 
     .saved-settings-panel {
+      order: 30;
       display: grid;
-      gap: 8px;
-      padding: 10px;
-      border: 1px solid rgba(40, 84, 103, .13);
-      border-left: 3px solid var(--accent);
-      border-radius: 10px;
-      background: var(--state-saved);
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(21, 34, 50, .08);
+      border-radius: 14px;
+      background: var(--surface);
     }
 
     .saved-settings-header {
@@ -276,8 +360,50 @@
 
     .saved-settings-header label {
       margin-bottom: 0;
+      color: var(--ink);
+      font-size: .86rem;
+      font-weight: 900;
+    }
+
+    .condition-change-btn {
+      width: auto;
+      min-width: 58px;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      font-size: .8rem;
+      box-shadow: none;
+    }
+
+    .condition-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .condition-summary-item {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+      padding: 8px 9px;
+      border-radius: 9px;
+      background: var(--surface);
+      border: 1px solid rgba(21, 34, 50, .08);
+    }
+
+    .condition-summary-item span {
       color: var(--muted);
-      font-size: .76rem;
+      font-size: .7rem;
+      font-weight: 800;
+    }
+
+    .condition-summary-item strong {
+      color: var(--ink);
+      font-size: .82rem;
+      font-weight: 900;
+      overflow-wrap: anywhere;
     }
 
     .preset-strip, .chips {
@@ -306,10 +432,10 @@
       display: grid;
       gap: 2px;
       max-width: 168px;
-      min-height: 34px;
-      padding: 7px 10px;
-      border-radius: 8px;
-      background: var(--surface);
+      min-height: 48px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--surface-soft);
       text-align: left;
       white-space: normal;
       border: 1px solid rgba(40, 84, 103, .16);
@@ -356,6 +482,10 @@
     }
 
     .preset-save-row {
+      max-width: 520px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 8px;
@@ -369,6 +499,10 @@
     }
 
     .save-settings-form {
+      order: 32;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
       display: grid;
       gap: 9px;
       padding: 10px;
@@ -628,10 +762,11 @@
     .metric-line {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--line);
+      gap: 9px;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
     }
 
     .status-line {
@@ -645,16 +780,27 @@
 
     .status-item {
       min-width: 0;
-      padding: 10px 8px;
-      border-right: 0;
+      display: grid;
+      gap: 8px;
+      min-height: 118px;
+      padding: 12px;
+      border: 1px solid rgba(21, 34, 50, .10);
+      border-radius: 14px;
       background: var(--surface);
     }
 
-    .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 0; }
+    .metric-line .status-item:first-child {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 1px solid rgba(21, 34, 50, .10); }
     .status-label { color: var(--muted); font-size: .72rem; font-weight: 800; }
-    .status-value { font-size: 1.04rem; font-weight: 900; overflow-wrap: anywhere; }
+    .status-value { font-size: 1.28rem; font-weight: 900; overflow-wrap: anywhere; }
     .status-subvalue {
-      margin-top: 2px;
+      order: -1;
+      margin-top: 0;
       color: var(--muted);
       font-size: .72rem;
       font-weight: 800;
@@ -662,10 +808,12 @@
     }
 
     .target-medals {
-      display: block;
+      display: grid;
+      gap: 5px;
       max-width: 100%;
-      margin-top: 4px;
-      font-size: .86rem;
+      margin-top: 0;
+      color: var(--muted);
+      font-size: .72rem;
       font-weight: 900;
       line-height: 1.25;
     }
@@ -673,7 +821,82 @@
     .target-medals-number,
     .target-medals-unit {
       color: var(--ink);
+      font-size: 1.04rem;
     }
+
+    .metric-line .status-item .status-label {
+      order: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 10px;
+      background: rgba(17, 24, 39, .06);
+      color: #253142;
+      font-size: .68rem;
+    }
+
+    .metric-line .status-item:nth-child(2) .status-label {
+      background: rgba(40, 84, 103, .08);
+      color: var(--accent-ink);
+    }
+
+    .metric-line .status-item .status-value {
+      order: 3;
+      justify-self: end;
+      margin-top: -37px;
+      padding-right: 9px;
+      color: #253142;
+      font-size: 1.05rem;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    .aux-targets {
+      display: grid;
+      grid-template-columns: 64px 1fr 64px;
+      gap: 8px;
+      align-items: center;
+      padding: 2px 6px 0;
+    }
+
+    .aux-target {
+      display: grid;
+      gap: 1px;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .aux-target b {
+      color: #334155;
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .aux-rail {
+      position: relative;
+      height: 2px;
+      border-radius: 999px;
+      background: #d5dee7;
+    }
+
+    .aux-rail::before,
+    .aux-rail::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #a0adbb;
+      transform: translateY(-50%);
+    }
+
+    .aux-rail::before { left: 0; }
+    .aux-rail::after { right: 0; }
 
     .callout {
       padding: 11px;
@@ -988,13 +1211,28 @@
 
         <div class="saved-settings-panel">
           <div class="saved-settings-header">
-            <label>保存した設定</label>
+            <label>条件</label>
             <div id="activePresetStatus" class="preset-status"></div>
+            <button id="openConditionSheetBtn" class="condition-change-btn" type="button">変更</button>
           </div>
           <div id="presetStrip" class="preset-strip"></div>
+          <div class="condition-summary-grid" aria-label="現在の条件">
+            <div class="condition-summary-item">
+              <span>交換率</span>
+              <strong id="conditionRateSummary">-</strong>
+            </div>
+            <div class="condition-summary-item">
+              <span>景品</span>
+              <strong id="conditionPrizeSummary">-</strong>
+            </div>
+          </div>
         </div>
 
         <div class="exchange-choices" aria-label="交換条件">
+          <div class="condition-sheet-header">
+            <div class="condition-sheet-title">条件を変更</div>
+            <button id="closeConditionSheetBtn" class="condition-sheet-close" type="button">閉じる</button>
+          </div>
           <section class="exchange-category rate-builder" aria-labelledby="exchangeRateHeading">
             <h3 id="exchangeRateHeading" class="exchange-category-title">交換率</h3>
             <div class="rate-sub-fields">
@@ -1037,76 +1275,99 @@
             <h3 id="prizeChoiceHeading" class="exchange-category-title">使う景品</h3>
             <div id="prizeChoices" class="chips"></div>
           </section>
-        </div>
 
-        <button
-          id="showSaveSettingsBtn"
-          class="secondary save-toggle-btn"
-          type="button"
-          aria-expanded="false"
-          aria-controls="saveSettingsForm"
-          data-save-toggle-label="open"
-        >＋ この設定を保存</button>
-        <div id="saveSettingsForm" class="save-settings-form hidden">
-          <div>
-            <label for="quickPresetName">設定名</label>
-            <input id="quickPresetName" type="text" placeholder="例: 駅前店" />
-            <p class="field-help">任意です。空欄の場合は交換率から自動で表示名を作ります。</p>
-          </div>
-          <div id="saveManualRateMeta" class="save-meta hidden">
-            <label>保存名用</label>
-            <div class="manual-save-meta-row">
-              <div>
-                <label for="manualSaveLendingRate">貸し出しレート</label>
-                <div class="inline-unit">
-                  <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="5" />
-                  <span>円</span>
+          <button
+            id="showSaveSettingsBtn"
+            class="secondary save-toggle-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="saveSettingsForm"
+            data-save-toggle-label="open"
+          >＋ この設定を保存</button>
+          <div id="saveSettingsForm" class="save-settings-form hidden">
+            <div>
+              <label for="quickPresetName">設定名</label>
+              <input id="quickPresetName" type="text" placeholder="例: 駅前店" />
+              <p class="field-help">任意です。空欄の場合は交換率から自動で表示名を作ります。</p>
+            </div>
+            <div id="saveManualRateMeta" class="save-meta hidden">
+              <label>保存名用</label>
+              <div class="manual-save-meta-row">
+                <div>
+                  <label for="manualSaveLendingRate">貸し出しレート</label>
+                  <div class="inline-unit">
+                    <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="5" />
+                    <span>円</span>
+                  </div>
                 </div>
-              </div>
-              <div class="manual-save-kind-field">
-                <label id="manualSaveKindLabel">種別</label>
-                <input id="manualSaveKind" type="hidden" value="slot" />
-                <div id="manualSaveKindButtons" class="manual-save-kind" role="group" aria-labelledby="manualSaveKindLabel">
-                  <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">パチスロ</button>
-                  <button type="button" data-manual-save-kind="pachi" aria-pressed="false">パチンコ</button>
+                <div class="manual-save-kind-field">
+                  <label id="manualSaveKindLabel">種別</label>
+                  <input id="manualSaveKind" type="hidden" value="slot" />
+                  <div id="manualSaveKindButtons" class="manual-save-kind" role="group" aria-labelledby="manualSaveKindLabel">
+                    <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">パチスロ</button>
+                    <button type="button" data-manual-save-kind="pachi" aria-pressed="false">パチンコ</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div id="savePresetPreview" class="save-preview">
-            <span class="save-preview-label">保存後の表示</span>
-            <span>
-              <span class="preset-chip-main">20スロ</span>
-              <span class="preset-chip-sub">5.2枚交換</span>
-            </span>
-          </div>
-          <div class="preset-save-row">
-            <button id="quickSavePresetBtn" type="button">設定を保存</button>
-            <button id="cancelSaveSettingsBtn" class="secondary" type="button" data-save-toggle-label="close">閉じる</button>
+            <div id="savePresetPreview" class="save-preview">
+              <span class="save-preview-label">保存後の表示</span>
+              <span>
+                <span class="preset-chip-main">20スロ</span>
+                <span class="preset-chip-sub">5.2枚交換</span>
+              </span>
+            </div>
+            <div class="preset-save-row">
+              <button id="quickSavePresetBtn" type="button">設定を保存</button>
+              <button id="cancelSaveSettingsBtn" class="secondary" type="button" data-save-toggle-label="close">閉じる</button>
+            </div>
           </div>
         </div>
 
         <div class="primary-input">
           <label for="medals">持ち玉/枚数</label>
-          <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="0" />
+          <div class="primary-input-row">
+            <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            <button id="openCalcBtn" class="inline-calc-btn" type="button" aria-label="電卓を開く" title="電卓">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="6" y="3" width="12" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+                <rect x="8.5" y="5.5" width="7" height="3" rx=".7" fill="currentColor"/>
+                <circle cx="9" cy="12" r="1.1" fill="currentColor"/>
+                <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+                <circle cx="15" cy="12" r="1.1" fill="currentColor"/>
+                <circle cx="9" cy="15" r="1.1" fill="currentColor"/>
+                <circle cx="12" cy="15" r="1.1" fill="currentColor"/>
+                <circle cx="15" cy="15" r="1.1" fill="currentColor"/>
+                <circle cx="9" cy="18" r="1.1" fill="currentColor"/>
+                <circle cx="12" cy="18" r="1.1" fill="currentColor"/>
+                <circle cx="15" cy="18" r="1.1" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="metric-line">
           <div class="status-item">
+            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
             <div class="status-label">余り</div>
             <div id="leftMedals" class="status-value">0枚</div>
-            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
           </div>
           <div class="status-item">
+            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
             <div class="status-label">あと</div>
             <div id="nextShortage" class="status-value">0枚</div>
-            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
           </div>
+        </div>
+
+        <div class="aux-targets" aria-label="前後の目標">
+          <div class="aux-target"><span>前の目標</span><b id="prevAuxTarget">-</b></div>
+          <div class="aux-rail" aria-hidden="true"></div>
+          <div class="aux-target"><span>次の目標</span><b id="nextAuxTarget">-</b></div>
         </div>
 
         <div id="nextCallout" class="callout hidden"></div>
         <div class="result-actions">
-          <button id="jumpExchangeTargetBtn" class="secondary" type="button">次の交換額へ</button>
+          <button id="jumpExchangeTargetBtn" class="secondary" type="button">余りを引く</button>
           <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
         </div>
       </section>
@@ -1263,26 +1524,6 @@
     </div>
   </div>
 
-  <div id="bottomBar" class="bottom-bar">
-    <div class="bottom-inner">
-      <button id="openCalcBtn" class="fab" type="button" aria-label="電卓を開く" title="電卓">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <rect x="6" y="3" width="12" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
-          <rect x="8.5" y="5.5" width="7" height="3" rx=".7" fill="currentColor"/>
-          <circle cx="9" cy="12" r="1.1" fill="currentColor"/>
-          <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
-          <circle cx="15" cy="12" r="1.1" fill="currentColor"/>
-          <circle cx="9" cy="15" r="1.1" fill="currentColor"/>
-          <circle cx="12" cy="15" r="1.1" fill="currentColor"/>
-          <circle cx="15" cy="15" r="1.1" fill="currentColor"/>
-          <circle cx="9" cy="18" r="1.1" fill="currentColor"/>
-          <circle cx="12" cy="18" r="1.1" fill="currentColor"/>
-          <circle cx="15" cy="18" r="1.1" fill="currentColor"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
   <section id="calcSheet" class="sheet">
     <div class="sheet-inner">
       <div class="section-title">
@@ -1360,6 +1601,10 @@
     const customExchangeRateFields = document.getElementById("customExchangeRateFields");
     const customExchangeRateError = document.getElementById("customExchangeRateError");
     const rateModeButtons = [...document.querySelectorAll("[data-rate-mode]")];
+    const exchangeChoices = document.querySelector(".exchange-choices");
+    const openConditionSheetBtn = document.getElementById("openConditionSheetBtn");
+    const closeConditionSheetBtn = document.getElementById("closeConditionSheetBtn");
+    const bottomBar = document.getElementById("bottomBar");
     const saveManualRateMeta = document.getElementById("saveManualRateMeta");
     const manualSaveKindInput = document.getElementById("manualSaveKind");
     const manualSaveKindButtons = [...document.querySelectorAll("[data-manual-save-kind]")];
@@ -1872,6 +2117,26 @@
       }
     }
 
+    function setConditionSheetOpen(open) {
+      exchangeChoices.classList.toggle("open", open);
+      openConditionSheetBtn.setAttribute("aria-expanded", String(open));
+    }
+
+    function renderConditionSummary() {
+      const rateSummary = document.getElementById("conditionRateSummary");
+      const prizeSummary = document.getElementById("conditionPrizeSummary");
+      const rate = currentExchangeRateValue();
+      const config = currentRateCategoryConfig();
+      const typeText = isCustomRateMode() ? "手入力" : rateTypeLabel();
+      rateSummary.textContent = Number.isFinite(rate) && rate > 0
+        ? `${typeText} / ${formatExchangeRateValue(rate)}${config?.unitLabel || currentUnit()}交換`
+        : `${typeText} / -`;
+      const prizes = currentPrizes();
+      prizeSummary.textContent = prizes.length
+        ? prizes.map((prize) => `${formatNumber(prize)}円`).join(" / ")
+        : "-";
+    }
+
     function findGuidedRateSelection(rate) {
       if (!rate) return null;
       for (const category of ["pachi4", "pachi1", "slot20", "slot5"]) {
@@ -2069,11 +2334,16 @@
     }
 
     function renderTargetMedals(element, value, unit) {
+      const label = element.id === "leftTargetMedals" ? "届いている目標" : "次の目標";
       if (!Number.isFinite(Number(value))) {
-        element.textContent = "目標 -";
+        element.textContent = `${label} -`;
         return;
       }
-      element.innerHTML = `目標 <span class="target-medals-number">${formatNumber(value)}</span><span class="target-medals-unit">${unit}</span>`;
+      element.innerHTML = `<span>${label}</span><span><span class="target-medals-number">${formatNumber(value)}</span><span class="target-medals-unit">${unit}</span></span>`;
+    }
+
+    function renderAuxTarget(element, value, unit) {
+      element.textContent = Number.isFinite(Number(value)) ? `${formatNumber(value)}${unit}` : "-";
     }
 
     function renderExchange() {
@@ -2084,6 +2354,8 @@
         document.getElementById("nextShortage").textContent = `-${unit}`;
         renderTargetMedals(document.getElementById("leftTargetMedals"), null, unit);
         renderTargetMedals(document.getElementById("nextTargetMedals"), null, unit);
+        renderAuxTarget(document.getElementById("prevAuxTarget"), null, unit);
+        renderAuxTarget(document.getElementById("nextAuxTarget"), null, unit);
         jumpExchangeTargetBtn.disabled = true;
         jumpExchangeTargetBtn.dataset.targetMedals = "";
         document.getElementById("bestYen").textContent = "-円";
@@ -2107,9 +2379,13 @@
       document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
       renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
       renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
+      const lowerCandidate = result.candidates.find((candidate) => candidate.yen < result.best.yen);
+      renderAuxTarget(document.getElementById("prevAuxTarget"), lowerCandidate?.requiredMedals, unit);
+      renderAuxTarget(document.getElementById("nextAuxTarget"), result.next.yen ? result.next.requiredMedals : null, unit);
       const jumpTarget = nextExchangeMedalsTarget(result);
       jumpExchangeTargetBtn.disabled = jumpTarget === null;
       jumpExchangeTargetBtn.dataset.targetMedals = jumpTarget === null ? "" : String(jumpTarget);
+      jumpExchangeTargetBtn.textContent = result.best.left > 0 ? "余りを引く" : "一段下げる";
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
@@ -2129,6 +2405,7 @@
         `;
         rows.appendChild(tr);
       });
+      renderConditionSummary();
       saveSettings();
     }
 
@@ -2232,7 +2509,7 @@
         document.getElementById("exchangeTab").classList.toggle("hidden", tab.dataset.tab !== "exchange");
         document.getElementById("groupTab").classList.toggle("hidden", tab.dataset.tab !== "group");
         document.getElementById("settingsTab").classList.toggle("hidden", tab.dataset.tab !== "settings");
-        document.getElementById("bottomBar").classList.toggle("hidden", tab.dataset.tab !== "exchange");
+        bottomBar?.classList.toggle("hidden", tab.dataset.tab !== "exchange");
       });
     });
 
@@ -2348,6 +2625,9 @@
       const isOpen = document.getElementById("showSaveSettingsBtn").getAttribute("aria-expanded") === "true";
       setSaveSettingsOpen(!isOpen, { clearName: isOpen });
     });
+
+    openConditionSheetBtn.addEventListener("click", () => setConditionSheetOpen(true));
+    closeConditionSheetBtn.addEventListener("click", () => setConditionSheetOpen(false));
 
     document.getElementById("cancelSaveSettingsBtn").addEventListener("click", () => {
       setSaveSettingsOpen(false, { clearName: true });

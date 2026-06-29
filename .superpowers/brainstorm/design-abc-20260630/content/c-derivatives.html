@@ -1,0 +1,159 @@
+<style>
+  .deriv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1040px) {
+    .deriv-grid { grid-template-columns: 1fr; }
+  }
+  .choice-card {
+    border: 1px solid #d8dee7;
+    border-radius: 18px;
+    overflow: hidden;
+    background: white;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .choice-card:hover { transform: translateY(-2px); box-shadow: 0 18px 45px rgba(15,23,42,.13); }
+  .choice-card.selected { border-color: #1d4f63; box-shadow: 0 0 0 3px rgba(29,79,99,.18), 0 18px 45px rgba(15,23,42,.13); }
+  .phone {
+    min-height: 690px;
+    padding: 14px;
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .title { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+  .brand { font-size:17px; font-weight:950; }
+  .calc { display:grid; place-items:center; width:40px; height:40px; font-weight:900; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:4px; margin-bottom:12px; }
+  .tab { display:grid; place-items:center; min-height:34px; font-size:12px; font-weight:900; }
+  .result { display:grid; gap:12px; padding:16px; margin-bottom:12px; }
+  .eyebrow { font-size:11px; font-weight:900; opacity:.68; }
+  .amount { font-size:36px; font-weight:950; letter-spacing:0; }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .metric { padding:10px; }
+  .metric span { display:block; font-size:10px; font-weight:850; opacity:.68; }
+  .metric strong { display:block; margin-top:3px; font-size:20px; }
+  .stepper { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px; }
+  .step { padding:9px; }
+  .step strong { display:block; font-size:12px; }
+  .step span { display:block; margin-top:3px; font-size:10px; opacity:.68; }
+  .panel { display:grid; gap:10px; padding:14px; margin-bottom:12px; }
+  .label-row { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .label { font-size:12px; font-weight:950; }
+  .hint { font-size:11px; font-weight:800; opacity:.66; }
+  .input { display:flex; justify-content:flex-end; align-items:center; min-height:58px; padding:0 14px; font-size:32px; font-weight:950; }
+  .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .action { display:grid; place-items:center; min-height:42px; font-size:13px; font-weight:950; }
+  .conditions { display:grid; gap:7px; }
+  .condition { display:grid; grid-template-columns:76px 1fr; gap:8px; align-items:center; padding:9px; }
+  .condition span { font-size:11px; font-weight:850; opacity:.68; }
+  .condition strong { font-size:13px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { padding:6px 9px; font-size:12px; font-weight:950; }
+  .body { padding:16px; border-top:1px solid #e5e7eb; }
+  .body h3 { margin:0 0 6px; font-size:18px; }
+  .body p { margin:0; color:#5c6674; line-height:1.55; }
+
+  /* 1. Dashboard */
+  .d1 .phone { background:#f4f7fa; color:#111827; }
+  .d1 .calc { border-radius:13px; background:#1d4f63; color:#fff; box-shadow:0 10px 22px rgba(29,79,99,.20); }
+  .d1 .tabs { background:#e6edf3; border-radius:13px; }
+  .d1 .tab { border-radius:10px; color:#657386; }
+  .d1 .tab.active { background:#fff; color:#111827; box-shadow:0 3px 10px rgba(15,23,42,.08); }
+  .d1 .result { border-radius:20px; background:#111827; color:#fff; }
+  .d1 .metric { border-radius:14px; background:rgba(255,255,255,.08); }
+  .d1 .step { border-radius:13px; background:#fff; border:1px solid #dfe7ef; }
+  .d1 .step.active { border-color:#1d4f63; box-shadow:inset 0 0 0 1px #1d4f63; }
+  .d1 .panel { border-radius:18px; background:#fff; border:1px solid #dfe7ef; }
+  .d1 .input { border-radius:14px; background:#f7f9fc; border:1px solid #d9e2eb; }
+  .d1 .action.primary { background:#1d4f63; color:white; border-radius:12px; }
+  .d1 .action.secondary { background:#edf3f6; color:#1d4f63; border-radius:12px; }
+  .d1 .condition { border-radius:12px; background:#f7f9fc; }
+  .d1 .chip { border-radius:999px; background:#e8f1f4; color:#1d4f63; }
+  .d1 .chip.on { background:#1d4f63; color:#fff; }
+
+  /* 2. Ticket */
+  .d2 .phone { background:#0f1720; color:#f8fafc; }
+  .d2 .calc { border-radius:50%; background:#f5c451; color:#101820; }
+  .d2 .tabs { background:#182433; border-radius:999px; }
+  .d2 .tab { border-radius:999px; color:#9caabd; }
+  .d2 .tab.active { background:#f8fafc; color:#111827; }
+  .d2 .result { position:relative; border-radius:18px; background:#f8fafc; color:#111827; box-shadow:0 20px 42px rgba(0,0,0,.26); }
+  .d2 .result:before, .d2 .result:after { content:""; position:absolute; top:50%; width:22px; height:22px; border-radius:50%; background:#0f1720; transform:translateY(-50%); }
+  .d2 .result:before { left:-11px; }
+  .d2 .result:after { right:-11px; }
+  .d2 .metric { border-radius:12px; background:#eef2f6; }
+  .d2 .step { border-radius:999px; background:#182433; color:#9caabd; text-align:center; }
+  .d2 .step.active { background:#f5c451; color:#101820; }
+  .d2 .panel { border-radius:18px; background:#172231; border:1px solid rgba(255,255,255,.08); }
+  .d2 .input { border-radius:14px; background:#0b1119; border:1px solid rgba(255,255,255,.10); color:#fff; }
+  .d2 .action.primary { background:#f5c451; color:#101820; border-radius:12px; }
+  .d2 .action.secondary { background:#26364a; color:#dce7f2; border-radius:12px; }
+  .d2 .condition { border-radius:12px; background:#111b28; }
+  .d2 .chip { border-radius:8px; background:#26364a; color:#dce7f2; }
+  .d2 .chip.on { background:#f5c451; color:#101820; }
+
+  /* 3. Split */
+  .d3 .phone { background:#fafafa; color:#171717; }
+  .d3 .calc { border-radius:10px; background:#171717; color:#fff; }
+  .d3 .tabs { background:transparent; border-bottom:1px solid #ddd; padding:0; gap:0; }
+  .d3 .tab { border-radius:0; color:#737373; }
+  .d3 .tab.active { color:#171717; border-bottom:3px solid #171717; }
+  .d3 .result { border-radius:0; padding:10px 0 14px; border-bottom:1px solid #ddd; background:transparent; }
+  .d3 .amount { font-size:42px; }
+  .d3 .metric { border-radius:0; background:#f1f1f1; border-left:4px solid #171717; }
+  .d3 .stepper { display:flex; gap:8px; overflow:hidden; }
+  .d3 .step { flex:1; border-radius:0; border-bottom:2px solid #ddd; background:transparent; }
+  .d3 .step.active { border-bottom-color:#171717; }
+  .d3 .panel { border-radius:0; background:#fff; border:1px solid #ddd; }
+  .d3 .input { border-radius:0; background:#fafafa; border:1px solid #ddd; }
+  .d3 .action.primary { background:#171717; color:#fff; border-radius:0; }
+  .d3 .action.secondary { background:#eee; color:#171717; border-radius:0; }
+  .d3 .condition { border-radius:0; background:#fafafa; border-bottom:1px solid #e5e5e5; }
+  .d3 .chip { border-radius:0; background:#fff; color:#171717; border:1px solid #d4d4d4; }
+  .d3 .chip.on { background:#171717; color:#fff; }
+</style>
+
+<h2>C案の派生</h2>
+<p class="subtitle">同じ「結果・入力・条件」構造で、見た目と操作感を振った3案です。</p>
+
+<div class="deriv-grid">
+  <div class="choice-card card d1" data-choice="c1-dashboard" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="result"><div><div class="eyebrow">交換額プレビュー</div><div class="amount">49,000円</div></div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div></div>
+      <div class="stepper"><div class="step active"><strong>1 入力</strong><span>持ち玉</span></div><div class="step"><strong>2 条件</strong><span>交換率</span></div><div class="step"><strong>3 確認</strong><span>内訳</span></div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">即時更新</div></div><div class="input">12345</div><div class="actions"><div class="action secondary">次の交換額へ</div><div class="action primary">景品・金額を見る</div></div></div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div><div class="conditions"><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div></div>
+    </div>
+    <div class="body"><h3>C1. Dashboard</h3><p>一番現実的。結果カードで大きく変えつつ、既存UIへの落とし込みがしやすい。</p></div>
+  </div>
+
+  <div class="choice-card card d2" data-choice="c2-ticket" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="result"><div><div class="eyebrow">交換チケット</div><div class="amount">49,000円</div></div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div></div>
+      <div class="stepper"><div class="step active"><strong>入力</strong><span>持ち玉</span></div><div class="step"><strong>条件</strong><span>交換率</span></div><div class="step"><strong>確認</strong><span>内訳</span></div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">カウンター用</div></div><div class="input">12345</div><div class="actions"><div class="action secondary">目標へ</div><div class="action primary">内訳を見る</div></div></div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">駅前店</div></div><div class="conditions"><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div></div>
+    </div>
+    <div class="body"><h3>C2. Ticket</h3><p>強い印象を狙う派生。交換結果をレシート/チケットのように見せる。</p></div>
+  </div>
+
+  <div class="choice-card card d3" data-choice="c3-split" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換計算</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="result"><div><div class="eyebrow">交換額</div><div class="amount">49,000円</div></div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div></div>
+      <div class="stepper"><div class="step active"><strong>入力</strong><span>12345枚</span></div><div class="step"><strong>条件</strong><span>5.152枚</span></div><div class="step"><strong>結果</strong><span>49,000円</span></div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">編集</div></div><div class="input">12345</div><div class="actions"><div class="action secondary">次へ</div><div class="action primary">詳細</div></div></div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">一覧</div></div><div class="conditions"><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip on">1,000</div><div class="chip on">5,000</div></div></div></div></div>
+    </div>
+    <div class="body"><h3>C3. Split</h3><p>一番シャープ。影や丸みを抑えて、数字と線で見せる。好みは分かれる。</p></div>
+  </div>
+</div>

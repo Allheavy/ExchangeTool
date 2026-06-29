@@ -1,0 +1,425 @@
+<style>
+  :root {
+    --ink: #101820;
+    --muted: #627181;
+    --line: #d8e0e7;
+    --soft: #f3f6f8;
+    --paper: #ffffff;
+    --blue: #124e78;
+    --green: #167052;
+    --amber: #a85d12;
+  }
+
+  .wrap {
+    display: grid;
+    grid-template-columns: minmax(320px, 390px) minmax(280px, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .wrap { grid-template-columns: 1fr; }
+  }
+
+  .phone {
+    min-height: 760px;
+    padding: 16px;
+    border: 1px solid #d7dde4;
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(18, 78, 120, .06), transparent 210px),
+      #eef3f6;
+    color: var(--ink);
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+
+  .phone * { box-sizing: border-box; }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 42px;
+    margin-bottom: 14px;
+  }
+
+  .app-name {
+    font-size: 18px;
+    font-weight: 950;
+    letter-spacing: 0;
+  }
+
+  .gear {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--muted);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 16px;
+    border: 1px solid #d7e0e8;
+    border-radius: 14px;
+    background: #e4ebf1;
+  }
+
+  .segmented div {
+    display: grid;
+    place-items: center;
+    min-height: 36px;
+    border-radius: 10px;
+    color: #5f6f7e;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .segmented .active {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+  }
+
+  .sheet {
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid #d9e1e8;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .9);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .08);
+  }
+
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    color: #334152;
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .field-label span {
+    color: #768594;
+    font-size: 11px;
+    font-weight: 850;
+  }
+
+  .count-field {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 66px;
+    padding: 0 14px;
+    border: 1px solid #ccd7e1;
+    border-radius: 14px;
+    background: #f8fafc;
+    font-size: 36px;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .target-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+  .target-head h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 950;
+  }
+
+  .target-head span {
+    color: #687788;
+    font-size: 11px;
+    font-weight: 850;
+  }
+
+  .target-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .target-row {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    min-height: 118px;
+    padding: 12px;
+    border: 1px solid #dfe6ed;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .target-row.current {
+    border-color: rgba(22, 112, 82, .35);
+    background: #f1f8f5;
+  }
+
+  .target-row.next {
+    border-color: rgba(18, 78, 120, .35);
+    background: #eff6fa;
+  }
+
+  .target-copy {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .target-kicker {
+    color: #596879;
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .target-value {
+    font-size: 24px;
+    font-weight: 950;
+    line-height: 1.05;
+  }
+
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    padding: 7px 9px;
+    border-radius: 10px;
+  }
+
+  .metric.leftover {
+    background: rgba(22, 112, 82, .10);
+    color: var(--green);
+  }
+
+  .metric.need {
+    background: rgba(18, 78, 120, .10);
+    color: var(--blue);
+  }
+
+  .metric span {
+    color: currentColor;
+    opacity: .74;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .metric strong {
+    font-size: 18px;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .candidate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border: 1px solid #dfe6ed;
+    border-radius: 12px;
+    background: #fbfcfd;
+  }
+
+  .candidate-title {
+    color: #536273;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+  }
+
+  .chips {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    min-height: 30px;
+    padding: 5px 7px;
+    border-radius: 9px;
+    background: #eef3f6;
+    white-space: nowrap;
+  }
+
+  .chip b {
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .chip span {
+    color: #6a7887;
+    font-size: 10px;
+    font-weight: 850;
+  }
+
+  .reveal {
+    display: grid;
+    place-items: center;
+    min-height: 50px;
+    border-radius: 14px;
+    background: #101820;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 950;
+  }
+
+  .settings {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid #dfe6ed;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .setting-row {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 10px;
+    align-items: center;
+    min-height: 34px;
+  }
+
+  .setting-row span {
+    color: #687788;
+    font-size: 11px;
+    font-weight: 850;
+  }
+
+  .setting-row strong {
+    color: #1d2733;
+    font-size: 13px;
+    font-weight: 950;
+  }
+
+  .notes {
+    display: grid;
+    gap: 12px;
+    padding-top: 2px;
+  }
+
+  .notes h2 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 0;
+  }
+
+  .notes p {
+    margin: 0;
+    color: #4d5967;
+    line-height: 1.75;
+  }
+
+  .notes ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #334152;
+    line-height: 1.8;
+  }
+</style>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="topbar">
+      <div class="app-name">交換枚数 計算ツール</div>
+      <div class="gear">⚙</div>
+    </div>
+
+    <div class="segmented">
+      <div class="active">交換</div>
+      <div>履歴</div>
+      <div>設定</div>
+    </div>
+
+    <div class="sheet">
+      <div>
+        <div class="field-label">現在の枚数 <span>交換額はあとで表示</span></div>
+        <div class="count-field">12,345</div>
+      </div>
+
+      <div class="target-head">
+        <h3>目標</h3>
+        <span>今と次を同じ強さで表示</span>
+      </div>
+
+      <div class="target-list">
+        <div class="target-row current">
+          <div class="target-copy">
+            <div class="target-kicker">届いている目標</div>
+            <div class="target-value">12,250枚</div>
+          </div>
+          <div class="metric leftover">
+            <span>余り</span>
+            <strong>95枚</strong>
+          </div>
+        </div>
+
+        <div class="target-row next">
+          <div class="target-copy">
+            <div class="target-kicker">次の目標</div>
+            <div class="target-value">12,500枚</div>
+          </div>
+          <div class="metric need">
+            <span>あと</span>
+            <strong>155枚</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="candidate">
+        <div class="candidate-title">前後の目標</div>
+        <div class="chips">
+          <div class="chip">
+            <b>12,000枚</b>
+            <span>余り 345枚</span>
+          </div>
+          <div class="chip">
+            <b>12,750枚</b>
+            <span>あと 405枚</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">交換額を表示</div>
+
+      <div class="settings">
+        <div class="setting-row"><span>店舗</span><strong>駅前店</strong></div>
+        <div class="setting-row"><span>交換単位</span><strong>250枚ごと</strong></div>
+        <div class="setting-row"><span>交換率</span><strong>20スロ / 5.152枚</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>本命案: 目標一覧型</h2>
+    <p>「ボタンっぽいカード」を減らして、計算結果を読む画面に寄せました。大きい/小さいのような抽象表現は使わず、候補は具体的な枚数で出します。</p>
+    <ul>
+      <li>主役は「届いている目標」と「次に届く目標」の2行。</li>
+      <li>余り/あと枚数は右側の濃いブロックにして、数値として強く見せる。</li>
+      <li>交換額は初期表示せず、「交換額を表示」だけを置く。</li>
+      <li>さらに前後の目標は「ほかの目標」として、12,000枚/12,750枚のように具体値で出す。</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,298 @@
+<style>
+  .abc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 1000px) {
+    .abc-grid { grid-template-columns: 1fr; }
+  }
+  .choice-card {
+    border: 1px solid #d8dee7;
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .choice-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
+  }
+  .choice-card.selected {
+    border-color: #285467;
+    box-shadow: 0 0 0 3px rgba(40, 84, 103, .18), 0 18px 45px rgba(15, 23, 42, .12);
+  }
+  .phone {
+    min-height: 650px;
+    padding: 14px;
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .app-title {
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 12px;
+  }
+  .tab {
+    display: grid;
+    place-items: center;
+    min-height: 38px;
+    font-size: 12px;
+    font-weight: 850;
+  }
+  .panel {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+  .heading {
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .saved {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+  }
+  .label {
+    font-size: 11px;
+    font-weight: 850;
+    opacity: .72;
+  }
+  .preset {
+    display: inline-grid;
+    gap: 2px;
+    width: fit-content;
+    max-width: 190px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 850;
+  }
+  .sub {
+    font-size: 10px;
+    opacity: .72;
+  }
+  .segment {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+  }
+  .segment div {
+    display: grid;
+    place-items: center;
+    min-height: 34px;
+    font-size: 12px;
+    font-weight: 850;
+  }
+  .fieldbox {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+  }
+  .select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 0 11px;
+    font-size: 14px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+  .check {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+  .inputbox {
+    display: grid;
+    gap: 6px;
+    padding: 12px;
+  }
+  .value {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 50px;
+    padding: 0 12px;
+    font-size: 24px;
+    font-weight: 950;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+  .stat {
+    padding: 10px;
+  }
+  .stat span {
+    display: block;
+    font-size: 10px;
+    font-weight: 850;
+    opacity: .68;
+  }
+  .stat strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 19px;
+  }
+  .primary {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    font-weight: 900;
+  }
+  .card-body {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .card-body h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+  }
+  .card-body p {
+    margin: 0;
+    color: #5c6674;
+    line-height: 1.55;
+  }
+
+  .a .phone { background: #f7f9fb; color: #111827; }
+  .a .tabs { background: #e7edf3; border: 1px solid rgba(21,34,50,.07); border-radius: 10px; }
+  .a .tab { border-radius: 7px; }
+  .a .tab.active { background: #fff; box-shadow: 0 3px 10px rgba(15,23,42,.08); }
+  .a .panel { background: #fff; border: 1px solid rgba(21,34,50,.08); border-radius: 14px; box-shadow: 0 12px 28px rgba(15,23,42,.07); }
+  .a .saved { background: rgba(40,84,103,.07); border: 1px solid rgba(40,84,103,.13); border-left: 3px solid #285467; border-radius: 10px; }
+  .a .preset, .a .select { background: #fff; border: 1px solid rgba(21,34,50,.12); border-radius: 8px; }
+  .a .segment, .a .fieldbox, .a .inputbox { background: #f1f5f8; border: 1px solid rgba(21,34,50,.08); border-radius: 10px; }
+  .a .segment .active { background: #fff; border-radius: 7px; box-shadow: 0 2px 7px rgba(15,23,42,.07); }
+  .a .chip { background: #285467; color: white; border-radius: 999px; }
+  .a .check { background: #fff; color: #285467; }
+  .a .value { background: #fff; border: 1px solid rgba(21,34,50,.12); border-radius: 8px; }
+  .a .stats { background: rgba(21,34,50,.12); border-radius: 10px; border: 1px solid rgba(21,34,50,.12); }
+  .a .stat { background: #fff; }
+  .a .primary { background: #285467; color: #fff; border-radius: 8px; }
+
+  .b .phone { background: #eef1f4; color: #101820; }
+  .b .tabs { background: #dce4ea; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(18,39,52,.12); }
+  .b .tab { border-radius: 5px; color: #2b4150; }
+  .b .tab.active { background: #173f52; color: #fff; box-shadow: 0 8px 16px rgba(23,63,82,.18); }
+  .b .panel { background: #fdfefe; border: 1px solid rgba(18,39,52,.14); border-radius: 10px; box-shadow: 0 16px 36px rgba(18,39,52,.10); }
+  .b .saved { background: #e9f0f3; border: 1px solid rgba(23,63,82,.16); border-radius: 8px; }
+  .b .preset, .b .select { background: #fff; border: 1px solid rgba(18,39,52,.18); border-radius: 6px; }
+  .b .segment, .b .fieldbox, .b .inputbox { background: #e8eef2; border: 1px solid rgba(18,39,52,.14); border-radius: 8px; }
+  .b .segment .active { background: #173f52; color: #fff; border-radius: 5px; }
+  .b .chip { background: #173f52; color: white; border-radius: 8px; }
+  .b .check { background: #f5c451; color: #173f52; }
+  .b .value { background: #111820; color: #f9fbfc; border-radius: 6px; font-variant-numeric: tabular-nums; }
+  .b .stats { background: #173f52; border-radius: 8px; }
+  .b .stat { background: #f8fbfc; }
+  .b .primary { background: #173f52; color: #fff; border-radius: 6px; }
+
+  .c .phone { background: #f8fafc; color: #111827; }
+  .c .tabs { background: transparent; border-bottom: 1px solid #dce3ea; padding: 0; gap: 0; }
+  .c .tab { border-radius: 0; color: #657386; }
+  .c .tab.active { color: #111827; border-bottom: 3px solid #285467; }
+  .c .panel { background: #fff; border: 1px solid #e1e7ee; border-radius: 8px; box-shadow: none; gap: 9px; }
+  .c .saved { background: #fff; border: 1px solid #e1e7ee; border-radius: 7px; }
+  .c .preset, .c .select { background: #fff; border: 1px solid #d8e0e8; border-radius: 6px; }
+  .c .segment, .c .fieldbox, .c .inputbox { background: #fff; border: 1px solid #e1e7ee; border-radius: 7px; }
+  .c .segment .active { background: #eff4f7; border-radius: 5px; color: #285467; }
+  .c .chip { background: #fff; color: #285467; border: 1px solid rgba(40,84,103,.35); border-radius: 6px; }
+  .c .check { background: #285467; color: #fff; }
+  .c .value { background: #f8fafc; border: 1px solid #d8e0e8; border-radius: 6px; }
+  .c .stats { background: #e1e7ee; border-radius: 7px; }
+  .c .stat { background: #fff; }
+  .c .primary { background: #285467; color: #fff; border-radius: 6px; }
+</style>
+
+<h2>ABC デザイン比較</h2>
+<p class="subtitle">同じ機能配置で、見た目の方向だけ変えています。クリックで候補を選べます。</p>
+
+<div class="abc-grid">
+  <div class="choice-card card a" data-choice="a-practical-ledger" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="app-title">交換枚数 計算ツール</div>
+      <div class="tabs"><div class="tab active">交換計算</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="heading">交換計算</div>
+        <div class="saved"><div class="label">保存した設定</div><div class="preset">駅前店<span class="sub">20スロ｜5.152枚交換</span></div></div>
+        <div class="heading">交換率</div>
+        <div class="segment"><div class="active">よく使う</div><div>手入力</div></div>
+        <div class="fieldbox"><div class="label">種類</div><div class="select">20円スロット <span>⌄</span></div><div class="label">よく使う交換率</div><div class="select">5.152枚交換 <span>⌄</span></div></div>
+        <div class="heading">使う景品</div>
+        <div class="chips"><div class="chip"><span class="check">✓</span>1,000円</div><div class="chip"><span class="check">✓</span>5,000円</div></div>
+        <div class="inputbox"><div class="label">持ち玉/枚数</div><div class="value">12345</div></div>
+        <div class="stats"><div class="stat"><span>余り</span><strong>95枚</strong></div><div class="stat"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="primary">景品・金額を見る</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A. Practical Ledger</h3><p>白基調、薄い境界、控えめな影。既存操作を変えずに一番安全に現代化する案。</p></div>
+  </div>
+
+  <div class="choice-card card b" data-choice="b-counter-terminal" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="app-title">交換枚数 計算ツール</div>
+      <div class="tabs"><div class="tab active">交換計算</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="heading">交換計算</div>
+        <div class="saved"><div class="label">保存した設定</div><div class="preset">駅前店<span class="sub">20スロ｜5.152枚交換</span></div></div>
+        <div class="heading">交換率</div>
+        <div class="segment"><div class="active">よく使う</div><div>手入力</div></div>
+        <div class="fieldbox"><div class="label">種類</div><div class="select">20円スロット <span>⌄</span></div><div class="label">よく使う交換率</div><div class="select">5.152枚交換 <span>⌄</span></div></div>
+        <div class="heading">使う景品</div>
+        <div class="chips"><div class="chip"><span class="check">✓</span>1,000円</div><div class="chip"><span class="check">✓</span>5,000円</div></div>
+        <div class="inputbox"><div class="label">持ち玉/枚数</div><div class="value">12345</div></div>
+        <div class="stats"><div class="stat"><span>余り</span><strong>95枚</strong></div><div class="stat"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="primary">景品・金額を見る</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B. Counter Terminal</h3><p>交換所の端末感。数字と操作面が強く、道具っぽい印象になる案。</p></div>
+  </div>
+
+  <div class="choice-card card c" data-choice="c-compact-utility" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="app-title">交換枚数 計算ツール</div>
+      <div class="tabs"><div class="tab active">交換計算</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="heading">交換計算</div>
+        <div class="saved"><div class="label">保存した設定</div><div class="preset">駅前店<span class="sub">20スロ｜5.152枚交換</span></div></div>
+        <div class="heading">交換率</div>
+        <div class="segment"><div class="active">よく使う</div><div>手入力</div></div>
+        <div class="fieldbox"><div class="label">種類</div><div class="select">20円スロット <span>⌄</span></div><div class="label">よく使う交換率</div><div class="select">5.152枚交換 <span>⌄</span></div></div>
+        <div class="heading">使う景品</div>
+        <div class="chips"><div class="chip"><span class="check">✓</span>1,000円</div><div class="chip"><span class="check">✓</span>5,000円</div></div>
+        <div class="inputbox"><div class="label">持ち玉/枚数</div><div class="value">12345</div></div>
+        <div class="stats"><div class="stat"><span>余り</span><strong>95枚</strong></div><div class="stat"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="primary">景品・金額を見る</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C. Compact Utility</h3><p>影を削り、線と密度で整理。最も軽く、管理画面っぽい案。</p></div>
+  </div>
+</div>

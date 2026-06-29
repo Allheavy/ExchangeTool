@@ -1,0 +1,113 @@
+<style>
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(280px,1fr)); gap:20px; align-items:start; }
+  @media (max-width:1040px){ .grid{grid-template-columns:1fr;} }
+  .choice-card { border:1px solid #d8dee7; border-radius:18px; overflow:hidden; background:#fff; cursor:pointer; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+  .choice-card:hover { transform:translateY(-2px); box-shadow:0 18px 45px rgba(15,23,42,.13); }
+  .choice-card.selected { border-color:#1d4f63; box-shadow:0 0 0 3px rgba(29,79,99,.18),0 18px 45px rgba(15,23,42,.13); }
+  .phone { min-height:720px; padding:14px; background:#f4f7fa; color:#111827; font-family:"Yu Gothic UI",system-ui,sans-serif; }
+  .phone *{box-sizing:border-box;}
+  .title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
+  .brand{font-size:17px;font-weight:950;}
+  .calc{display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:#1d4f63;color:white;font-weight:900;}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:4px;margin-bottom:12px;background:#e6edf3;border-radius:13px;}
+  .tab{display:grid;place-items:center;min-height:34px;border-radius:10px;color:#657386;font-size:12px;font-weight:900;}
+  .tab.active{background:white;color:#111827;box-shadow:0 3px 10px rgba(15,23,42,.08);}
+  .panel{display:grid;gap:10px;padding:14px;margin-bottom:12px;border:1px solid #dfe7ef;border-radius:18px;background:white;}
+  .label-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .label{color:#344154;font-size:12px;font-weight:950;}
+  .hint{color:#6b7b8f;font-size:11px;font-weight:800;}
+  .input{display:flex;justify-content:flex-end;align-items:center;min-height:58px;padding:0 14px;border:1px solid #d9e2eb;border-radius:14px;background:#f7f9fc;font-size:32px;font-weight:950;}
+  .amount{display:grid;place-items:center;min-height:43px;border-radius:12px;background:#111827;color:#fff;font-size:13px;font-weight:950;}
+  .condition{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:center;padding:9px;border-radius:12px;background:#f7f9fc;}
+  .condition span{color:#6b7b8f;font-size:11px;font-weight:850;}
+  .condition strong{font-size:13px;}
+  .body{padding:16px;border-top:1px solid #e5e7eb;}
+  .body h3{margin:0 0 6px;font-size:18px;}
+  .body p{margin:0;color:#5c6674;line-height:1.55;}
+
+  .target-list { display:grid; gap:7px; }
+  .target-row { display:grid; grid-template-columns:82px 1fr auto; align-items:center; gap:8px; padding:9px; border:1px solid #e1e7ee; border-radius:13px; background:#f7f9fc; }
+  .target-row.active { border-color:#1d4f63; background:#edf5f7; box-shadow:inset 0 0 0 1px #1d4f63; }
+  .target-kicker { color:#6b7b8f; font-size:10px; font-weight:900; }
+  .target-main { font-size:17px; font-weight:950; }
+  .target-sub { color:#6b7b8f; font-size:10px; font-weight:850; }
+  .target-btn { display:grid; place-items:center; min-width:74px; min-height:34px; padding:0 8px; border-radius:10px; background:#1d4f63; color:#fff; font-size:11px; font-weight:950; }
+  .target-btn.secondary { background:#edf3f6; color:#1d4f63; border:1px solid rgba(29,79,99,.22); }
+
+  .rail { display:flex; gap:8px; overflow:hidden; padding-bottom:2px; }
+  .rail-card { flex:0 0 132px; display:grid; gap:6px; min-height:118px; padding:10px; border:1px solid #e1e7ee; border-radius:14px; background:#f7f9fc; }
+  .rail-card.active { border-color:#1d4f63; background:#edf5f7; box-shadow:inset 0 0 0 1px #1d4f63; }
+  .rail-card .target-main { font-size:20px; }
+  .rail-card .target-btn { margin-top:auto; min-width:0; }
+
+  .focus-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .focus-card { display:grid; gap:8px; min-height:124px; padding:12px; border:1px solid #e1e7ee; border-radius:16px; background:#fff; }
+  .focus-card.active { border-color:#1d4f63; box-shadow:inset 0 0 0 1px #1d4f63; }
+  .more-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .more-btn { display:grid; place-items:center; min-height:38px; border-radius:11px; background:#edf3f6; color:#1d4f63; font-size:12px; font-weight:950; }
+  .more-btn.primary { background:#1d4f63; color:#fff; }
+</style>
+
+<h2>複数目標を見せる案</h2>
+<p class="subtitle">下・今・次・さらに上の目標まで見える形にした派生です。</p>
+
+<div class="grid">
+  <div class="choice-card card" data-choice="multi-target-list" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">交換額は確認時に表示</div></div>
+        <div class="input">12345</div>
+        <div class="target-list">
+          <div class="target-row"><div class="target-kicker">下の目標</div><div><div class="target-main">12,000枚</div><div class="target-sub">345枚減らす</div></div><div class="target-btn secondary">入力</div></div>
+          <div class="target-row active"><div class="target-kicker">今の目標</div><div><div class="target-main">12,250枚</div><div class="target-sub">余り 95枚</div></div><div class="target-btn secondary">入力</div></div>
+          <div class="target-row"><div class="target-kicker">次の目標</div><div><div class="target-main">12,500枚</div><div class="target-sub">あと 155枚</div></div><div class="target-btn">入力</div></div>
+          <div class="target-row"><div class="target-kicker">さらに上</div><div><div class="target-main">13,000枚</div><div class="target-sub">あと 655枚</div></div><div class="target-btn">入力</div></div>
+        </div>
+        <div class="amount">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div></div>
+    </div>
+    <div class="body"><h3>案1. 目標リスト</h3><p>一番分かりやすい。上下の候補が全部見える。縦には少し長い。</p></div>
+  </div>
+
+  <div class="choice-card card" data-choice="multi-target-rail" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">左右に目標候補</div></div>
+        <div class="input">12345</div>
+        <div class="rail">
+          <div class="rail-card"><div class="target-kicker">下</div><div class="target-main">12,000</div><div class="target-sub">345枚減</div><div class="target-btn secondary">入力</div></div>
+          <div class="rail-card active"><div class="target-kicker">今</div><div class="target-main">12,250</div><div class="target-sub">余り95枚</div><div class="target-btn secondary">入力</div></div>
+          <div class="rail-card"><div class="target-kicker">次</div><div class="target-main">12,500</div><div class="target-sub">あと155枚</div><div class="target-btn">入力</div></div>
+          <div class="rail-card"><div class="target-kicker">上</div><div class="target-main">13,000</div><div class="target-sub">あと655枚</div><div class="target-btn">入力</div></div>
+        </div>
+        <div class="amount">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div></div>
+    </div>
+    <div class="body"><h3>案2. 横レール</h3><p>スマホらしい。候補を横に流せるが、全部が一目では見えにくい。</p></div>
+  </div>
+
+  <div class="choice-card card" data-choice="multi-target-focused" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">よく使う2つを表示</div></div>
+        <div class="input">12345</div>
+        <div class="focus-grid">
+          <div class="focus-card active"><div class="target-kicker">今の目標</div><div class="target-main">12,250枚</div><div class="target-sub">余り 95枚</div><div class="target-btn secondary">入力</div></div>
+          <div class="focus-card"><div class="target-kicker">次の目標</div><div class="target-main">12,500枚</div><div class="target-sub">あと 155枚</div><div class="target-btn">入力</div></div>
+        </div>
+        <div class="more-row"><div class="more-btn">下の目標も見る</div><div class="more-btn primary">さらに上を見る</div></div>
+        <div class="amount">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div></div>
+    </div>
+    <div class="body"><h3>案3. 主要2つ + 展開</h3><p>初期画面はすっきり。必要な時だけ下/さらに上を出す。実装もしやすい。</p></div>
+  </div>
+</div>

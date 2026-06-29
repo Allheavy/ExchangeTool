@@ -1,0 +1,142 @@
+<style>
+  :root{--ink:#111827;--muted:#687588;--line:#dde5ec;--soft:#f4f7fa;--paper:#fff;--teal:#1d4f63;--navy:#142333;}
+  .wrap{display:grid;grid-template-columns:repeat(2,minmax(320px,390px)) minmax(260px,1fr);gap:22px;align-items:start;}
+  @media(max-width:1120px){.wrap{grid-template-columns:1fr;}}
+  .phone{position:relative;min-height:760px;padding:14px;border:1px solid #d8dee7;border-radius:20px;background:linear-gradient(180deg,rgba(29,79,99,.07),transparent 190px),#f4f7fa;color:var(--ink);font-family:"Yu Gothic UI",system-ui,sans-serif;overflow:hidden;}
+  .phone *{box-sizing:border-box;}
+  .title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
+  .brand{font-size:17px;font-weight:950;letter-spacing:0;}
+  .status{padding:7px 9px;border:1px solid #dce5ed;border-radius:999px;background:rgba(255,255,255,.78);color:#526171;font-size:11px;font-weight:900;}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:4px;margin-bottom:12px;background:#e6edf3;border-radius:13px;}
+  .tab{display:grid;place-items:center;min-height:34px;border-radius:10px;color:#657386;font-size:12px;font-weight:900;}
+  .tab.active{background:white;color:#111827;box-shadow:0 3px 10px rgba(15,23,42,.08);}
+  .panel{display:grid;gap:10px;padding:14px;margin-bottom:12px;border:1px solid #dfe7ef;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 10px 28px rgba(15,23,42,.07);}
+  .label-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .label{color:#344154;font-size:12px;font-weight:950;}
+  .hint{color:#6b7b8f;font-size:11px;font-weight:800;}
+  .input-row{display:grid;grid-template-columns:1fr 58px;gap:8px;}
+  .input{display:flex;justify-content:flex-end;align-items:center;min-height:58px;padding:0 14px;border:1px solid #d9e2eb;border-radius:14px;background:#f7f9fc;font-size:32px;font-weight:950;line-height:1;}
+  .calc-btn{display:grid;place-items:center;min-height:58px;border-radius:14px;background:var(--teal);color:#fff;font-weight:950;box-shadow:0 8px 18px rgba(29,79,99,.2);}
+  .focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .focus-card{display:grid;gap:8px;min-height:118px;padding:12px;border:1px solid #e1e7ee;border-radius:16px;background:#fff;}
+  .focus-card.active{border-color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal);background:#edf5f7;}
+  .target-label{color:#6b7b8f;font-size:11px;font-weight:900;}
+  .target-value{font-size:24px;font-weight:950;letter-spacing:0;line-height:1.05;}
+  .target-metric{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:7px 9px;border-radius:10px;background:rgba(17,24,39,.06);color:#253142;}
+  .target-metric.next{background:rgba(29,79,99,.08);color:var(--teal);}
+  .target-metric span{color:currentColor;opacity:.7;font-size:10px;font-weight:850;}
+  .target-metric strong{font-size:17px;font-weight:950;}
+  .aux-targets{display:grid;grid-template-columns:58px 1fr 58px;gap:8px;align-items:center;padding:8px 6px 2px;}
+  .aux-target{display:grid;gap:2px;color:#738191;font-size:10px;font-weight:900;text-align:center;}
+  .aux-target b{color:#354252;font-size:12px;font-weight:950;}
+  .rail{position:relative;height:2px;border-radius:999px;background:#d5dee7;}
+  .rail::before,.rail::after{content:"";position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:#a0adbb;transform:translateY(-50%);}
+  .rail::before{left:0}.rail::after{right:0}
+  .amount{display:grid;place-items:center;min-height:43px;border-radius:12px;background:#111827;color:#fff;font-size:13px;font-weight:950;}
+
+  .condition-card{display:grid;gap:10px;padding:12px;border:1px solid #dfe7ef;border-radius:16px;background:#fff;}
+  .condition-head{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .condition-title{font-size:13px;font-weight:950;color:#2d3948;}
+  .change-link{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border-radius:10px;background:#eef4f6;color:var(--teal);font-size:12px;font-weight:950;}
+  .preset-line{display:flex;gap:7px;overflow:hidden;}
+  .preset{display:grid;gap:2px;min-width:88px;padding:8px 9px;border:1px solid #dde6ee;border-radius:12px;background:#f8fafc;color:#647386;}
+  .preset.active{border-color:var(--teal);background:#edf5f7;color:var(--teal);}
+  .preset b{color:#1f2937;font-size:12px;font-weight:950;}
+  .preset span{font-size:10px;font-weight:850;}
+  .condition-mini{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .mini-row{display:grid;gap:2px;padding:8px 9px;border-radius:11px;background:#f7f9fc;}
+  .mini-row span{color:#6b7b8f;font-size:10px;font-weight:850;}
+  .mini-row strong{font-size:12px;font-weight:950;color:#1f2937;}
+
+  .sheet-backdrop{position:absolute;inset:0;background:rgba(17,24,39,.26);display:flex;align-items:flex-end;padding:10px;}
+  .bottom-sheet{display:grid;gap:12px;width:100%;padding:14px;border-radius:18px;background:#fff;box-shadow:0 -18px 40px rgba(15,23,42,.2);}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;}
+  .sheet-head b{font-size:15px;font-weight:950;}
+  .close{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:#f1f4f7;color:#617082;font-weight:950;}
+  .edit-list{display:grid;gap:8px;}
+  .edit-row{display:grid;grid-template-columns:82px 1fr;gap:8px;align-items:center;padding:10px;border:1px solid #e1e8ef;border-radius:12px;background:#fbfcfd;}
+  .edit-row span{color:#647386;font-size:11px;font-weight:900;}
+  .select-like{display:flex;justify-content:space-between;align-items:center;color:#1f2937;font-size:13px;font-weight:950;}
+  .primary{display:grid;place-items:center;min-height:42px;border-radius:12px;background:var(--teal);color:#fff;font-size:13px;font-weight:950;}
+  .notes{display:grid;gap:12px;padding-top:4px;}
+  .notes h2{margin:0;font-size:24px;letter-spacing:0;}
+  .notes p,.notes li{color:#4d5967;line-height:1.75;}
+  .notes p{margin:0}.notes ul{margin:0;padding-left:20px;}
+</style>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="status">通常時</div></div>
+    <div class="tabs"><div class="tab active">交換</div><div>履歴</div><div>設定</div></div>
+    <div class="panel">
+      <div class="label-row"><div class="label">現在の枚数</div><div class="hint">交換額は確認時に表示</div></div>
+      <div class="input-row"><div class="input">12345</div><div class="calc-btn">計</div></div>
+      <div class="focus-grid">
+        <div class="focus-card active"><div class="target-label">届いている目標</div><div class="target-value">12,250枚</div><div class="target-metric"><span>余り</span><strong>95枚</strong></div></div>
+        <div class="focus-card"><div class="target-label">次の目標</div><div class="target-value">12,500枚</div><div class="target-metric next"><span>あと</span><strong>155枚</strong></div></div>
+      </div>
+      <div class="aux-targets"><div class="aux-target"><span>前の目標</span><b>12,000</b></div><div class="rail"></div><div class="aux-target"><span>次の目標</span><b>12,750</b></div></div>
+      <div class="amount">交換額を見る</div>
+    </div>
+    <div class="condition-card">
+      <div class="condition-head"><div class="condition-title">条件</div><div class="change-link">変更</div></div>
+      <div class="preset-line">
+        <div class="preset active"><b>駅前店</b><span>20スロ</span></div>
+        <div class="preset"><b>郊外店</b><span>5スロ</span></div>
+        <div class="preset"><b>手入力</b><span>交換率</span></div>
+      </div>
+      <div class="condition-mini">
+        <div class="mini-row"><span>交換率</span><strong>5.152枚</strong></div>
+        <div class="mini-row"><span>交換単位</span><strong>250枚ごと</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="status">変更時</div></div>
+    <div class="tabs"><div class="tab active">交換</div><div>履歴</div><div>設定</div></div>
+    <div class="panel">
+      <div class="label-row"><div class="label">現在の枚数</div><div class="hint">交換額は確認時に表示</div></div>
+      <div class="input-row"><div class="input">12345</div><div class="calc-btn">計</div></div>
+      <div class="focus-grid">
+        <div class="focus-card active"><div class="target-label">届いている目標</div><div class="target-value">12,250枚</div><div class="target-metric"><span>余り</span><strong>95枚</strong></div></div>
+        <div class="focus-card"><div class="target-label">次の目標</div><div class="target-value">12,500枚</div><div class="target-metric next"><span>あと</span><strong>155枚</strong></div></div>
+      </div>
+      <div class="aux-targets"><div class="aux-target"><span>前の目標</span><b>12,000</b></div><div class="rail"></div><div class="aux-target"><span>次の目標</span><b>12,750</b></div></div>
+      <div class="amount">交換額を見る</div>
+    </div>
+    <div class="condition-card">
+      <div class="condition-head"><div class="condition-title">条件</div><div class="change-link">変更</div></div>
+      <div class="preset-line">
+        <div class="preset active"><b>駅前店</b><span>20スロ</span></div>
+        <div class="preset"><b>郊外店</b><span>5スロ</span></div>
+        <div class="preset"><b>手入力</b><span>交換率</span></div>
+      </div>
+      <div class="condition-mini">
+        <div class="mini-row"><span>交換率</span><strong>5.152枚</strong></div>
+        <div class="mini-row"><span>交換単位</span><strong>250枚ごと</strong></div>
+      </div>
+    </div>
+    <div class="sheet-backdrop">
+      <div class="bottom-sheet">
+        <div class="sheet-head"><b>条件を変更</b><div class="close">×</div></div>
+        <div class="edit-list">
+          <div class="edit-row"><span>店舗</span><div class="select-like">駅前店 <b>⌄</b></div></div>
+          <div class="edit-row"><span>交換率</span><div class="select-like">20スロ / 5.152枚 <b>⌄</b></div></div>
+          <div class="edit-row"><span>交換単位</span><div class="select-like">250枚ごと <b>⌄</b></div></div>
+        </div>
+        <div class="primary">この条件で計算</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>Bベース + Aシート</h2>
+    <p>通常時はBのように条件カード内でプリセットを軽く切り替えられる。詳細な変更はAの下シートでまとめて編集します。</p>
+    <ul>
+      <li>よく使う店舗はカード内でワンタップ切り替え。</li>
+      <li><code>変更</code> は下シートを開き、店舗・交換率・交換単位をまとめて変更。</li>
+      <li>後から「カード内展開」に戻す必要があっても、条件カード部分だけ差し替えれば済む構成。</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,413 @@
+<style>
+  .stage {
+    display: grid;
+    gap: 22px;
+  }
+  .phone-shell {
+    max-width: 420px;
+    margin: 0 auto;
+    border: 1px solid #d9e1ea;
+    border-radius: 26px;
+    padding: 14px;
+    background: #eef3f7;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .14);
+  }
+  .phone {
+    min-height: 780px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f7f9fc;
+    color: #111827;
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .appbar {
+    display: grid;
+    gap: 12px;
+    padding: 16px 16px 12px;
+    background: #fff;
+    border-bottom: 1px solid #e3e9f0;
+  }
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand {
+    font-size: 18px;
+    font-weight: 950;
+    letter-spacing: 0;
+  }
+  .calc-button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: #1d4f63;
+    color: white;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(29, 79, 99, .22);
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px;
+    border-radius: 13px;
+    background: #e9eef4;
+  }
+  .tab {
+    display: grid;
+    place-items: center;
+    min-height: 36px;
+    border-radius: 10px;
+    color: #617185;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .tab.active {
+    background: #fff;
+    color: #111827;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, .08);
+  }
+  .screen {
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+  }
+  .status-card {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 18px;
+    background: #111827;
+    color: #fff;
+  }
+  .status-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: start;
+  }
+  .eyebrow {
+    color: #9fb2c4;
+    font-size: 11px;
+    font-weight: 900;
+  }
+  .amount {
+    margin-top: 4px;
+    font-size: 38px;
+    font-weight: 950;
+    letter-spacing: 0;
+  }
+  .condition-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .10);
+    color: #d8e7f1;
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .mini-stat {
+    padding: 11px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .08);
+  }
+  .mini-stat span {
+    display: block;
+    color: #9fb2c4;
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .mini-stat strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 20px;
+    font-weight: 950;
+  }
+  .stepper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .step {
+    display: grid;
+    gap: 4px;
+    padding: 10px 9px;
+    border: 1px solid #dfe7ef;
+    border-radius: 13px;
+    background: #fff;
+  }
+  .step strong {
+    font-size: 12px;
+    font-weight: 950;
+  }
+  .step span {
+    color: #6b7b8f;
+    font-size: 10px;
+    font-weight: 800;
+  }
+  .step.active {
+    border-color: #1d4f63;
+    box-shadow: inset 0 0 0 1px #1d4f63;
+  }
+  .input-panel {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #dfe7ef;
+    border-radius: 18px;
+    background: #fff;
+  }
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .label {
+    color: #344154;
+    font-size: 12px;
+    font-weight: 950;
+  }
+  .hint {
+    color: #6b7b8f;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .input-value {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 62px;
+    padding: 0 14px;
+    border: 1px solid #d9e2eb;
+    border-radius: 14px;
+    background: #f7f9fc;
+    font-size: 34px;
+    font-weight: 950;
+    letter-spacing: 0;
+  }
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .secondary-action,
+  .primary-action {
+    display: grid;
+    place-items: center;
+    min-height: 43px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 950;
+  }
+  .secondary-action {
+    background: #edf3f6;
+    color: #1d4f63;
+  }
+  .primary-action {
+    background: #1d4f63;
+    color: #fff;
+  }
+  .condition-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #dfe7ef;
+    border-radius: 18px;
+    background: #fff;
+  }
+  .condition-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .edit-link {
+    color: #1d4f63;
+    font-size: 12px;
+    font-weight: 950;
+  }
+  .condition-list {
+    display: grid;
+    gap: 7px;
+  }
+  .condition-row {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f7f9fc;
+  }
+  .condition-row span {
+    color: #6b7b8f;
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .condition-row strong {
+    font-size: 13px;
+    font-weight: 950;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #e8f1f4;
+    color: #1d4f63;
+    font-size: 12px;
+    font-weight: 950;
+  }
+  .chip.on {
+    background: #1d4f63;
+    color: #fff;
+  }
+  .details-preview {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+    border: 1px solid #dfe7ef;
+    border-radius: 18px;
+    background: #fff;
+  }
+  .details-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 9px 0;
+    border-bottom: 1px solid #edf1f5;
+    font-size: 13px;
+    font-weight: 850;
+  }
+  .details-row:last-child { border-bottom: 0; }
+  .notes {
+    display: grid;
+    gap: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .notes h3 { margin: 0; }
+  .notes p { margin: 0; color: #566273; line-height: 1.65; }
+  .pros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .pros div {
+    padding: 12px;
+    border: 1px solid #dfe7ef;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .pros strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+</style>
+
+<div class="stage">
+  <h2>C案を実画面寄りに具体化</h2>
+  <p class="subtitle">「ステップ型」だけでは弱かったので、結果・入力・条件確認が同時に成立する画面に寄せました。クリックでこの案を選べます。</p>
+
+  <div class="choice-card card" data-choice="c-guided-workflow-v2" onclick="toggleSelect(this)">
+    <div class="phone-shell">
+      <div class="phone">
+        <div class="appbar">
+          <div class="title-row">
+            <div class="brand">交換枚数 計算ツール</div>
+            <div class="calc-button">電</div>
+          </div>
+          <div class="tabs">
+            <div class="tab active">交換計算</div>
+            <div class="tab">ノリ打ち</div>
+            <div class="tab">管理</div>
+          </div>
+        </div>
+
+        <div class="screen">
+          <section class="status-card">
+            <div class="status-top">
+              <div>
+                <div class="eyebrow">交換額プレビュー</div>
+                <div class="amount">49,000円</div>
+              </div>
+              <div class="condition-pill">駅前店</div>
+            </div>
+            <div class="status-grid">
+              <div class="mini-stat"><span>余り</span><strong>95枚</strong></div>
+              <div class="mini-stat"><span>あと</span><strong>155枚</strong></div>
+            </div>
+          </section>
+
+          <div class="stepper">
+            <div class="step active"><strong>1 入力</strong><span>持ち玉</span></div>
+            <div class="step"><strong>2 条件</strong><span>交換率・景品</span></div>
+            <div class="step"><strong>3 確認</strong><span>金額・内訳</span></div>
+          </div>
+
+          <section class="input-panel">
+            <div class="label-row">
+              <div class="label">持ち玉/枚数</div>
+              <div class="hint">入力すると上の結果が更新</div>
+            </div>
+            <div class="input-value">12345</div>
+            <div class="action-row">
+              <div class="secondary-action">次の交換額へ</div>
+              <div class="primary-action">景品・金額を見る</div>
+            </div>
+          </section>
+
+          <section class="condition-card">
+            <div class="condition-title">
+              <div class="label">条件</div>
+              <div class="edit-link">変更</div>
+            </div>
+            <div class="condition-list">
+              <div class="condition-row"><span>保存設定</span><strong>駅前店</strong></div>
+              <div class="condition-row"><span>交換率</span><strong>20スロ｜5.152枚交換</strong></div>
+              <div class="condition-row"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div>
+            </div>
+          </section>
+
+          <section class="details-preview">
+            <div class="label">内訳プレビュー</div>
+            <div class="details-row"><span>必要枚数</span><strong>12,250枚</strong></div>
+            <div class="details-row"><span>交換額</span><strong>49,000円</strong></div>
+            <div class="details-row"><span>景品</span><strong>5,000円 x 9 / 1,000円 x 4</strong></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>この案の狙い</h3>
+    <p>既存の「条件を選んでから入力する」構造を、利用者の視点では「入力したら結果が上で即見える」構造に変えます。ただし保存設定、交換率、景品、詳細表はそのまま残せます。DOMは少し動かしますが、計算ロジックと保存キーは触らない設計です。</p>
+    <div class="pros">
+      <div><strong>変化が大きい</strong>トップに黒い結果カードを置くので、今の画面とは明確に違って見えます。</div>
+      <div><strong>実装は現実的</strong>条件編集は既存UIを折りたたみ/展開へ寄せれば再利用できます。</div>
+      <div><strong>安全策あり</strong>実装時は必ず `app-core.mjs?v=29` と SW cache `v29` を同時更新します。</div>
+    </div>
+  </div>
+</div>

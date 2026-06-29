@@ -1,0 +1,392 @@
+<style>
+  :root {
+    --ink: #111827;
+    --muted: #687588;
+    --line: #dde5ec;
+    --soft: #f4f7fa;
+    --paper: #fff;
+    --teal: #1d4f63;
+    --navy: #142333;
+  }
+
+  .wrap {
+    display: grid;
+    grid-template-columns: minmax(320px, 390px) minmax(280px, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .wrap { grid-template-columns: 1fr; }
+  }
+
+  .phone {
+    min-height: 710px;
+    padding: 14px;
+    border: 1px solid #d8dee7;
+    border-radius: 20px;
+    background:
+      linear-gradient(180deg, rgba(29,79,99,.07), transparent 190px),
+      #f4f7fa;
+    color: var(--ink);
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+
+  .phone * { box-sizing: border-box; }
+
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .brand {
+    font-size: 17px;
+    font-weight: 950;
+    letter-spacing: 0;
+  }
+
+  .status {
+    padding: 7px 9px;
+    border: 1px solid #dce5ed;
+    border-radius: 999px;
+    background: rgba(255,255,255,.78);
+    color: #526171;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 4px;
+    margin-bottom: 12px;
+    background: #e6edf3;
+    border-radius: 13px;
+  }
+
+  .tab {
+    display: grid;
+    place-items: center;
+    min-height: 34px;
+    border-radius: 10px;
+    color: #657386;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .tab.active {
+    background: white;
+    color: #111827;
+    box-shadow: 0 3px 10px rgba(15,23,42,.08);
+  }
+
+  .panel {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #dfe7ef;
+    border-radius: 18px;
+    background: rgba(255,255,255,.94);
+    box-shadow: 0 10px 28px rgba(15,23,42,.07);
+  }
+
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .label {
+    color: #344154;
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .hint {
+    color: #6b7b8f;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 58px;
+    gap: 8px;
+  }
+
+  .input {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 58px;
+    padding: 0 14px;
+    border: 1px solid #d9e2eb;
+    border-radius: 14px;
+    background: #f7f9fc;
+    font-size: 32px;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .calc-btn {
+    display: grid;
+    place-items: center;
+    min-height: 58px;
+    border: 1px solid rgba(29,79,99,.28);
+    border-radius: 14px;
+    background: var(--teal);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(29,79,99,.2);
+  }
+
+  .calc-icon {
+    display: grid;
+    grid-template-columns: repeat(2, 5px);
+    grid-template-rows: 11px repeat(2, 5px);
+    gap: 4px;
+    width: 18px;
+  }
+
+  .calc-icon span {
+    border-radius: 2px;
+    background: rgba(255,255,255,.9);
+  }
+
+  .calc-icon span:first-child {
+    grid-column: 1 / 3;
+    background: rgba(255,255,255,.7);
+  }
+
+  .focus-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .focus-card {
+    display: grid;
+    gap: 8px;
+    min-height: 118px;
+    padding: 12px;
+    border: 1px solid #e1e7ee;
+    border-radius: 16px;
+    background: #fff;
+  }
+
+  .focus-card.active {
+    border-color: var(--teal);
+    box-shadow: inset 0 0 0 1px var(--teal);
+    background: #edf5f7;
+  }
+
+  .target-label {
+    color: #6b7b8f;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .target-value {
+    font-size: 24px;
+    font-weight: 950;
+    letter-spacing: 0;
+    line-height: 1.05;
+  }
+
+  .target-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 10px;
+    background: rgba(17,24,39,.06);
+    color: #253142;
+  }
+
+  .target-metric.next {
+    background: rgba(29,79,99,.08);
+    color: var(--teal);
+  }
+
+  .target-metric span {
+    color: currentColor;
+    opacity: .7;
+    font-size: 10px;
+    font-weight: 850;
+  }
+
+  .target-metric strong {
+    font-size: 17px;
+    font-weight: 950;
+  }
+
+  .aux-targets {
+    display: grid;
+    grid-template-columns: 58px 1fr 58px;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 6px 2px;
+  }
+
+  .aux-target {
+    display: grid;
+    gap: 2px;
+    color: #738191;
+    font-size: 10px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .aux-target b {
+    color: #354252;
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .rail {
+    position: relative;
+    height: 2px;
+    border-radius: 999px;
+    background: #d5dee7;
+  }
+
+  .rail::before,
+  .rail::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #a0adbb;
+    transform: translateY(-50%);
+  }
+
+  .rail::before { left: 0; }
+  .rail::after { right: 0; }
+
+  .amount {
+    display: grid;
+    place-items: center;
+    min-height: 43px;
+    border-radius: 12px;
+    background: #111827;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 950;
+  }
+
+  .condition {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 9px;
+    border-radius: 12px;
+    background: #f7f9fc;
+  }
+
+  .condition span {
+    color: #6b7b8f;
+    font-size: 11px;
+    font-weight: 850;
+  }
+
+  .condition strong { font-size: 13px; }
+
+  .notes {
+    display: grid;
+    gap: 12px;
+    padding-top: 4px;
+  }
+
+  .notes h2 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 0;
+  }
+
+  .notes p,
+  .notes li {
+    color: #4d5967;
+    line-height: 1.75;
+  }
+
+  .notes p { margin: 0; }
+  .notes ul { margin: 0; padding-left: 20px; }
+</style>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="title">
+      <div class="brand">交換枚数 計算ツール</div>
+      <div class="status">交換</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">交換</div>
+      <div>履歴</div>
+      <div>設定</div>
+    </div>
+
+    <div class="panel">
+      <div class="label-row">
+        <div class="label">現在の枚数</div>
+        <div class="hint">交換額は確認時に表示</div>
+      </div>
+
+      <div class="input-row">
+        <div class="input">12345</div>
+        <div class="calc-btn" aria-label="計算機">
+          <div class="calc-icon">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="focus-grid">
+        <div class="focus-card active">
+          <div class="target-label">届いている目標</div>
+          <div class="target-value">12,250枚</div>
+          <div class="target-metric"><span>余り</span><strong>95枚</strong></div>
+        </div>
+
+        <div class="focus-card">
+          <div class="target-label">次の目標</div>
+          <div class="target-value">12,500枚</div>
+          <div class="target-metric next"><span>あと</span><strong>155枚</strong></div>
+        </div>
+      </div>
+
+      <div class="aux-targets">
+        <div class="aux-target"><span>前の目標</span><b>12,000</b></div>
+        <div class="rail"></div>
+        <div class="aux-target"><span>次の目標</span><b>12,750</b></div>
+      </div>
+
+      <div class="amount">交換額を見る</div>
+    </div>
+
+    <div class="panel">
+      <div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div>
+      <div class="condition"><span>設定</span><strong>駅前店</strong></div>
+      <div class="condition"><span>交換率</span><strong>20スロ / 5.152枚</strong></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>Dベース確定案</h2>
+    <p>前後の目標はDのレール型に寄せ、Eへ差し替える場合もこの <code>aux-targets</code> 部分だけ変えれば済む構成にします。</p>
+    <ul>
+      <li>計算機ボタンは上部の小アイコンから、現在枚数入力の右側へ移動。</li>
+      <li>前後の目標には余り/あとを出さず、枚数だけを補助的に表示。</li>
+      <li>主役は届いている目標、次の目標、交換額を見るボタン。</li>
+    </ul>
+  </div>
+</div>

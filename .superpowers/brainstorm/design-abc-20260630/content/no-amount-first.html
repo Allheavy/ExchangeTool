@@ -1,0 +1,119 @@
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1040px) { .grid { grid-template-columns: 1fr; } }
+  .choice-card {
+    border: 1px solid #d8dee7;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .choice-card:hover { transform: translateY(-2px); box-shadow: 0 18px 45px rgba(15,23,42,.13); }
+  .choice-card.selected { border-color:#1d4f63; box-shadow:0 0 0 3px rgba(29,79,99,.18), 0 18px 45px rgba(15,23,42,.13); }
+  .phone {
+    min-height: 690px;
+    padding: 14px;
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .title { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+  .brand { font-size:17px; font-weight:950; }
+  .calc { display:grid; place-items:center; width:40px; height:40px; border-radius:13px; background:#1d4f63; color:#fff; font-weight:900; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:4px; margin-bottom:12px; background:#e6edf3; border-radius:13px; }
+  .tab { display:grid; place-items:center; min-height:34px; border-radius:10px; color:#657386; font-size:12px; font-weight:900; }
+  .tab.active { background:#fff; color:#111827; box-shadow:0 3px 10px rgba(15,23,42,.08); }
+  .panel { display:grid; gap:10px; padding:14px; margin-bottom:12px; border:1px solid #dfe7ef; border-radius:18px; background:#fff; }
+  .label-row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .label { color:#344154; font-size:12px; font-weight:950; }
+  .hint { color:#6b7b8f; font-size:11px; font-weight:800; }
+  .input { display:flex; justify-content:flex-end; align-items:center; min-height:62px; padding:0 14px; border:1px solid #d9e2eb; border-radius:14px; background:#f7f9fc; font-size:34px; font-weight:950; }
+  .stepper { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px; }
+  .step { padding:9px; border:1px solid #dfe7ef; border-radius:13px; background:#fff; }
+  .step strong { display:block; font-size:12px; }
+  .step span { display:block; margin-top:3px; color:#6b7b8f; font-size:10px; font-weight:800; }
+  .step.active { border-color:#1d4f63; box-shadow:inset 0 0 0 1px #1d4f63; }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .metric { padding:11px; border-radius:13px; background:#f7f9fc; border:1px solid #e1e7ee; }
+  .metric span { display:block; color:#6b7b8f; font-size:11px; font-weight:850; }
+  .metric strong { display:block; margin-top:4px; font-size:22px; font-weight:950; }
+  .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .action { display:grid; place-items:center; min-height:43px; border-radius:12px; font-size:13px; font-weight:950; }
+  .primary { background:#1d4f63; color:#fff; }
+  .secondary { background:#edf3f6; color:#1d4f63; }
+  .ghost { background:#fff; color:#1d4f63; border:1px solid rgba(29,79,99,.25); }
+  .condition { display:grid; grid-template-columns:78px 1fr; gap:8px; align-items:center; padding:9px; border-radius:12px; background:#f7f9fc; }
+  .condition span { color:#6b7b8f; font-size:11px; font-weight:850; }
+  .condition strong { font-size:13px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { padding:6px 9px; border-radius:999px; background:#e8f1f4; color:#1d4f63; font-size:12px; font-weight:950; }
+  .chip.on { background:#1d4f63; color:#fff; }
+  .reveal { padding:13px; border-radius:14px; background:#111827; color:#fff; }
+  .reveal .small { color:#9fb2c4; font-size:11px; font-weight:850; }
+  .reveal strong { display:block; margin-top:4px; font-size:24px; }
+  .body { padding:16px; border-top:1px solid #e5e7eb; }
+  .body h3 { margin:0 0 6px; font-size:18px; }
+  .body p { margin:0; color:#5c6674; line-height:1.55; }
+
+  .a .phone { background:#f4f7fa; color:#111827; }
+  .b .phone { background:#f8fafc; color:#111827; }
+  .b .summary { display:grid; gap:8px; padding:14px; margin-bottom:12px; border-radius:18px; background:#111827; color:#fff; }
+  .b .summary-title { font-size:13px; font-weight:950; }
+  .b .summary-line { display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid rgba(255,255,255,.10); font-size:13px; font-weight:850; }
+  .b .summary-line strong { font-size:16px; }
+  .c .phone { background:#0f1720; color:#f8fafc; }
+  .c .tabs { background:#182433; }
+  .c .tab { color:#9caabd; }
+  .c .tab.active { background:#f8fafc; color:#111827; }
+  .c .panel, .c .step { background:#172231; border-color:rgba(255,255,255,.08); }
+  .c .input, .c .metric, .c .condition { background:#0b1119; border-color:rgba(255,255,255,.10); }
+  .c .hint, .c .step span, .c .metric span, .c .condition span { color:#9caabd; }
+  .c .secondary { background:#26364a; color:#dce7f2; }
+  .c .ghost { background:#172231; color:#f5c451; border-color:rgba(245,196,81,.35); }
+  .c .primary { background:#f5c451; color:#101820; }
+  .c .chip { background:#26364a; color:#dce7f2; border-radius:8px; }
+  .c .chip.on { background:#f5c451; color:#101820; }
+</style>
+
+<h2>交換額を初期表示しない派生</h2>
+<p class="subtitle">交換額は常時大きく出さず、確認操作で表示する前提に変えています。</p>
+
+<div class="grid">
+  <div class="choice-card card a" data-choice="no-amount-a-action" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="stepper"><div class="step active"><strong>1 入力</strong><span>持ち玉</span></div><div class="step"><strong>2 条件</strong><span>交換率</span></div><div class="step"><strong>3 確認</strong><span>金額</span></div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">入力後に確認</div></div><div class="input">12345</div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div><div class="actions"><div class="action secondary">次の交換額へ</div><div class="action primary">交換額を見る</div></div></div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div>
+    </div>
+    <div class="body"><h3>A. Action Reveal</h3><p>初期画面では余り/あとだけ。交換額は「交換額を見る」で開く。最も自然。</p></div>
+  </div>
+
+  <div class="choice-card card b" data-choice="no-amount-b-collapsed" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">結果は下に折りたたみ</div></div><div class="input">12345</div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div></div>
+      <div class="summary"><div class="summary-title">結果は非表示</div><div class="summary-line"><span>交換額</span><strong>タップで表示</strong></div><div class="summary-line"><span>景品内訳</span><strong>閉じています</strong></div><div class="action primary">結果を開く</div></div>
+      <div class="panel"><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div></div>
+    </div>
+    <div class="body"><h3>B. Collapsed Result</h3><p>結果エリア自体はあるが、金額は閉じておく。詳細確認の導線が分かりやすい。</p></div>
+  </div>
+
+  <div class="choice-card card c" data-choice="no-amount-c-private" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel"><div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">金額は隠しています</div></div><div class="input">12345</div><div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div><div class="actions"><div class="action ghost">目標へ</div><div class="action primary">長押しで金額</div></div></div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">駅前店</div></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div>
+      <div class="reveal"><div class="small">表示後の状態例</div><strong>49,000円</strong></div>
+    </div>
+    <div class="body"><h3>C. Private Amount</h3><p>店内で金額を目立たせたくない想定。金額は意図的な操作でだけ出す。</p></div>
+  </div>
+</div>

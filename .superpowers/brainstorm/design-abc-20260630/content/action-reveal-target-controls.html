@@ -1,0 +1,127 @@
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1040px) { .grid { grid-template-columns: 1fr; } }
+  .choice-card {
+    border: 1px solid #d8dee7;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .choice-card:hover { transform: translateY(-2px); box-shadow: 0 18px 45px rgba(15,23,42,.13); }
+  .choice-card.selected { border-color:#1d4f63; box-shadow:0 0 0 3px rgba(29,79,99,.18), 0 18px 45px rgba(15,23,42,.13); }
+  .phone {
+    min-height: 700px;
+    padding: 14px;
+    background:#f4f7fa;
+    color:#111827;
+    font-family:"Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing:border-box; }
+  .title { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+  .brand { font-size:17px; font-weight:950; }
+  .calc { display:grid; place-items:center; width:40px; height:40px; border-radius:13px; background:#1d4f63; color:white; font-weight:900; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:4px; margin-bottom:12px; background:#e6edf3; border-radius:13px; }
+  .tab { display:grid; place-items:center; min-height:34px; border-radius:10px; color:#657386; font-size:12px; font-weight:900; }
+  .tab.active { background:white; color:#111827; box-shadow:0 3px 10px rgba(15,23,42,.08); }
+  .panel { display:grid; gap:10px; padding:14px; margin-bottom:12px; border:1px solid #dfe7ef; border-radius:18px; background:white; }
+  .label-row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .label { color:#344154; font-size:12px; font-weight:950; }
+  .hint { color:#6b7b8f; font-size:11px; font-weight:800; }
+  .input { display:flex; justify-content:flex-end; align-items:center; min-height:62px; padding:0 14px; border:1px solid #d9e2eb; border-radius:14px; background:#f7f9fc; font-size:34px; font-weight:950; }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .metric { padding:11px; border-radius:13px; background:#f7f9fc; border:1px solid #e1e7ee; }
+  .metric span { display:block; color:#6b7b8f; font-size:11px; font-weight:850; }
+  .metric strong { display:block; margin-top:4px; font-size:22px; font-weight:950; }
+  .target-box { display:grid; gap:8px; padding:11px; border-radius:14px; background:#edf4f7; border:1px solid rgba(29,79,99,.15); }
+  .target-main { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  .target-main span { color:#566879; font-size:11px; font-weight:850; }
+  .target-main strong { font-size:16px; font-weight:950; color:#1d4f63; }
+  .target-actions { display:grid; gap:8px; }
+  .split2 { grid-template-columns:1fr 1fr; }
+  .action { display:grid; place-items:center; min-height:42px; border-radius:12px; font-size:13px; font-weight:950; text-align:center; }
+  .primary { background:#1d4f63; color:white; }
+  .secondary { background:#fff; color:#1d4f63; border:1px solid rgba(29,79,99,.25); }
+  .muted { background:#edf3f6; color:#1d4f63; }
+  .condition { display:grid; grid-template-columns:78px 1fr; gap:8px; align-items:center; padding:9px; border-radius:12px; background:#f7f9fc; }
+  .condition span { color:#6b7b8f; font-size:11px; font-weight:850; }
+  .condition strong { font-size:13px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { padding:6px 9px; border-radius:999px; background:#e8f1f4; color:#1d4f63; font-size:12px; font-weight:950; }
+  .chip.on { background:#1d4f63; color:white; }
+  .body { padding:16px; border-top:1px solid #e5e7eb; }
+  .body h3 { margin:0 0 6px; font-size:18px; }
+  .body p { margin:0; color:#5c6674; line-height:1.55; }
+</style>
+
+<h2>A案: 目標操作の言い換え</h2>
+<p class="subtitle">「次の交換額へ」をやめて、目標を上げる/下げる操作として見せる案です。</p>
+
+<div class="grid">
+  <div class="choice-card card" data-choice="target-adjust-two-buttons" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">交換額は確認時に表示</div></div>
+        <div class="input">12345</div>
+        <div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="target-box">
+          <div class="target-main"><span>現在の目標</span><strong>12,250枚</strong></div>
+          <div class="target-actions split2"><div class="action secondary">目標を下げる</div><div class="action primary">目標を上げる</div></div>
+        </div>
+        <div class="action muted">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div>
+    </div>
+    <div class="body"><h3>案1. 目標を上げる/下げる</h3><p>一番ストレート。上下の意味は分かりやすいが、何円単位かは押すまで少し不明。</p></div>
+  </div>
+
+  <div class="choice-card card" data-choice="target-amount-language" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">交換額は確認時に表示</div></div>
+        <div class="input">12345</div>
+        <div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="target-box">
+          <div class="target-main"><span>調整先</span><strong>あと155枚で次の目標</strong></div>
+          <div class="target-actions split2"><div class="action secondary">ひとつ下の景品に合わせる</div><div class="action primary">ひとつ上の景品に合わせる</div></div>
+        </div>
+        <div class="action muted">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div>
+    </div>
+    <div class="body"><h3>案2. 景品に合わせる</h3><p>「何をするボタンか」は一番具体的。少し文言が長いので、ボタンの高さは必要。</p></div>
+  </div>
+
+  <div class="choice-card card" data-choice="target-stepper" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="title"><div class="brand">交換枚数 計算ツール</div><div class="calc">電</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="panel">
+        <div class="label-row"><div class="label">持ち玉/枚数</div><div class="hint">交換額は確認時に表示</div></div>
+        <div class="input">12345</div>
+        <div class="metrics"><div class="metric"><span>余り</span><strong>95枚</strong></div><div class="metric"><span>あと</span><strong>155枚</strong></div></div>
+        <div class="target-box">
+          <div class="target-main"><span>目標枚数</span><strong>12,250枚</strong></div>
+          <div class="target-actions" style="grid-template-columns:44px 1fr 44px;">
+            <div class="action secondary">−</div>
+            <div class="action muted">目標を選ぶ</div>
+            <div class="action primary">＋</div>
+          </div>
+        </div>
+        <div class="action muted">交換額を見る</div>
+      </div>
+      <div class="panel"><div class="label-row"><div class="label">条件</div><div class="hint">変更</div></div><div class="condition"><span>設定</span><strong>駅前店</strong></div><div class="condition"><span>交換率</span><strong>20スロ｜5.152枚</strong></div><div class="condition"><span>景品</span><div class="chips"><div class="chip">500円</div><div class="chip on">1,000円</div><div class="chip on">5,000円</div></div></div></div>
+    </div>
+    <div class="body"><h3>案3. 目標ステッパー</h3><p>スマホ操作としてはコンパクト。慣れると速いが、初見では案1/2より説明が必要。</p></div>
+  </div>
+</div>

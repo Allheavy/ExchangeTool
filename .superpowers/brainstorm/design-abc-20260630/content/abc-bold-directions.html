@@ -1,0 +1,166 @@
+<style>
+  .bold-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1040px) {
+    .bold-grid { grid-template-columns: 1fr; }
+  }
+  .choice-card {
+    border: 1px solid #d8dee7;
+    border-radius: 18px;
+    overflow: hidden;
+    background: white;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .choice-card:hover { transform: translateY(-2px); box-shadow: 0 18px 45px rgba(15,23,42,.13); }
+  .choice-card.selected { border-color: #101827; box-shadow: 0 0 0 3px rgba(16,24,39,.18), 0 18px 45px rgba(15,23,42,.13); }
+  .phone {
+    min-height: 680px;
+    padding: 14px;
+    font-family: "Yu Gothic UI", system-ui, sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .body h3 { margin: 0 0 6px; font-size: 18px; }
+  .body p { margin: 0; color: #5c6674; line-height: 1.55; }
+  .body { padding: 16px; border-top: 1px solid #e5e7eb; }
+
+  .topline { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .brand { font-size:17px; font-weight:950; letter-spacing:0; }
+  .mini-icon { display:grid; place-items:center; width:38px; height:38px; font-weight:900; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+  .tab { display:grid; place-items:center; min-height:34px; font-size:12px; font-weight:850; }
+  .pill { display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:7px 10px; font-size:12px; font-weight:900; white-space:nowrap; }
+  .label { font-size:11px; font-weight:850; opacity:.68; }
+  .value { font-size:30px; font-weight:950; letter-spacing:0; }
+  .small { font-size:12px; font-weight:800; opacity:.72; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .button { display:grid; place-items:center; min-height:42px; font-weight:900; font-size:14px; }
+  .select { display:flex; justify-content:space-between; align-items:center; min-height:40px; padding:0 10px; font-size:13px; font-weight:800; }
+
+  /* A: result-first command surface */
+  .a .phone { background:#101827; color:#f9fafb; display:grid; gap:12px; align-content:start; }
+  .a .mini-icon { border-radius:12px; background:#213047; color:#9ee7d3; }
+  .a .tabs { padding:4px; border-radius:12px; background:#1a2638; }
+  .a .tab { border-radius:9px; color:#aeb8c7; }
+  .a .tab.active { background:#f9fafb; color:#101827; }
+  .a .hero { display:grid; gap:12px; padding:18px; border-radius:22px; background:linear-gradient(160deg,#f9fafb,#d9f4ee); color:#101827; }
+  .a .hero .label { opacity:.62; }
+  .a .hero .value { font-size:38px; }
+  .a .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .a .metric { padding:10px; border-radius:14px; background:rgba(16,24,39,.08); }
+  .a .metric strong { display:block; margin-top:3px; font-size:20px; }
+  .a .controls { display:grid; gap:10px; padding:14px; border-radius:18px; background:#172235; }
+  .a .pill { border-radius:999px; background:#22324a; color:#dce8f2; }
+  .a .pill.on { background:#9ee7d3; color:#10251f; }
+  .a .select { border-radius:10px; background:#0f1726; color:#f9fafb; }
+  .a .button { border-radius:12px; background:#9ee7d3; color:#10251f; }
+
+  /* B: bottom-sheet calculator */
+  .b .phone { background:#f0ede5; color:#17130f; display:grid; align-content:start; gap:12px; }
+  .b .topline { padding:2px 2px 0; }
+  .b .mini-icon { border-radius:50%; background:#17130f; color:#f0ede5; }
+  .b .tabs { order:3; padding:5px; border-radius:18px; background:#ded6c7; }
+  .b .tab { border-radius:14px; color:#655d50; }
+  .b .tab.active { background:#17130f; color:#fff; }
+  .b .result-card { display:grid; gap:10px; padding:16px; border-radius:26px; background:#fffdf7; box-shadow:0 20px 40px rgba(48,35,18,.13); }
+  .b .result-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .b .result-row div { padding:10px; border-radius:16px; background:#f2eadc; }
+  .b .sheet { display:grid; gap:10px; padding:16px; margin-top:6px; border-radius:26px 26px 18px 18px; background:#17130f; color:#fff; }
+  .b .sheet-head { display:flex; align-items:center; justify-content:space-between; }
+  .b .grab { width:48px; height:5px; border-radius:999px; background:#776f64; }
+  .b .input { display:flex; justify-content:flex-end; align-items:center; min-height:56px; padding:0 14px; border-radius:16px; background:#fff; color:#17130f; font-size:30px; font-weight:950; }
+  .b .keygrid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; }
+  .b .key { display:grid; place-items:center; min-height:38px; border-radius:12px; background:#2a241e; color:#fff; font-weight:900; }
+  .b .pill { border-radius:12px; background:#2a241e; color:#fff; }
+  .b .pill.on { background:#f1c55c; color:#17130f; }
+
+  /* C: segmented workflow */
+  .c .phone { background:#f7f8fb; color:#111827; display:grid; align-content:start; gap:10px; }
+  .c .topline { padding-bottom:2px; }
+  .c .mini-icon { border-radius:10px; background:#e5ebf3; color:#34465d; }
+  .c .tabs { display:flex; gap:6px; overflow:hidden; }
+  .c .tab { flex:1; min-height:32px; border-radius:999px; background:#e8edf4; color:#66758a; }
+  .c .tab.active { background:#111827; color:white; }
+  .c .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .c .step { padding:9px 8px; border-radius:12px; background:#fff; border:1px solid #e1e7ee; }
+  .c .step strong { display:block; font-size:13px; }
+  .c .step span { font-size:10px; color:#66758a; }
+  .c .active-step { border-color:#111827; box-shadow:0 8px 22px rgba(15,23,42,.08); }
+  .c .work { display:grid; gap:10px; padding:14px; border-radius:18px; background:#fff; border:1px solid #e1e7ee; }
+  .c .input { display:flex; justify-content:flex-end; align-items:center; min-height:58px; padding:0 14px; border-radius:12px; background:#f2f5f9; font-size:32px; font-weight:950; }
+  .c .summary { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .c .summary div { padding:10px; border-radius:12px; background:#f8fafc; border:1px solid #e1e7ee; }
+  .c .summary strong { display:block; margin-top:3px; font-size:20px; }
+  .c .option-list { display:grid; gap:7px; }
+  .c .option { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:12px; background:#f8fafc; border:1px solid #e1e7ee; font-size:13px; font-weight:850; }
+  .c .button { border-radius:12px; background:#111827; color:#fff; }
+</style>
+
+<h2>大幅変更案</h2>
+<p class="subtitle">保存データと計算ロジックは維持しつつ、1画面目の見せ方を大きく変える案です。</p>
+
+<div class="bold-grid">
+  <div class="choice-card card a" data-choice="a-result-first" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="topline"><div class="brand">交換枚数</div><div class="mini-icon">⌗</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="hero">
+        <div class="label">交換額プレビュー</div>
+        <div class="value">49,000円</div>
+        <div class="hero-grid">
+          <div class="metric"><span class="label">余り</span><strong>95枚</strong></div>
+          <div class="metric"><span class="label">あと</span><strong>155枚</strong></div>
+        </div>
+        <div class="button">景品・金額を見る</div>
+      </div>
+      <div class="controls">
+        <div class="row"><div class="pill on">駅前店</div><div class="pill">20スロ</div><div class="pill">5.152枚</div></div>
+        <div class="select">持ち玉/枚数 <strong>12345</strong></div>
+        <div class="row"><div class="pill on">1,000円</div><div class="pill on">5,000円</div><div class="pill">500円</div></div>
+      </div>
+    </div>
+    <div class="body"><h3>A. Result First</h3><p>結果カードを主役にする案。今よりかなりアプリらしく、入力後の価値が一瞬で分かる。</p></div>
+  </div>
+
+  <div class="choice-card card b" data-choice="b-calculator-sheet" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="topline"><div class="brand">交換枚数 計算</div><div class="mini-icon">電</div></div>
+      <div class="result-card">
+        <div class="label">現在の条件</div>
+        <div class="row"><div class="pill on">駅前店</div><div class="pill">20スロ</div><div class="pill">5.152枚</div></div>
+        <div class="result-row"><div><span class="label">余り</span><div class="value" style="font-size:24px">95</div></div><div><span class="label">あと</span><div class="value" style="font-size:24px">155</div></div></div>
+      </div>
+      <div class="sheet">
+        <div class="sheet-head"><div class="grab"></div><div class="small">持ち玉/枚数</div></div>
+        <div class="input">12345</div>
+        <div class="keygrid"><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">⌫</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">+</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">=</div></div>
+      </div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+    </div>
+    <div class="body"><h3>B. Calculator Sheet</h3><p>電卓を主役にする案。パチンコ店内で素早く数字を打つ用途に寄せる。</p></div>
+  </div>
+
+  <div class="choice-card card c" data-choice="c-guided-workflow" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div class="topline"><div class="brand">交換計算</div><div class="mini-icon">3</div></div>
+      <div class="tabs"><div class="tab active">交換</div><div class="tab">ノリ打ち</div><div class="tab">管理</div></div>
+      <div class="steps"><div class="step active-step"><strong>1 入力</strong><span>持ち玉</span></div><div class="step"><strong>2 条件</strong><span>交換率</span></div><div class="step"><strong>3 結果</strong><span>景品</span></div></div>
+      <div class="work">
+        <div class="label">持ち玉/枚数</div>
+        <div class="input">12345</div>
+        <div class="summary"><div><span class="label">交換額</span><strong>49,000円</strong></div><div><span class="label">あと</span><strong>155枚</strong></div></div>
+        <div class="option-list">
+          <div class="option"><span>保存設定</span><strong>駅前店</strong></div>
+          <div class="option"><span>交換率</span><strong>5.152枚</strong></div>
+          <div class="option"><span>景品</span><strong>1,000 / 5,000円</strong></div>
+        </div>
+        <div class="button">景品・金額を見る</div>
+      </div>
+    </div>
+    <div class="body"><h3>C. Guided Workflow</h3><p>入力・条件・結果を段階化する案。初見でも迷いにくく、情報整理の変化が大きい。</p></div>
+  </div>
+</div>
