@@ -22,14 +22,17 @@ const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
 const localServer = readFileSync(new URL("./serve-local.js", import.meta.url), "utf8");
 const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
-assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=25" \/>/);
-assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=25" \/>/);
+assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=27" \/>/);
+assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=27" \/>/);
 assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
 assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
 const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
 assert.doesNotMatch(faviconSvg, /51\.52/);
 assert.doesNotMatch(faviconSvg, /#111827/);
-assert.match(faviconSvg, /fill="#f4efe5"/);
+assert.doesNotMatch(faviconSvg, /#f4efe5/);
+assert.match(faviconSvg, /<rect width="192" height="192" fill="#f59e0b"\/>/);
+assert.doesNotMatch(faviconSvg, /<circle/);
+assert.match(faviconSvg, /stroke-width="14"/);
 assert.match(localServer, /"\.svg": "image\/svg\+xml; charset=utf-8"/);
 assert.match(indexHtml, /function selectInitialZeroOnFocus/);
 assert.match(indexHtml, /medalsInput\.addEventListener\("focus", selectInitialZeroOnFocus\)/);
@@ -101,9 +104,9 @@ assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 assert.match(indexHtml, /manualPresetCategory\(preset\)/);
 assert.match(indexHtml, /mainRateCategoryInput\.value = category/);
-assert.match(serviceWorker, /exchange-tool-pwa-v25/);
-assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=25/);
-assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=25/);
+assert.match(serviceWorker, /exchange-tool-pwa-v27/);
+assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=27/);
+assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=27/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
