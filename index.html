@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=50" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=50" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=52" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=52" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -908,7 +908,7 @@
 
     .goal-rail .status-item {
       margin: -7px 4px 0;
-      padding: 7px 5px 3px;
+      padding: 7px 5px 4px;
       border: 0;
       border-radius: 8px;
       background: rgba(241, 245, 248, .72);
@@ -955,14 +955,14 @@
     }
 
     .goal-rail .target-medals {
-      display: flex;
-      align-items: baseline;
+      display: grid;
       justify-content: center;
-      gap: 4px;
+      gap: 1px;
       white-space: nowrap;
       color: #4f5f70;
       font-size: .58rem;
       font-weight: 900;
+      text-align: center;
     }
 
     .target-medals-number,
@@ -974,7 +974,7 @@
     .goal-rail .target-medals-number,
     .goal-rail .target-medals-unit {
       color: var(--ink);
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       font-weight: 900;
     }
 
@@ -992,7 +992,7 @@
       border-radius: 0;
       background: transparent;
       color: var(--muted);
-      font-size: .72rem;
+      font-size: .68rem;
       font-weight: 800;
       line-height: 1;
     }
@@ -1011,7 +1011,7 @@
       justify-self: start;
       margin-top: 0;
       color: var(--muted);
-      font-size: .78rem;
+      font-size: .72rem;
       font-weight: 800;
       line-height: 1;
       z-index: 1;
@@ -1203,7 +1203,7 @@
     }
 
     .sensitive-result.blurred::after {
-      content: "タップで表示";
+      content: "";
       position: absolute;
       inset: 3px;
       display: grid;
@@ -1214,6 +1214,13 @@
       font-size: .68rem;
       font-weight: 900;
       pointer-events: none;
+    }
+
+    .sensitive-hint {
+      margin: -6px 0 0;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 800;
     }
 
     table {
@@ -1738,6 +1745,7 @@
 
       <section id="exchangeDetails" class="panel details">
         <h2>結果</h2>
+        <p class="sensitive-hint">交換額・景品はタップで表示</p>
         <div class="status-line">
           <div class="status-item">
             <div class="status-label">必要枚数</div>
@@ -1961,7 +1969,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=50";
+    } from "./app-core.mjs?v=52";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
