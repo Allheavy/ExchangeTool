@@ -23,9 +23,9 @@ const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
 const localServer = readFileSync(new URL("./serve-local.js", import.meta.url), "utf8");
 const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
-assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=36" \/>/);
-assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=36" \/>/);
-assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=36"/);
+assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=50" \/>/);
+assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=50" \/>/);
+assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=50"/);
 assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
 assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
 const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
@@ -129,10 +129,20 @@ assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 assert.match(indexHtml, /manualPresetCategory\(preset\)/);
 assert.match(indexHtml, /mainRateCategoryInput\.value = category/);
-assert.match(serviceWorker, /exchange-tool-pwa-v36/);
-assert.match(serviceWorker, /\.\/app-core\.mjs\?v=36/);
-assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=36/);
-assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=36/);
+assert.match(indexHtml, /id="calcSheet"[\s\S]*class="investment-counter-panel mini-tool"/);
+assert.match(indexHtml, /id="investmentCounter"/);
+assert.match(indexHtml, /id="investmentAmount"[^>]*>0円<\/strong>/);
+assert.match(indexHtml, /data-investment-delta="-10000"[\s\S]*>-10k<\/button>/);
+assert.match(indexHtml, /data-investment-delta="10000"[\s\S]*>\+10k<\/button>/);
+assert.match(indexHtml, /data-investment-delta="5000"[\s\S]*>\+5k<\/button>/);
+assert.match(indexHtml, /data-investment-delta="1000"[\s\S]*>\+1k<\/button>/);
+assert.match(indexHtml, /function renderInvestmentCounter/);
+assert.match(indexHtml, /investmentAmount = Math\.max\(0, investmentAmount \+ delta\)/);
+assert.doesNotMatch(indexHtml, /data-member="\$\{index\}" data-investment-delta/);
+assert.match(serviceWorker, /exchange-tool-pwa-v50/);
+assert.match(serviceWorker, /\.\/app-core\.mjs\?v=50/);
+assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=50/);
+assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=50/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),

@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=36" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=36" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=50" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=50" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -281,6 +281,44 @@
       height: 27px;
     }
 
+    .investment-counter-panel {
+      display: grid;
+      gap: 7px;
+      padding-top: 2px;
+    }
+
+    .investment-counter-panel.mini-tool {
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid rgba(21, 34, 50, .08);
+      border-radius: 10px;
+      background: var(--surface-soft);
+    }
+
+    .investment-counter-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .investment-counter-head strong {
+      color: var(--ink);
+      font-size: 1.08rem;
+      overflow-wrap: anywhere;
+    }
+
+    .mini-tool .investment-counter-head {
+      font-size: .76rem;
+    }
+
+    .mini-tool .investment-counter-head strong {
+      font-size: 1rem;
+    }
+
     label {
       display: block;
       margin-bottom: 5px;
@@ -345,10 +383,12 @@
       order: 30;
       display: grid;
       gap: 10px;
-      padding: 12px;
-      border: 1px solid rgba(21, 34, 50, .08);
-      border-radius: 14px;
-      background: var(--surface);
+      margin-top: 6px;
+      padding: 14px 0 0;
+      border: 0;
+      border-top: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
     }
 
     .saved-settings-header {
@@ -759,15 +799,80 @@
       box-shadow: none;
     }
 
-    .metric-line {
+    .metric-line,
+    .goal-rail {
       position: relative;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
+      grid-template-columns: .58fr 1.42fr 1.42fr .58fr;
+      gap: 0;
       overflow: visible;
       border: 0;
       border-radius: 0;
       background: transparent;
+    }
+
+    .goal-rail {
+      padding: 28px 0 0;
+    }
+
+    .goal-rail::before {
+      content: "";
+      position: absolute;
+      left: 11%;
+      right: 11%;
+      top: 16px;
+      height: 2px;
+      border-radius: 999px;
+      background: #b9c6d2;
+      box-shadow: none;
+    }
+
+    .goal-rail::after {
+      content: "";
+      position: absolute;
+      left: 31%;
+      right: 31%;
+      top: 16px;
+      height: 2px;
+      border-radius: 999px;
+      background: rgba(40, 84, 103, .72);
+      pointer-events: none;
+    }
+
+    .goal-node {
+      position: relative;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .goal-node::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -19px;
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 2px solid #b9c6d2;
+      transform: translateX(-50%);
+      box-shadow: 0 0 0 2px var(--panel);
+      opacity: .42;
+      z-index: 1;
+    }
+
+    .goal-rail .status-item::before {
+      width: 13px;
+      height: 13px;
+      top: -20px;
+      background: var(--panel);
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px var(--panel);
+      opacity: 1;
+    }
+
+    .goal-rail .status-item:nth-child(3)::before {
+      border-color: #9fb0bf;
     }
 
     .status-line {
@@ -786,40 +891,45 @@
       background: var(--surface);
     }
 
-    .metric-line .status-item {
-      position: relative;
+    .metric-line .status-item,
+    .goal-rail .status-item {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-rows: auto auto;
-      gap: 8px;
-      min-height: 118px;
-      padding: 12px;
-      border: 1px solid rgba(21, 34, 50, .10);
-      border-radius: 14px;
+      grid-template-columns: auto auto;
+      justify-content: center;
+      align-content: start;
+      column-gap: 2px;
+      row-gap: 4px;
+      min-height: 50px;
+      padding: 0 3px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
     }
 
-    .metric-line .status-item:first-child {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent);
-      background: var(--accent-soft);
+    .goal-rail .status-item {
+      margin: -7px 4px 0;
+      padding: 7px 5px 3px;
+      border: 0;
+      border-radius: 8px;
+      background: rgba(241, 245, 248, .72);
+      box-shadow: none;
     }
 
-    .metric-line .status-item::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: -21px;
-      width: 2px;
-      height: 20px;
-      background: #cdd8e2;
-      transform: translateX(-50%);
+    .goal-rail .status-item:first-of-type {
+      background: rgba(228, 240, 244, .72);
     }
 
-    .metric-line .status-item:first-child::after {
-      background: rgba(40, 84, 103, .45);
+    .goal-rail .status-item::before {
+      top: -14px;
+      box-shadow: 0 0 0 3px rgba(241, 245, 248, .96);
+    }
+
+    .goal-rail .status-item:first-of-type::before {
+      box-shadow: 0 0 0 3px rgba(228, 240, 244, .96);
     }
 
     .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 1px solid rgba(21, 34, 50, .10); }
+    .goal-rail .status-item:last-child { border-right: 0; }
     .status-label { color: var(--muted); font-size: .72rem; font-weight: 800; }
     .status-value { font-size: 1.28rem; font-weight: 900; overflow-wrap: anywhere; }
     .status-subvalue {
@@ -835,47 +945,74 @@
       grid-column: 1 / -1;
       grid-row: 1;
       display: grid;
-      gap: 5px;
+      gap: 2px;
       max-width: 100%;
       margin-top: 0;
       color: var(--muted);
-      font-size: .72rem;
+      font-size: .64rem;
       font-weight: 900;
       line-height: 1.25;
+    }
+
+    .goal-rail .target-medals {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
+      color: #4f5f70;
+      font-size: .58rem;
+      font-weight: 900;
     }
 
     .target-medals-number,
     .target-medals-unit {
       color: var(--ink);
-      font-size: 1.04rem;
+      font-size: .96rem;
     }
 
-    .metric-line .status-item .status-label {
-      grid-column: 1 / -1;
+    .goal-rail .target-medals-number,
+    .goal-rail .target-medals-unit {
+      color: var(--ink);
+      font-size: 1.08rem;
+      font-weight: 900;
+    }
+
+    .metric-line .status-item .status-label,
+    .goal-rail .status-item .status-label {
+      grid-column: 1;
       grid-row: 2;
-      display: block;
-      padding: 7px 9px;
-      padding-right: 72px;
-      border-radius: 10px;
-      background: rgba(17, 24, 39, .06);
-      color: #253142;
-      font-size: .68rem;
+      display: inline;
+      align-self: baseline;
+      justify-self: end;
+      min-width: 0;
+      width: auto;
+      height: auto;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 800;
+      line-height: 1;
     }
 
-    .metric-line .status-item:nth-child(2) .status-label {
-      background: rgba(40, 84, 103, .08);
-      color: var(--accent-ink);
+    .metric-line .status-item:nth-child(2) .status-label,
+    .goal-rail .status-item:nth-child(3) .status-label {
+      background: transparent;
+      color: var(--muted);
     }
 
-    .metric-line .status-item .status-value {
+    .metric-line .status-item .status-value,
+    .goal-rail .status-item .status-value {
       grid-column: 2;
       grid-row: 2;
-      align-self: center;
-      justify-self: end;
+      align-self: baseline;
+      justify-self: start;
       margin-top: 0;
-      padding-right: 9px;
-      color: #253142;
-      font-size: 1.05rem;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
       line-height: 1;
       z-index: 1;
     }
@@ -884,42 +1021,31 @@
       position: relative;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 9px;
+      gap: 0;
       align-items: center;
-      padding: 20px 0 0;
+      padding: 12px 8px 4px;
     }
 
     .aux-targets::before {
       content: "";
       position: absolute;
-      left: calc(25% + 1px);
-      right: calc(25% + 1px);
-      top: 10px;
-      height: 2px;
+      left: calc(25% + 14px);
+      right: calc(25% + 14px);
+      top: 18px;
+      height: 6px;
       border-radius: 999px;
-      background: #d5dee7;
-    }
-
-    .aux-targets::after {
-      content: "";
-      position: absolute;
-      left: calc(25% - 3px);
-      top: 7px;
-      width: calc(50% + 6px);
-      height: 8px;
-      background:
-        radial-gradient(circle at left center, rgba(40, 84, 103, .5) 0 3px, transparent 4px),
-        radial-gradient(circle at right center, #a0adbb 0 3px, transparent 4px);
-      pointer-events: none;
+      background: linear-gradient(90deg, rgba(40, 84, 103, .55), #d8e2ea 72%, #d8e2ea);
+      box-shadow: inset 0 0 0 1px rgba(21, 34, 50, .05);
     }
 
     .aux-target {
+      position: relative;
       display: grid;
-      gap: 1px;
-      min-height: 42px;
-      padding: 5px 8px;
+      gap: 2px;
+      min-height: 58px;
+      padding: 31px 8px 2px;
       border: 0;
-      border-radius: 8px;
+      border-radius: 0;
       background: transparent;
       color: var(--muted);
       font-size: .68rem;
@@ -929,15 +1055,89 @@
       cursor: pointer;
     }
 
+    .goal-rail .aux-target {
+      min-height: 50px;
+      padding: 24px 2px 0;
+      opacity: .26;
+      transition: opacity .15s ease;
+    }
+
+    .aux-target::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: #fff;
+      border: 3px solid #c7d3df;
+      transform: translateX(-50%);
+      box-shadow: 0 0 0 4px var(--panel);
+    }
+
+    .aux-target:first-child::before {
+      border-color: rgba(40, 84, 103, .68);
+    }
+
+    .goal-rail .aux-target::before {
+      display: block;
+      top: -19px;
+      width: 9px;
+      height: 9px;
+      border: 2px solid #c4d0dc;
+      background: var(--panel);
+      box-shadow: 0 0 0 2px var(--panel);
+    }
+
+    .goal-rail .aux-target:first-child::before {
+      border-color: #b7c4cf;
+    }
+
+    .goal-rail .aux-target:last-child::before {
+      border-color: #c4d0dc;
+    }
+
+    .goal-rail .aux-target:not(:disabled):hover,
+    .goal-rail .aux-target:not(:disabled):focus-visible {
+      opacity: .58;
+    }
+
+    .goal-rail .aux-target span {
+      font-size: .54rem;
+      font-weight: 700;
+    }
+
+    .goal-rail .aux-target b {
+      color: var(--muted);
+      font-size: .64rem;
+      font-weight: 800;
+    }
+
+    .aux-target span {
+      color: var(--muted);
+      font-size: .58rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
     .aux-target b {
       color: #334155;
-      font-size: .78rem;
+      font-size: .68rem;
       font-weight: 900;
+      line-height: 1.2;
     }
 
     .aux-target:not(:disabled):hover,
     .aux-target:not(:disabled):focus-visible {
-      background: rgba(40, 84, 103, .07);
+      color: var(--accent-ink);
+      outline: none;
+    }
+
+    .aux-target:not(:disabled):hover::before,
+    .aux-target:not(:disabled):focus-visible::before {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--panel), 0 0 0 7px rgba(40, 84, 103, .13);
     }
 
     .aux-target:disabled {
@@ -1090,6 +1290,28 @@
       border-radius: 12px;
       background: var(--surface);
       box-shadow: 0 6px 16px rgba(15, 23, 42, .04);
+    }
+
+    .investment-counter {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .investment-counter button {
+      min-height: 34px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      background: var(--soft);
+      color: var(--ink);
+      font-size: .82rem;
+      box-shadow: none;
+    }
+
+    .mini-tool .investment-counter button {
+      min-height: 32px;
+      background: var(--panel);
+      border: 1px solid rgba(21, 34, 50, .08);
     }
 
     .payment {
@@ -1492,25 +1714,21 @@
           </div>
         </div>
 
-        <div class="metric-line">
-          <div class="status-item">
-            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
-            <div class="status-label">余り</div>
-            <div id="leftMedals" class="status-value">0枚</div>
-          </div>
-          <div class="status-item">
-            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
-            <div class="status-label">あと</div>
-            <div id="nextShortage" class="status-value">0枚</div>
-          </div>
-        </div>
-
-        <div class="aux-targets" aria-label="前後の目標">
-          <button id="prevAuxTargetBtn" class="aux-target" type="button">
+        <div class="goal-rail" aria-label="目標レール">
+          <button id="prevAuxTargetBtn" class="goal-node aux-target" type="button">
             <span>前の目標</span><b id="prevAuxTarget">-</b>
           </button>
-          <div class="aux-rail" aria-hidden="true"></div>
-          <button id="nextAuxTargetBtn" class="aux-target" type="button">
+          <div class="goal-node status-item">
+            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
+            <div class="status-label" aria-label="余り">-</div>
+            <div id="leftMedals" class="status-value">0枚</div>
+          </div>
+          <div class="goal-node status-item">
+            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
+            <div class="status-label" aria-label="あと">+</div>
+            <div id="nextShortage" class="status-value">0枚</div>
+          </div>
+          <button id="nextAuxTargetBtn" class="goal-node aux-target" type="button">
             <span>次の目標</span><b id="nextAuxTarget">-</b>
           </button>
         </div>
@@ -1706,6 +1924,18 @@
         <button class="calc-key danger" data-key="clear" type="button">C</button>
         <button class="calc-key secondary" data-key="=" type="button">=</button>
       </div>
+      <div class="investment-counter-panel mini-tool">
+        <div class="investment-counter-head">
+          <span>投資メモ</span>
+          <strong id="investmentAmount">0円</strong>
+        </div>
+        <div id="investmentCounter" class="investment-counter" aria-label="投資額カウンター">
+          <button type="button" data-investment-delta="-10000">-10k</button>
+          <button type="button" data-investment-delta="10000">+10k</button>
+          <button type="button" data-investment-delta="5000">+5k</button>
+          <button type="button" data-investment-delta="1000">+1k</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1731,7 +1961,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=36";
+    } from "./app-core.mjs?v=50";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1746,6 +1976,8 @@
       slot5: { label: "5円スロット", shortLabel: "5スロ", unitLabel: "枚", yenPerUnit: 5, yenBase: 1000 },
     };
     const medalsInput = document.getElementById("medals");
+    const investmentCounter = document.getElementById("investmentCounter");
+    const investmentAmountDisplay = document.getElementById("investmentAmount");
     const rateTypeInput = document.getElementById("rateType");
     const guidedRateFieldsGroup = document.getElementById("guidedRateFieldsGroup");
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
@@ -1789,6 +2021,7 @@
     let activeCustomRateId = "";
     let calcExpression = "";
     let calcResult = 0;
+    let investmentAmount = 0;
     let toastTimer = 0;
     let toastUndo = null;
     let serviceWorkerRegistration = null;
@@ -2487,7 +2720,7 @@
     }
 
     function renderTargetMedals(element, value, unit) {
-      const label = element.id === "leftTargetMedals" ? "届いている目標" : "次の目標";
+      const label = element.id === "leftTargetMedals" ? "達成目標" : "次の目標";
       if (!Number.isFinite(Number(value))) {
         element.textContent = `${label} -`;
         return;
@@ -2574,6 +2807,10 @@
       calcResult = evaluateCalculatorExpression(calcExpression);
       calcExpression = String(calcResult);
       renderCalc();
+    }
+
+    function renderInvestmentCounter() {
+      investmentAmountDisplay.textContent = `${formatNumber(investmentAmount)}円`;
     }
 
     function renderMembers() {
@@ -2953,6 +3190,14 @@
       members.splice(Number(button.dataset.removeMember), 1);
       if (members.length === 0) members.push({ name: "A", investment: "", recovery: "" });
       renderMembers();
+    });
+
+    investmentCounter.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-investment-delta]");
+      if (!button) return;
+      const delta = Number(button.dataset.investmentDelta);
+      investmentAmount = Math.max(0, investmentAmount + delta);
+      renderInvestmentCounter();
     });
 
     medalsInput.addEventListener("focus", selectInitialZeroOnFocus);
