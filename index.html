@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=28" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=28" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=36" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=36" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -760,6 +760,7 @@
     }
 
     .metric-line {
+      position: relative;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 9px;
@@ -780,19 +781,42 @@
 
     .status-item {
       min-width: 0;
+      padding: 10px 8px;
+      border-right: 0;
+      background: var(--surface);
+    }
+
+    .metric-line .status-item {
+      position: relative;
       display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
       gap: 8px;
       min-height: 118px;
       padding: 12px;
       border: 1px solid rgba(21, 34, 50, .10);
       border-radius: 14px;
-      background: var(--surface);
     }
 
     .metric-line .status-item:first-child {
       border-color: var(--accent);
       box-shadow: inset 0 0 0 1px var(--accent);
       background: var(--accent-soft);
+    }
+
+    .metric-line .status-item::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -21px;
+      width: 2px;
+      height: 20px;
+      background: #cdd8e2;
+      transform: translateX(-50%);
+    }
+
+    .metric-line .status-item:first-child::after {
+      background: rgba(40, 84, 103, .45);
     }
 
     .metric-line .status-item:nth-child(2), .status-item:last-child { border-right: 1px solid rgba(21, 34, 50, .10); }
@@ -808,6 +832,8 @@
     }
 
     .target-medals {
+      grid-column: 1 / -1;
+      grid-row: 1;
       display: grid;
       gap: 5px;
       max-width: 100%;
@@ -825,12 +851,11 @@
     }
 
     .metric-line .status-item .status-label {
-      order: 2;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: block;
       padding: 7px 9px;
+      padding-right: 72px;
       border-radius: 10px;
       background: rgba(17, 24, 39, .06);
       color: #253142;
@@ -843,9 +868,11 @@
     }
 
     .metric-line .status-item .status-value {
-      order: 3;
+      grid-column: 2;
+      grid-row: 2;
+      align-self: center;
       justify-self: end;
-      margin-top: -37px;
+      margin-top: 0;
       padding-right: 9px;
       color: #253142;
       font-size: 1.05rem;
@@ -854,20 +881,52 @@
     }
 
     .aux-targets {
+      position: relative;
       display: grid;
-      grid-template-columns: 64px 1fr 64px;
-      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
       align-items: center;
-      padding: 2px 6px 0;
+      padding: 20px 0 0;
+    }
+
+    .aux-targets::before {
+      content: "";
+      position: absolute;
+      left: calc(25% + 1px);
+      right: calc(25% + 1px);
+      top: 10px;
+      height: 2px;
+      border-radius: 999px;
+      background: #d5dee7;
+    }
+
+    .aux-targets::after {
+      content: "";
+      position: absolute;
+      left: calc(25% - 3px);
+      top: 7px;
+      width: calc(50% + 6px);
+      height: 8px;
+      background:
+        radial-gradient(circle at left center, rgba(40, 84, 103, .5) 0 3px, transparent 4px),
+        radial-gradient(circle at right center, #a0adbb 0 3px, transparent 4px);
+      pointer-events: none;
     }
 
     .aux-target {
       display: grid;
       gap: 1px;
+      min-height: 42px;
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
       color: var(--muted);
       font-size: .68rem;
       font-weight: 800;
       text-align: center;
+      box-shadow: none;
+      cursor: pointer;
     }
 
     .aux-target b {
@@ -876,27 +935,17 @@
       font-weight: 900;
     }
 
-    .aux-rail {
-      position: relative;
-      height: 2px;
-      border-radius: 999px;
-      background: #d5dee7;
+    .aux-target:not(:disabled):hover,
+    .aux-target:not(:disabled):focus-visible {
+      background: rgba(40, 84, 103, .07);
     }
 
-    .aux-rail::before,
-    .aux-rail::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #a0adbb;
-      transform: translateY(-50%);
+    .aux-target:disabled {
+      cursor: default;
+      opacity: .56;
     }
 
-    .aux-rail::before { left: 0; }
-    .aux-rail::after { right: 0; }
+    .aux-rail { display: none; }
 
     .callout {
       padding: 11px;
@@ -918,49 +967,146 @@
       gap: 8px;
     }
 
-    .details, .sheet {
+    .sheet {
       display: none;
     }
 
-    .details.open, .sheet.open {
+    .details,
+    .sheet.open {
       display: grid;
       gap: 12px;
     }
 
+    .sensitive-result {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      text-align: inherit;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .sensitive-result.blurred {
+      user-select: none;
+    }
+
+    .sensitive-result.blurred .sensitive-value {
+      filter: blur(7px);
+      opacity: .72;
+    }
+
+    .sensitive-result.blurred::after {
+      content: "タップで表示";
+      position: absolute;
+      inset: 3px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: rgba(247, 249, 251, .72);
+      color: var(--accent-ink);
+      font-size: .68rem;
+      font-weight: 900;
+      pointer-events: none;
+    }
+
     table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0 7px;
       font-size: .86rem;
     }
 
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .group-result-table {
+      min-width: 440px;
+    }
+
     th, td {
-      border-bottom: 1px solid var(--line);
-      padding: 9px 6px;
+      border-bottom: 0;
+      padding: 10px 9px;
       text-align: right;
       vertical-align: top;
     }
 
     th:first-child, td:first-child { text-align: left; }
-    th { color: var(--muted); background: var(--surface-soft); font-size: .74rem; }
+    th {
+      padding: 0 9px 2px;
+      color: var(--muted);
+      background: transparent;
+      font-size: .72rem;
+      font-weight: 900;
+    }
+
+    tbody tr {
+      background: var(--surface-soft);
+    }
+
+    tbody td {
+      border-top: 1px solid rgba(21, 34, 50, .07);
+      border-bottom: 1px solid rgba(21, 34, 50, .07);
+      color: #1f2937;
+      font-weight: 850;
+    }
+
+    tbody td:first-child {
+      border-left: 1px solid rgba(21, 34, 50, .07);
+      border-radius: 10px 0 0 10px;
+    }
+
+    tbody td:last-child {
+      border-right: 1px solid rgba(21, 34, 50, .07);
+      border-radius: 0 10px 10px 0;
+    }
+
+    #candidateRows td:nth-child(2),
+    #memberResultRows td:nth-child(2),
+    #memberResultRows td:nth-child(3),
+    #memberResultRows td:nth-child(4) {
+      font-weight: 950;
+    }
+
+    #candidateRows td:last-child,
+    #memberResultRows td:first-child {
+      overflow-wrap: anywhere;
+    }
 
     .member {
       display: grid;
       gap: 8px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--surface-soft);
+      padding: 12px;
+      border: 1px solid rgba(21, 34, 50, .08);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .04);
     }
 
     .payment {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
+      padding: 10px 11px;
+      border: 1px solid rgba(21, 34, 50, .08);
+      border-radius: 11px;
       background: var(--surface-soft);
       font-weight: 800;
+    }
+
+    #memberRows,
+    #paymentRows {
+      display: grid;
+      gap: 8px;
     }
 
     .bottom-bar {
@@ -1360,16 +1506,16 @@
         </div>
 
         <div class="aux-targets" aria-label="前後の目標">
-          <div class="aux-target"><span>前の目標</span><b id="prevAuxTarget">-</b></div>
+          <button id="prevAuxTargetBtn" class="aux-target" type="button">
+            <span>前の目標</span><b id="prevAuxTarget">-</b>
+          </button>
           <div class="aux-rail" aria-hidden="true"></div>
-          <div class="aux-target"><span>次の目標</span><b id="nextAuxTarget">-</b></div>
+          <button id="nextAuxTargetBtn" class="aux-target" type="button">
+            <span>次の目標</span><b id="nextAuxTarget">-</b>
+          </button>
         </div>
 
         <div id="nextCallout" class="callout hidden"></div>
-        <div class="result-actions">
-          <button id="jumpExchangeTargetBtn" class="secondary" type="button">余りを引く</button>
-          <button id="toggleDetailsBtn" type="button">景品・金額を見る</button>
-        </div>
       </section>
 
       <section id="exchangeDetails" class="panel details">
@@ -1381,23 +1527,29 @@
           </div>
           <div class="status-item">
             <div class="status-label">交換額</div>
-            <div id="bestYen" class="status-value">0円</div>
+            <button class="status-value sensitive-result blurred" type="button" data-sensitive-result>
+              <span id="bestYen" class="sensitive-value">0円</span>
+            </button>
           </div>
           <div class="status-item">
             <div class="status-label">景品</div>
-            <div id="bestCombo" class="status-value">-</div>
+            <button class="status-value sensitive-result blurred" type="button" data-sensitive-result>
+              <span id="bestCombo" class="sensitive-value">-</span>
+            </button>
           </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>必要枚数</th>
-              <th>交換額</th>
-              <th>景品</th>
-            </tr>
-          </thead>
-          <tbody id="candidateRows"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>必要枚数</th>
+                <th>交換額</th>
+                <th>景品</th>
+              </tr>
+            </thead>
+            <tbody id="candidateRows"></tbody>
+          </table>
+        </div>
       </section>
 
     </section>
@@ -1500,17 +1652,19 @@
             <div id="groupProfit" class="status-value">0円</div>
           </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>名前</th>
-              <th>実績</th>
-              <th>目標収支</th>
-              <th>差額</th>
-            </tr>
-          </thead>
-          <tbody id="memberResultRows"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table class="group-result-table">
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>実績</th>
+                <th>目標収支</th>
+                <th>差額</th>
+              </tr>
+            </thead>
+            <tbody id="memberResultRows"></tbody>
+          </table>
+        </div>
         <h3>受け渡し</h3>
         <div id="paymentRows"></div>
       </section>
@@ -1571,14 +1725,13 @@
       exchangeCalloutText,
       formatNumber,
       movePreset,
-      nextExchangeMedalsTarget,
       nextMemberName,
       rateCategoryOptions,
       selectedPresetIndex,
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=28";
+    } from "./app-core.mjs?v=36";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -1621,7 +1774,8 @@
     const editPresetRateOption = document.getElementById("editPresetRateOption");
     const editPresetPrizes = document.getElementById("editPresetPrizes");
     const details = document.getElementById("exchangeDetails");
-    const jumpExchangeTargetBtn = document.getElementById("jumpExchangeTargetBtn");
+    const prevAuxTargetBtn = document.getElementById("prevAuxTargetBtn");
+    const nextAuxTargetBtn = document.getElementById("nextAuxTargetBtn");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
     const toast = document.getElementById("toast");
@@ -1720,7 +1874,6 @@
         exchangeRate: currentExchangeRateValue(),
         isCustomExchangeRate: isCustomRateMode(),
         prizes: currentPrizes(),
-        detailsOpen: details.classList.contains("open"),
       });
     }
 
@@ -2342,8 +2495,12 @@
       element.innerHTML = `<span>${label}</span><span><span class="target-medals-number">${formatNumber(value)}</span><span class="target-medals-unit">${unit}</span></span>`;
     }
 
-    function renderAuxTarget(element, value, unit) {
-      element.textContent = Number.isFinite(Number(value)) ? `${formatNumber(value)}${unit}` : "-";
+    function renderAuxTarget(button, value, unit) {
+      const label = button.querySelector("b");
+      const hasTarget = Number.isFinite(Number(value));
+      label.textContent = hasTarget ? `${formatNumber(value)}${unit}` : "-";
+      button.disabled = !hasTarget;
+      button.dataset.targetMedals = hasTarget ? String(value) : "";
     }
 
     function renderExchange() {
@@ -2354,10 +2511,8 @@
         document.getElementById("nextShortage").textContent = `-${unit}`;
         renderTargetMedals(document.getElementById("leftTargetMedals"), null, unit);
         renderTargetMedals(document.getElementById("nextTargetMedals"), null, unit);
-        renderAuxTarget(document.getElementById("prevAuxTarget"), null, unit);
-        renderAuxTarget(document.getElementById("nextAuxTarget"), null, unit);
-        jumpExchangeTargetBtn.disabled = true;
-        jumpExchangeTargetBtn.dataset.targetMedals = "";
+        renderAuxTarget(prevAuxTargetBtn, null, unit);
+        renderAuxTarget(nextAuxTargetBtn, null, unit);
         document.getElementById("bestYen").textContent = "-円";
         document.getElementById("bestRequired").textContent = `-${unit}`;
         document.getElementById("bestCombo").textContent = "-";
@@ -2379,13 +2534,8 @@
       document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
       renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
       renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
-      const lowerCandidate = result.candidates.find((candidate) => candidate.yen < result.best.yen);
-      renderAuxTarget(document.getElementById("prevAuxTarget"), lowerCandidate?.requiredMedals, unit);
-      renderAuxTarget(document.getElementById("nextAuxTarget"), result.next.yen ? result.next.requiredMedals : null, unit);
-      const jumpTarget = nextExchangeMedalsTarget(result);
-      jumpExchangeTargetBtn.disabled = jumpTarget === null;
-      jumpExchangeTargetBtn.dataset.targetMedals = jumpTarget === null ? "" : String(jumpTarget);
-      jumpExchangeTargetBtn.textContent = result.best.left > 0 ? "余りを引く" : "一段下げる";
+      renderAuxTarget(prevAuxTargetBtn, result.best.yen ? result.best.requiredMedals : null, unit);
+      renderAuxTarget(nextAuxTargetBtn, result.next.yen ? result.next.requiredMedals : null, unit);
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
@@ -2400,8 +2550,8 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${formatNumber(candidate.requiredMedals)}${unit}</td>
-          <td>${formatNumber(candidate.yen)}円</td>
-          <td>${comboText(candidate.combo)}</td>
+          <td><button class="sensitive-result blurred" type="button" data-sensitive-result><span class="sensitive-value">${formatNumber(candidate.yen)}円</span></button></td>
+          <td><button class="sensitive-result blurred" type="button" data-sensitive-result><span class="sensitive-value">${comboText(candidate.combo)}</span></button></td>
         `;
         rows.appendChild(tr);
       });
@@ -2483,7 +2633,6 @@
       const settings = loadJson(SETTINGS_KEY, {
         rateType: "rate5152",
         prizes: getPrizeTypes(),
-        detailsOpen: false,
       });
       renderMainRateOptions();
       if (settings.isCustomExchangeRate && Number.isFinite(Number(settings.exchangeRate))) {
@@ -2496,10 +2645,6 @@
         syncMainRateToHidden({ custom: false });
       }
       renderPrizeChoices(settings.prizes);
-      details.classList.toggle("open", !!settings.detailsOpen);
-      document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "景品・金額を隠す"
-        : "景品・金額を見る";
       renderActivePresetStatus();
     }
 
@@ -2513,19 +2658,20 @@
       });
     });
 
-    document.getElementById("toggleDetailsBtn").addEventListener("click", () => {
-      details.classList.toggle("open");
-      document.getElementById("toggleDetailsBtn").textContent = details.classList.contains("open")
-        ? "景品・金額を隠す"
-        : "景品・金額を見る";
-      renderExchange();
-    });
-
-    jumpExchangeTargetBtn.addEventListener("click", () => {
-      const targetMedals = Number(jumpExchangeTargetBtn.dataset.targetMedals);
+    function applyAuxTarget(button) {
+      const targetMedals = Number(button.dataset.targetMedals);
       if (!Number.isFinite(targetMedals)) return;
       medalsInput.value = String(targetMedals);
       renderExchange();
+    }
+
+    prevAuxTargetBtn.addEventListener("click", () => applyAuxTarget(prevAuxTargetBtn));
+    nextAuxTargetBtn.addEventListener("click", () => applyAuxTarget(nextAuxTargetBtn));
+    details.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-sensitive-result]");
+      if (!target) return;
+      const shouldBlur = !target.classList.contains("blurred");
+      details.querySelectorAll("[data-sensitive-result]").forEach((item) => item.classList.toggle("blurred", shouldBlur));
     });
 
     document.getElementById("openCalcBtn").addEventListener("click", () => calcSheet.classList.add("open"));
