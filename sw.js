@@ -1,12 +1,12 @@
-const CACHE_NAME = "exchange-tool-pwa-v58";
+const CACHE_NAME = "exchange-tool-pwa-v59";
 const ASSETS = [
   "./",
   "./index.html",
-  "./app-core.mjs?v=58",
+  "./app-core.mjs?v=59",
   "./manifest.webmanifest",
-  "./icons/favicon.svg?v=58",
-  "./icons/icon-192.png?v=58",
-  "./icons/icon-512.png?v=58"
+  "./icons/favicon.svg?v=59",
+  "./icons/icon-192.png?v=59",
+  "./icons/icon-512.png?v=59"
 ];
 
 self.addEventListener("install", (event) => {

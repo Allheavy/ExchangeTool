@@ -8,9 +8,9 @@ export const RATE_CONFIGS = {
 
 export const DEFAULT_PRIZES = [500, 1000, 5000];
 export const GROUP_MODES = {
-  none: { label: "比重なし", strength: 0 },
-  A: { label: "比重A", strength: 0.18 },
-  B: { label: "比重B", strength: 0.34 },
+  none: { label: "均等", strength: 0 },
+  A: { label: "少し差をつける", strength: 0.18 },
+  B: { label: "大きく差をつける", strength: 0.34 },
 };
 
 export const RATE_CATEGORY_CONFIGS = {
