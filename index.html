@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=56" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=56" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=58" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=58" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -1736,7 +1736,7 @@
 
         <div class="goal-rail" aria-label="目標レール">
           <button id="prevAuxTargetBtn" class="goal-node aux-target" type="button">
-            <span>前の目標</span><b id="prevAuxTarget">-</b>
+            <span>ひとつ前</span><b id="prevAuxTarget">-</b>
           </button>
           <div class="goal-node status-item">
             <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
@@ -1749,7 +1749,7 @@
             <div id="nextShortage" class="status-value">0枚</div>
           </div>
           <button id="nextAuxTargetBtn" class="goal-node aux-target" type="button">
-            <span>次の目標</span><b id="nextAuxTarget">-</b>
+            <span>さらに次</span><b id="nextAuxTarget">-</b>
           </button>
         </div>
 
@@ -1980,7 +1980,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=56";
+    } from "./app-core.mjs?v=58";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -2756,6 +2756,22 @@
       button.dataset.targetMedals = hasTarget ? String(value) : "";
     }
 
+    function auxTargetMedals(result, rates) {
+      const previous = result.candidates.find((candidate) => candidate.yen > 0 && candidate.yen < result.best.yen);
+      const nextResult = result.next.yen
+        ? calculateExchange({
+            medals: result.next.requiredMedals,
+            rateType: rateTypeInput.value,
+            prizes: currentPrizes(),
+            rates,
+          })
+        : null;
+      return {
+        previous: previous ? previous.requiredMedals : null,
+        next: nextResult?.next.yen ? nextResult.next.requiredMedals : null,
+      };
+    }
+
     function syncSensitiveResults() {
       details.querySelectorAll("[data-sensitive-group]").forEach((item) => {
         item.classList.toggle("blurred", sensitiveResultsBlurred);
@@ -2790,12 +2806,13 @@
       });
       const unit = currentUnit();
       const shortage = result.next.shortage;
+      const auxTargets = auxTargetMedals(result, rates);
       document.getElementById("leftMedals").textContent = `${formatNumber(result.best.left)}${unit}`;
       document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
       renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
       renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
-      renderAuxTarget(prevAuxTargetBtn, result.best.yen ? result.best.requiredMedals : null, unit);
-      renderAuxTarget(nextAuxTargetBtn, result.next.yen ? result.next.requiredMedals : null, unit);
+      renderAuxTarget(prevAuxTargetBtn, auxTargets.previous, unit);
+      renderAuxTarget(nextAuxTargetBtn, auxTargets.next, unit);
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
