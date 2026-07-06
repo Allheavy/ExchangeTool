@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換枚数 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=52" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=52" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=56" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=56" />
   <title>交換枚数 計算ツール｜PWA</title>
   <style>
     :root {
@@ -1177,38 +1177,51 @@
       gap: 12px;
     }
 
-    .sensitive-result {
+    .sensitive-scope {
       position: relative;
-      width: 100%;
-      min-height: 0;
-      padding: 0;
-      border: 0;
-      border-radius: 7px;
-      background: transparent;
-      color: inherit;
-      font: inherit;
-      font-weight: inherit;
-      text-align: inherit;
-      box-shadow: none;
-      cursor: pointer;
     }
 
-    .sensitive-result.blurred {
+    .sensitive-scope.blurred {
       user-select: none;
     }
 
-    .sensitive-result.blurred .sensitive-value {
+    .sensitive-scope.blurred .sensitive-value {
       filter: blur(7px);
       opacity: .72;
     }
 
-    .sensitive-result.blurred::after {
+    .sensitive-toggle {
+      position: absolute;
+      z-index: 2;
+      width: auto;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .result-summary .sensitive-toggle {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 33.333%;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .sensitive-table .sensitive-toggle {
+      inset: 28px 0 2px;
+      border-radius: 10px;
+    }
+
+    .sensitive-scope.blurred .sensitive-toggle::after {
       content: "";
       position: absolute;
-      inset: 3px;
+      inset: 4px;
       display: grid;
       place-items: center;
-      border-radius: 7px;
+      border-radius: inherit;
       background: rgba(247, 249, 251, .72);
       color: var(--accent-ink);
       font-size: .68rem;
@@ -1746,25 +1759,22 @@
       <section id="exchangeDetails" class="panel details">
         <h2>結果</h2>
         <p class="sensitive-hint">交換額・景品はタップで表示</p>
-        <div class="status-line">
+        <div class="status-line result-summary sensitive-scope blurred" data-sensitive-group="summary">
           <div class="status-item">
             <div class="status-label">必要枚数</div>
             <div id="bestRequired" class="status-value">0枚</div>
           </div>
           <div class="status-item">
             <div class="status-label">交換額</div>
-            <button class="status-value sensitive-result blurred" type="button" data-sensitive-result>
-              <span id="bestYen" class="sensitive-value">0円</span>
-            </button>
+            <div id="bestYen" class="status-value sensitive-value">0円</div>
           </div>
           <div class="status-item">
             <div class="status-label">景品</div>
-            <button class="status-value sensitive-result blurred" type="button" data-sensitive-result>
-              <span id="bestCombo" class="sensitive-value">-</span>
-            </button>
+            <div id="bestCombo" class="status-value sensitive-value">-</div>
           </div>
+          <button class="sensitive-toggle" type="button" data-sensitive-toggle="summary" aria-label="交換額と景品の表示を切り替え"></button>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap sensitive-table sensitive-scope blurred" data-sensitive-group="table">
           <table>
             <thead>
               <tr>
@@ -1775,6 +1785,7 @@
             </thead>
             <tbody id="candidateRows"></tbody>
           </table>
+          <button class="sensitive-toggle" type="button" data-sensitive-toggle="table" aria-label="候補表の交換額と景品の表示を切り替え"></button>
         </div>
       </section>
 
@@ -1938,10 +1949,10 @@
           <strong id="investmentAmount">0円</strong>
         </div>
         <div id="investmentCounter" class="investment-counter" aria-label="投資額カウンター">
-          <button type="button" data-investment-delta="-10000">-10k</button>
-          <button type="button" data-investment-delta="10000">+10k</button>
-          <button type="button" data-investment-delta="5000">+5k</button>
-          <button type="button" data-investment-delta="1000">+1k</button>
+          <button type="button" data-investment-delta="10000">10k</button>
+          <button type="button" data-investment-delta="5000">5k</button>
+          <button type="button" data-investment-delta="1000">1k</button>
+          <button type="button" data-investment-action="clear">C</button>
         </div>
       </div>
     </div>
@@ -1969,7 +1980,7 @@
       settleGroup,
       unitLabelFor,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=52";
+    } from "./app-core.mjs?v=56";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -2030,6 +2041,7 @@
     let calcExpression = "";
     let calcResult = 0;
     let investmentAmount = 0;
+    let sensitiveResultsBlurred = true;
     let toastTimer = 0;
     let toastUndo = null;
     let serviceWorkerRegistration = null;
@@ -2744,6 +2756,12 @@
       button.dataset.targetMedals = hasTarget ? String(value) : "";
     }
 
+    function syncSensitiveResults() {
+      details.querySelectorAll("[data-sensitive-group]").forEach((item) => {
+        item.classList.toggle("blurred", sensitiveResultsBlurred);
+      });
+    }
+
     function renderExchange() {
       renderCustomRateFields();
       if (!validateCurrentRate()) {
@@ -2760,6 +2778,7 @@
         document.getElementById("nextCallout").className = "callout hot";
         document.getElementById("nextCallout").textContent = "交換率を正しく入力してください。";
         document.getElementById("candidateRows").innerHTML = "";
+        syncSensitiveResults();
         return;
       }
       const rates = getRates();
@@ -2791,11 +2810,12 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${formatNumber(candidate.requiredMedals)}${unit}</td>
-          <td><button class="sensitive-result blurred" type="button" data-sensitive-result><span class="sensitive-value">${formatNumber(candidate.yen)}円</span></button></td>
-          <td><button class="sensitive-result blurred" type="button" data-sensitive-result><span class="sensitive-value">${comboText(candidate.combo)}</span></button></td>
+          <td><span class="sensitive-value">${formatNumber(candidate.yen)}円</span></td>
+          <td><span class="sensitive-value">${comboText(candidate.combo)}</span></td>
         `;
         rows.appendChild(tr);
       });
+      syncSensitiveResults();
       renderConditionSummary();
       saveSettings();
     }
@@ -2913,10 +2933,10 @@
     prevAuxTargetBtn.addEventListener("click", () => applyAuxTarget(prevAuxTargetBtn));
     nextAuxTargetBtn.addEventListener("click", () => applyAuxTarget(nextAuxTargetBtn));
     details.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-sensitive-result]");
+      const target = event.target.closest("[data-sensitive-toggle]");
       if (!target) return;
-      const shouldBlur = !target.classList.contains("blurred");
-      details.querySelectorAll("[data-sensitive-result]").forEach((item) => item.classList.toggle("blurred", shouldBlur));
+      sensitiveResultsBlurred = !sensitiveResultsBlurred;
+      syncSensitiveResults();
     });
 
     document.getElementById("openCalcBtn").addEventListener("click", () => calcSheet.classList.add("open"));
@@ -3201,8 +3221,13 @@
     });
 
     investmentCounter.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-investment-delta]");
+      const button = event.target.closest("[data-investment-delta], [data-investment-action]");
       if (!button) return;
+      if (button.dataset.investmentAction === "clear") {
+        investmentAmount = 0;
+        renderInvestmentCounter();
+        return;
+      }
       const delta = Number(button.dataset.investmentDelta);
       investmentAmount = Math.max(0, investmentAmount + delta);
       renderInvestmentCounter();
