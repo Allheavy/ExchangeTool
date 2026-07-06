@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   DEFAULT_PRIZES,
+  computeGroupShares,
   activePresetStatusText,
   buildRateConfigFromOption,
   calculateExchange,
@@ -10,6 +11,7 @@ import {
   payoutYenPerUnit,
   rateCategoryOptions,
   rateUnitHintText,
+  unitLabelForPreset,
   selectedPresetIndex,
   movePreset,
   updatePresetAtIndex,
@@ -23,9 +25,9 @@ const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
 const localServer = readFileSync(new URL("./serve-local.js", import.meta.url), "utf8");
 const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
-assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=59" \/>/);
-assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=59" \/>/);
-assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=59"/);
+assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=62" \/>/);
+assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=62" \/>/);
+assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=62"/);
 assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
 assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
 const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
@@ -122,6 +124,10 @@ assert.doesNotMatch(indexHtml, /景品・金額を見る/);
 assert.doesNotMatch(indexHtml, /景品・金額を隠す/);
 assert.doesNotMatch(indexHtml, /結果を見る/);
 assert.doesNotMatch(indexHtml, /結果を隠す/);
+assert.match(indexHtml, /<th>名前<\/th>\s*<th>実績<\/th>\s*<th>目標収支<\/th>\s*<\/tr>/);
+assert.doesNotMatch(indexHtml, /<th>差額<\/th>/);
+assert.doesNotMatch(indexHtml, /member\.balance >= 0 \? "渡す " : "受ける "/);
+assert.doesNotMatch(indexHtml, /#memberResultRows td:nth-child\(4\)/);
 assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
 assert.match(indexHtml, /data-save-toggle-label="open"/);
 assert.match(indexHtml, /data-save-toggle-label="close"/);
@@ -141,6 +147,8 @@ assert.doesNotMatch(indexHtml, /id="addRateBtn"/);
 assert.match(indexHtml, /id="applyCalcBtn"[^>]*>反映して閉じる<\/button>[\s\S]*id="closeCalcBtn"/);
 assert.match(indexHtml, /manualPresetCategory\(preset\)/);
 assert.match(indexHtml, /mainRateCategoryInput\.value = category/);
+assert.match(indexHtml, /activePresetUnitLabel = unitLabelForPreset\(preset, ""\)/);
+assert.match(indexHtml, /activePresetUnitLabel \|\| categoryConfig\?\.unitLabel \|\| CUSTOM_RATE_UNIT_LABEL/);
 assert.match(indexHtml, /id="calcSheet"[\s\S]*class="investment-counter-panel mini-tool"/);
 assert.match(indexHtml, /id="investmentCounter"/);
 assert.match(indexHtml, /id="investmentAmount"[^>]*>0円<\/strong>/);
@@ -153,10 +161,10 @@ assert.match(indexHtml, /function renderInvestmentCounter/);
 assert.match(indexHtml, /investmentAmount = Math\.max\(0, investmentAmount \+ delta\)/);
 assert.match(indexHtml, /investmentAmount = 0/);
 assert.doesNotMatch(indexHtml, /data-member="\$\{index\}" data-investment-delta/);
-assert.match(serviceWorker, /exchange-tool-pwa-v59/);
-assert.match(serviceWorker, /\.\/app-core\.mjs\?v=59/);
-assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=59/);
-assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=59/);
+assert.match(serviceWorker, /exchange-tool-pwa-v62/);
+assert.match(serviceWorker, /\.\/app-core\.mjs\?v=62/);
+assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=62/);
+assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=62/);
 
 const yenText = exchangeCalloutText({
   result: calculateExchange({ medals: 77, rateType: "rate5152", prizes: [200, 500] }),
@@ -174,6 +182,12 @@ const exactText = exchangeCalloutText({
 assert.equal(exactText, "余りは0枚です。");
 
 assert.equal(calculateExchange({ medals: 0, rateType: "pachi4_28", prizes: [500] }).best.requiredMedals, 0);
+
+assert.deepEqual(
+  computeGroupShares(-60000, [-80000, 20000], "B", 1000),
+  [-45000, -15000],
+  "large group-share differences should strongly reduce damage for better performers"
+);
 
 const fiveHundredYenUnitRates = {
   twentySixForFiveHundred: { label: "26 per 500", medalsPerYen: 26 / 500, unitLabel: "枚" },
@@ -215,6 +229,12 @@ assert.equal(noLowerExchangeTarget, null);
 assert.equal(activePresetStatusText("駅前店"), "駅前店を適用中");
 assert.equal(activePresetStatusText(""), "");
 assert.equal(rateUnitHintText("枚"), "100円あたりの枚数");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, rateCategory: "pachi4", exchangeRate: 28 }), "玉");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, rateCategory: "slot20", exchangeRate: 5.2 }), "枚");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, manualRateKind: "pachi", exchangeRate: 28 }), "玉");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, unitLabel: "枚", exchangeRate: 5.2 }), "枚");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, rateCategory: "pachi4", unitLabel: "玉/枚", exchangeRate: 28 }), "玉");
+assert.equal(unitLabelForPreset({ isCustomExchangeRate: true, unitLabel: "玉/枚", exchangeRate: 5.2 }), "玉/枚");
 assert.equal(payoutYenPerUnit(5.152), 100 / 5.152);
 assert.equal(formatExchangeRateValue(5.1524), "5.152");
 

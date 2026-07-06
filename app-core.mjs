@@ -10,7 +10,7 @@ export const DEFAULT_PRIZES = [500, 1000, 5000];
 export const GROUP_MODES = {
   none: { label: "均等", strength: 0 },
   A: { label: "少し差をつける", strength: 0.18 },
-  B: { label: "大きく差をつける", strength: 0.34 },
+  B: { label: "大きく差をつける", strength: 0.5 },
 };
 
 export const RATE_CATEGORY_CONFIGS = {
@@ -56,6 +56,21 @@ function rateConfigFor(rateType, rates = RATE_CONFIGS) {
 
 export function unitLabelFor(rateType, rates = RATE_CONFIGS) {
   return rateConfigFor(rateType, rates).unitLabel || "玉/枚";
+}
+
+function normalizedSingleUnit(unit) {
+  return unit === "玉" || unit === "枚" ? unit : "";
+}
+
+export function unitLabelForPreset(preset, fallbackUnit = "玉/枚") {
+  const directUnit = normalizedSingleUnit(preset?.manualRateUnit) || normalizedSingleUnit(preset?.unitLabel);
+  if (directUnit) return directUnit;
+  const category = preset?.rateCategory || preset?.category;
+  const categoryUnit = RATE_CATEGORY_CONFIGS[category]?.unitLabel;
+  if (categoryUnit) return categoryUnit;
+  if (preset?.manualRateKind === "pachi") return "玉";
+  if (preset?.manualRateKind === "slot") return "枚";
+  return fallbackUnit;
 }
 
 export function requiredMedalsForYen(yen, rateType, rates = RATE_CONFIGS) {

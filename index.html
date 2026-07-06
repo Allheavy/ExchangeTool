@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="交換目安 計算ツール" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=59" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=59" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=62" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png?v=62" />
   <title>交換目安 計算ツール｜PWA</title>
   <style>
     :root {
@@ -1292,8 +1292,7 @@
 
     #candidateRows td:nth-child(2),
     #memberResultRows td:nth-child(2),
-    #memberResultRows td:nth-child(3),
-    #memberResultRows td:nth-child(4) {
+    #memberResultRows td:nth-child(3) {
       font-weight: 950;
     }
 
@@ -1896,7 +1895,6 @@
                 <th>名前</th>
                 <th>実績</th>
                 <th>目標収支</th>
-                <th>差額</th>
               </tr>
             </thead>
             <tbody id="memberResultRows"></tbody>
@@ -1979,8 +1977,9 @@
       selectedPresetIndex,
       settleGroup,
       unitLabelFor,
+      unitLabelForPreset,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=59";
+    } from "./app-core.mjs?v=62";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -2036,6 +2035,7 @@
     const checkUpdateBtn = document.getElementById("checkUpdateBtn");
     const updateStatus = document.getElementById("updateStatus");
     let activePresetName = "";
+    let activePresetUnitLabel = "";
     let mainRateId = "";
     let activeCustomRateId = "";
     let calcExpression = "";
@@ -2148,6 +2148,7 @@
 
     function markCustomSettings() {
       activePresetName = "";
+      activePresetUnitLabel = "";
       renderActivePresetStatus();
     }
 
@@ -2235,10 +2236,11 @@
 
     function currentRateCategoryConfig() {
       if (isCustomRateMode()) {
+        const categoryConfig = RATE_CATEGORY_UI_CONFIGS[mainRateCategoryInput.value];
         return {
           label: "カスタム",
-          unitLabel: CUSTOM_RATE_UNIT_LABEL,
-          yenBase: 100,
+          unitLabel: activePresetUnitLabel || categoryConfig?.unitLabel || CUSTOM_RATE_UNIT_LABEL,
+          yenBase: categoryConfig?.yenBase || 100,
         };
       }
       return RATE_CATEGORY_UI_CONFIGS[mainRateCategoryInput.value];
@@ -2708,6 +2710,7 @@
     function applyPreset(preset) {
       if (!preset) return;
       activePresetName = displayNameForPreset(preset);
+      activePresetUnitLabel = unitLabelForPreset(preset, "");
       if (preset.isCustomExchangeRate && Number.isFinite(Number(preset.exchangeRate))) {
         const category = manualPresetCategory(preset);
         mainRateCategoryInput.value = category;
@@ -2892,7 +2895,6 @@
           <td>${member.name}</td>
           <td>${member.performance >= 0 ? "+" : ""}${formatNumber(member.performance)}円</td>
           <td>${member.targetNet >= 0 ? "+" : ""}${formatNumber(member.targetNet)}円</td>
-          <td>${member.balance >= 0 ? "渡す " : "受ける "}${formatNumber(Math.abs(member.balance))}円</td>
         `;
         memberResultRows.appendChild(tr);
       });
