@@ -1,0 +1,458 @@
+<style>
+  .direction-note {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0 0 1.35rem;
+    padding: .45rem .7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-size: .78rem;
+  }
+  .direction-note::before {
+    content: "";
+    width: .45rem;
+    height: .45rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .direction-cards {
+    grid-template-columns: repeat(3, minmax(270px, 1fr));
+    align-items: start;
+  }
+  .direction-card .card-image {
+    position: relative;
+    aspect-ratio: auto;
+    min-height: 570px;
+    padding: 22px 14px;
+    overflow: hidden;
+  }
+  .direction-card .card-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 10%, rgba(255,255,255,.34), transparent 52%);
+    pointer-events: none;
+  }
+  .direction-marker {
+    position: absolute;
+    z-index: 3;
+    top: 12px;
+    left: 12px;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: rgba(0,0,0,.72);
+    color: white;
+    font-size: .8rem;
+    font-weight: 800;
+    box-shadow: 0 5px 18px rgba(0,0,0,.18);
+  }
+  .phone {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 276px);
+    min-height: 520px;
+    padding: 17px 15px 14px;
+    overflow: hidden;
+    color: var(--p-ink);
+    background: var(--p-bg);
+    border: 1px solid var(--p-border);
+    border-radius: 28px;
+    box-shadow: 0 24px 50px rgba(0,0,0,.22), inset 0 0 0 5px var(--p-shell);
+    font-family: "Yu Gothic UI", "Hiragino Sans", sans-serif;
+  }
+  .phone * { box-sizing: border-box; }
+  .phone-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 30px;
+    margin-bottom: 11px;
+  }
+  .phone-brand {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: -.02em;
+  }
+  .phone-brand i {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background: var(--p-accent);
+    color: var(--p-accent-ink);
+    font-style: normal;
+    font-size: 10px;
+  }
+  .condition-pill {
+    padding: 4px 7px;
+    border: 1px solid var(--p-border);
+    border-radius: 999px;
+    color: var(--p-muted);
+    background: var(--p-surface);
+    font-size: 8px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .phone-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-bottom: 13px;
+    padding: 3px;
+    border-radius: 11px;
+    background: var(--p-soft);
+  }
+  .phone-tabs span {
+    display: grid;
+    place-items: center;
+    min-height: 30px;
+    border-radius: 8px;
+    color: var(--p-muted);
+    font-size: 9px;
+    font-weight: 900;
+  }
+  .phone-tabs .active {
+    background: var(--p-tab);
+    color: var(--p-ink);
+    box-shadow: var(--p-tab-shadow);
+  }
+  .eyebrow {
+    color: var(--p-muted);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .input-panel {
+    margin-top: 5px;
+    padding: 13px;
+    border: 1px solid var(--p-border);
+    border-radius: 15px;
+    background: var(--p-surface);
+    box-shadow: var(--p-card-shadow);
+  }
+  .amount-line {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .amount {
+    margin-top: 4px;
+    font-size: 27px;
+    font-weight: 950;
+    letter-spacing: -.05em;
+    line-height: 1;
+  }
+  .amount small {
+    margin-left: 3px;
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .calc-key {
+    display: grid;
+    place-items: center;
+    width: 37px;
+    height: 37px;
+    border-radius: 11px;
+    color: var(--p-accent-ink);
+    background: var(--p-accent);
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .goal-panel {
+    position: relative;
+    margin-top: 10px;
+    padding: 12px 12px 11px;
+    overflow: hidden;
+    border-radius: 14px;
+    color: var(--p-goal-ink);
+    background: var(--p-goal);
+  }
+  .goal-panel::after {
+    content: "";
+    position: absolute;
+    right: -23px;
+    top: -27px;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    border: 18px solid var(--p-goal-ring);
+  }
+  .goal-title {
+    position: relative;
+    z-index: 1;
+    font-size: 8px;
+    font-weight: 900;
+    opacity: .72;
+  }
+  .goal-value {
+    position: relative;
+    z-index: 1;
+    margin-top: 2px;
+    font-size: 20px;
+    font-weight: 950;
+    letter-spacing: -.04em;
+  }
+  .goal-value small { font-size: 10px; letter-spacing: 0; }
+  .goal-track {
+    position: relative;
+    z-index: 1;
+    height: 4px;
+    margin-top: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--p-track);
+  }
+  .goal-track b {
+    display: block;
+    width: 78%;
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+  }
+  .result-panel {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid var(--p-border);
+    border-radius: 15px;
+    background: var(--p-surface);
+    box-shadow: var(--p-card-shadow);
+  }
+  .result-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+  }
+  .result-head strong { font-size: 10px; }
+  .result-head span { color: var(--p-muted); font-size: 8px; font-weight: 800; }
+  .result-primary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .result-primary b {
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -.045em;
+  }
+  .result-primary small { color: var(--p-muted); font-size: 8px; font-weight: 800; }
+  .data-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: 9px;
+  }
+  .data-row div {
+    padding: 8px;
+    border-radius: 9px;
+    background: var(--p-soft);
+  }
+  .data-row span { display: block; color: var(--p-muted); font-size: 7px; font-weight: 800; }
+  .data-row b { display: block; margin-top: 2px; font-size: 10px; }
+  .phone-foot {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 12px;
+  }
+  .phone-foot i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--p-border);
+  }
+  .phone-foot i:first-child { width: 16px; border-radius: 999px; background: var(--p-accent); }
+
+  .stage-a { background: #dfe7eb; }
+  .theme-a {
+    --p-bg: #f5f8f9; --p-shell: #edf3f5; --p-surface: #fff; --p-soft: #e8eef1;
+    --p-ink: #10252d; --p-muted: #687a82; --p-border: rgba(16,37,45,.12);
+    --p-accent: #0e6170; --p-accent-ink: #fff; --p-tab: #fff;
+    --p-goal: #d9ecee; --p-goal-ink: #164b55; --p-goal-ring: rgba(14,97,112,.09);
+    --p-track: rgba(14,97,112,.16); --p-tab-shadow: 0 2px 8px rgba(15,35,44,.08);
+    --p-card-shadow: 0 8px 22px rgba(22,43,52,.07);
+  }
+  .stage-b { background: #2b2d29; }
+  .theme-b {
+    --p-bg: #0d0f0d; --p-shell: #171a16; --p-surface: #171a17; --p-soft: #252923;
+    --p-ink: #f5f7ec; --p-muted: #9ca393; --p-border: rgba(236,242,219,.13);
+    --p-accent: #d9ff43; --p-accent-ink: #10120d; --p-tab: #d9ff43;
+    --p-goal: #d9ff43; --p-goal-ink: #10120d; --p-goal-ring: rgba(16,18,13,.11);
+    --p-track: rgba(16,18,13,.18); --p-tab-shadow: none;
+    --p-card-shadow: none;
+  }
+  .theme-b .phone-brand { letter-spacing: .06em; text-transform: uppercase; }
+  .theme-b .condition-pill { border-color: rgba(217,255,67,.36); color: #d9ff43; background: transparent; }
+  .theme-b .input-panel, .theme-b .result-panel { border-radius: 4px; }
+  .theme-b .goal-panel { border-radius: 4px; }
+  .theme-b .phone-tabs { border-radius: 4px; }
+  .theme-b .phone-tabs span { border-radius: 2px; }
+  .theme-b .calc-key { border-radius: 2px; }
+  .theme-b .data-row div { border-radius: 2px; }
+
+  .stage-c { background: #dfcfb6; }
+  .theme-c {
+    --p-bg: #fff8e9; --p-shell: #f1e5ce; --p-surface: #fffdf6; --p-soft: #f3ead8;
+    --p-ink: #33261e; --p-muted: #826f61; --p-border: rgba(83,57,40,.18);
+    --p-accent: #c84b34; --p-accent-ink: #fff9ed; --p-tab: #fffdf6;
+    --p-goal: #33261e; --p-goal-ink: #fff8e9; --p-goal-ring: rgba(255,248,233,.08);
+    --p-track: rgba(255,248,233,.18); --p-tab-shadow: 0 2px 0 rgba(83,57,40,.10);
+    --p-card-shadow: 0 7px 0 rgba(83,57,40,.06);
+  }
+  .theme-c .phone-brand,
+  .theme-c .amount,
+  .theme-c .goal-value,
+  .theme-c .result-primary b { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; }
+  .theme-c .input-panel,
+  .theme-c .result-panel { border-style: dashed; }
+  .theme-c .condition-pill { border-radius: 4px; }
+  .theme-c .goal-panel { border-radius: 8px; }
+
+  .card-kicker {
+    display: inline-block;
+    margin-bottom: .35rem;
+    color: var(--accent);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .card-body h3 { font-size: 1rem; }
+  .card-body p { line-height: 1.55; }
+  .tradeoff {
+    display: block;
+    margin-top: .55rem;
+    color: var(--text-tertiary);
+    font-size: .75rem;
+  }
+  @media (max-width: 980px) {
+    .direction-cards { grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    #frame-content { padding: 1.25rem; }
+    .direction-card .card-image { min-height: 530px; padding: 16px 10px; }
+  }
+</style>
+
+<h2>全面刷新の「顔」を選ぶ</h2>
+<p class="subtitle">機能と表示内容は同じまま、性格だけを大きく振っています。毎日使いたいと感じる方向を1つ選んでください。</p>
+<div class="direction-note">カードをクリックすると選択できます</div>
+
+<div class="cards direction-cards">
+  <div class="card direction-card" data-choice="precision-ledger" onclick="toggleSelect(this)">
+    <div class="card-image stage-a">
+      <div class="direction-marker">A</div>
+      <div class="phone theme-a">
+        <div class="phone-head">
+          <div class="phone-brand"><i>交</i>交換目安</div>
+          <div class="condition-pill">4パチ・25玉</div>
+        </div>
+        <div class="phone-tabs"><span class="active">交換</span><span>ノリ打ち</span><span>管理</span></div>
+        <div class="eyebrow">持ち玉</div>
+        <div class="input-panel">
+          <div class="amount-line"><div class="amount">8,450<small>玉</small></div><div class="calc-key">▦</div></div>
+        </div>
+        <div class="goal-panel">
+          <div class="goal-title">次の交換ラインまで</div>
+          <div class="goal-value">あと 300<small>玉</small></div>
+          <div class="goal-track"><b></b></div>
+        </div>
+        <div class="result-panel">
+          <div class="result-head"><strong>いま交換すると</strong><span>表示中</span></div>
+          <div class="result-primary"><b>33,500円</b><small>必要 8,375玉</small></div>
+          <div class="data-row"><div><span>景品</span><b>5,000円 × 6ほか</b></div><div><span>余り</span><b>75玉</b></div></div>
+        </div>
+        <div class="phone-foot"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-kicker">Quiet / Precise</span>
+      <h3>A　精密台帳</h3>
+      <p>冷静で信頼感のある計器。数字の比較と長時間利用を最優先にした、現在の良さを磨く方向です。</p>
+      <span class="tradeoff">強み：迷いにくい　／　注意：変化は比較的おだやか</span>
+    </div>
+  </div>
+
+  <div class="card direction-card" data-choice="field-scoreboard" onclick="toggleSelect(this)">
+    <div class="card-image stage-b">
+      <div class="direction-marker">B</div>
+      <div class="phone theme-b">
+        <div class="phone-head">
+          <div class="phone-brand"><i>EX</i>Exchange</div>
+          <div class="condition-pill">4P / 25</div>
+        </div>
+        <div class="phone-tabs"><span class="active">交換</span><span>ノリ打ち</span><span>管理</span></div>
+        <div class="eyebrow">Current balls</div>
+        <div class="input-panel">
+          <div class="amount-line"><div class="amount">8,450<small>玉</small></div><div class="calc-key">＋</div></div>
+        </div>
+        <div class="goal-panel">
+          <div class="goal-title">NEXT TARGET</div>
+          <div class="goal-value">あと 300<small>玉</small></div>
+          <div class="goal-track"><b></b></div>
+        </div>
+        <div class="result-panel">
+          <div class="result-head"><strong>EXCHANGE NOW</strong><span>LIVE</span></div>
+          <div class="result-primary"><b>33,500円</b><small>8,375玉</small></div>
+          <div class="data-row"><div><span>PRIZES</span><b>5,000 × 6</b></div><div><span>LEFT</span><b>75玉</b></div></div>
+        </div>
+        <div class="phone-foot"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-kicker">Bold / Instant</span>
+      <h3>B　現場スコアボード</h3>
+      <p>暗い店内でも一瞬で読める強いコントラスト。入力と結果を大胆に見せ、道具感を前面に出します。</p>
+      <span class="tradeoff">強み：最速で読める　／　注意：個性と暗さが強い</span>
+    </div>
+  </div>
+
+  <div class="card direction-card" data-choice="pocket-ticket" onclick="toggleSelect(this)">
+    <div class="card-image stage-c">
+      <div class="direction-marker">C</div>
+      <div class="phone theme-c">
+        <div class="phone-head">
+          <div class="phone-brand"><i>交</i>交換の手帖</div>
+          <div class="condition-pill">四円・二十五玉</div>
+        </div>
+        <div class="phone-tabs"><span class="active">交換</span><span>ノリ打ち</span><span>管理</span></div>
+        <div class="eyebrow">ただいまの持ち玉</div>
+        <div class="input-panel">
+          <div class="amount-line"><div class="amount">8,450<small>玉</small></div><div class="calc-key">算</div></div>
+        </div>
+        <div class="goal-panel">
+          <div class="goal-title">次の目安まで</div>
+          <div class="goal-value">あと 300<small>玉</small></div>
+          <div class="goal-track"><b></b></div>
+        </div>
+        <div class="result-panel">
+          <div class="result-head"><strong>交換票</strong><span>目安</span></div>
+          <div class="result-primary"><b>33,500円</b><small>8,375玉</small></div>
+          <div class="data-row"><div><span>景品の組合せ</span><b>5,000円 × 6ほか</b></div><div><span>残る玉</span><b>75玉</b></div></div>
+        </div>
+        <div class="phone-foot"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-kicker">Warm / Tactile</span>
+      <h3>C　ポケット交換票</h3>
+      <p>紙の伝票や手帖を思わせる親しみのある佇まい。無機質さを抑え、日常の道具として愛着を持たせます。</p>
+      <span class="tradeoff">強み：印象に残る　／　注意：数字ツールとしては少し柔らかい</span>
+    </div>
+  </div>
+</div>
