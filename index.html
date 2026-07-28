@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f7f9fb" />
+  <meta name="theme-color" content="#f5f3ee" />
   <meta name="application-name" content="交換目安 計算ツール" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="交換目安 計算ツール" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg?v=62" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png?v=62" />
-  <link rel="stylesheet" href="./tokens.css?v=64" />
+  <link rel="stylesheet" href="./tokens.css?v=65" />
   <title>交換目安 計算ツール｜PWA</title>
   <style>
     :root {
@@ -41,7 +41,7 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-width: 320px;
+      min-width: 0;
       background: var(--bg);
       color: var(--ink);
       font-family: var(--font-body);
@@ -1860,6 +1860,1015 @@
       }
     }
 
+    /* Hallmark · approved mock fidelity pass · mobile workbench · pencil slate */
+    body {
+      min-width: 0;
+      background: var(--color-paper-top);
+    }
+
+    main {
+      width: min(100%, 30rem);
+      max-width: none;
+      min-height: 100vh;
+      padding: 0 0 var(--space-3xl);
+      background: var(--color-paper);
+      box-shadow: 0 0 var(--space-xl) var(--color-shadow);
+    }
+
+    .top {
+      gap: 0;
+      margin: 0;
+      padding: var(--space-sm) var(--space-md) 0;
+      background: var(--color-surface);
+    }
+
+    .top h1 {
+      margin: 0 0 var(--space-sm);
+      font-size: var(--text-md);
+    }
+
+    .tabs {
+      gap: 0;
+      padding: 0;
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .tab {
+      min-width: 0;
+      min-height: 2.75rem;
+      padding: var(--space-xs);
+      border: 0;
+      border-bottom: var(--rule-strong) solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--color-ink-2);
+      font-size: .78rem;
+      box-shadow: none;
+    }
+
+    .tab.active {
+      border-bottom-color: var(--color-accent);
+      background: transparent;
+      color: var(--color-ink);
+      box-shadow: none;
+    }
+
+    #exchangeTab > .panel,
+    #settingsPanel {
+      display: block;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .saved-settings-panel {
+      display: grid;
+      gap: var(--space-xs);
+      margin: 0;
+      padding: var(--space-sm) var(--space-md);
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: var(--color-surface);
+    }
+
+    .preset-region {
+      position: relative;
+      padding: var(--space-sm) var(--space-md) var(--space-2xs);
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      background: var(--color-surface);
+    }
+
+    .preset-region-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    .preset-label {
+      display: block;
+      margin-bottom: var(--space-xs);
+      color: var(--color-ink-2);
+      font-size: .64rem;
+      font-weight: 700;
+    }
+
+    .preset-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .preset-add {
+      display: inline-grid;
+      align-self: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+      place-items: center;
+      border: var(--rule-thin) solid var(--color-rule);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-accent);
+      box-shadow: none;
+    }
+
+    .preset-add svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .preset-chip {
+      flex: 0 0 auto;
+      min-height: 2.5rem;
+      padding: var(--space-xs) 0;
+      border: 0;
+      border-bottom: var(--rule-strong) solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--color-ink-2);
+      font-size: .72rem;
+      box-shadow: none;
+    }
+
+    .condition-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-sm);
+      align-items: center;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      background: var(--color-surface);
+    }
+
+    .condition-copy {
+      min-width: 0;
+    }
+
+    .condition-label {
+      display: block;
+      margin-bottom: var(--space-2xs);
+      color: var(--color-ink-2);
+      font-size: .68rem;
+      font-weight: 700;
+    }
+
+    .condition-value {
+      display: block;
+      overflow: hidden;
+      color: var(--color-ink);
+      font-size: .78rem;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .condition-change-btn {
+      width: auto;
+      min-height: 2.5rem;
+      padding: var(--space-xs) var(--space-sm);
+      border: var(--rule-thin) solid var(--color-rule);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-accent);
+      box-shadow: none;
+    }
+
+    .exchange-choices.open {
+      inset: 0;
+      z-index: 35;
+      display: grid;
+      align-content: start;
+      max-height: none;
+      padding: 0 var(--space-md) var(--space-xl);
+      overflow: auto;
+      background: var(--color-paper);
+      border: 0;
+      box-shadow: none;
+    }
+
+    .exchange-choices.open::before {
+      display: none;
+    }
+
+    .exchange-choices.open .condition-sheet-header {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      width: calc(100% + var(--space-xl));
+      max-width: none;
+      margin-inline: calc(var(--space-md) * -1);
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+    }
+
+    .saved-settings-header {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    .preset-strip {
+      gap: var(--space-md);
+      padding-bottom: 0;
+    }
+
+    .condition-summary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+
+    .condition-summary-item {
+      padding: var(--space-xs) 0;
+      border: 0;
+      border-top: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .primary-input {
+      order: initial;
+      display: block;
+      padding: var(--space-md) var(--space-md) 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .primary-input .section-heading {
+      margin: 0 0 var(--space-sm);
+      font-size: .72rem;
+      line-height: 1.5;
+      font-weight: 800;
+    }
+
+    .primary-input > label {
+      margin-bottom: var(--space-xs);
+      font-size: .7rem;
+      line-height: 1.5;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .primary-input-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0;
+      width: min(17rem, 92%);
+      margin: 0 auto;
+    }
+
+    .primary-input input {
+      min-width: 0;
+      min-height: 3.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      border: var(--rule-thin) solid var(--color-accent);
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+      background: var(--color-surface);
+      font-size: 1.75rem;
+      text-align: right;
+    }
+
+    .inline-calc-btn {
+      width: 3.75rem;
+      min-height: 3.75rem;
+      border: var(--rule-thin) solid var(--color-accent);
+      border-left: 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      box-shadow: none;
+    }
+
+    .goal-scale {
+      --endpoint-column: 5.5rem;
+      position: relative;
+      margin: var(--space-2xl) var(--space-md) 0;
+      margin-bottom: var(--space-xl);
+      padding-top: var(--space-xl);
+    }
+
+    .held-to-current-line {
+      position: absolute;
+      z-index: 0;
+      top: calc(var(--space-2xl) * -1);
+      left: 0;
+      width: 100%;
+      height: calc(var(--space-2xl) + var(--space-xl) + var(--rule-thin));
+      overflow: visible;
+      color: var(--color-accent);
+      pointer-events: none;
+    }
+
+    .segment-delta {
+      position: absolute;
+      top: 0;
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      color: var(--color-accent);
+      font-family: var(--font-body);
+      font-size: 1.16rem;
+      font-weight: 900;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .segment-delta.used {
+      left: calc(var(--endpoint-column) / 2);
+      width: calc(50% - var(--endpoint-column) / 2);
+    }
+
+    .segment-delta.needed {
+      right: calc(var(--endpoint-column) / 2);
+      left: 50%;
+    }
+
+    .scale-track {
+      position: relative;
+      z-index: 1;
+      height: var(--rule-strong);
+      margin-inline: calc(var(--endpoint-column) / 2);
+      background: var(--color-rule);
+    }
+
+    .scale-track::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0 0 0 50%;
+      background: var(--color-accent);
+    }
+
+    .scale-point {
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      width: var(--space-sm);
+      height: var(--space-sm);
+      border: var(--rule-strong) solid var(--color-rule);
+      border-radius: 50%;
+      background: var(--color-paper);
+      transform: translate(-50%, -50%);
+    }
+
+    .scale-point.achieved { left: 0; }
+    .scale-point.current {
+      left: 50%;
+      width: var(--space-md);
+      height: var(--space-md);
+      border-color: var(--color-accent);
+      background: var(--color-accent);
+    }
+    .scale-point.next {
+      left: 100%;
+      border-color: var(--color-accent);
+    }
+
+    .current-label {
+      position: absolute;
+      top: var(--space-sm);
+      left: 50%;
+      color: var(--color-ink-2);
+      font-size: .62rem;
+      font-weight: 800;
+      transform: translateX(-50%);
+    }
+
+    .scale-endpoints {
+      display: grid;
+      grid-template-columns: var(--endpoint-column) minmax(0, 1fr) var(--endpoint-column);
+      margin-top: var(--space-lg);
+    }
+
+    .target-medals {
+      display: grid;
+      gap: var(--space-2xs);
+      width: auto;
+      min-height: 2.75rem;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--color-ink-2);
+      font-size: .66rem;
+      font-weight: 800;
+      text-align: left;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .target-medals:last-child {
+      grid-column: 3;
+      text-align: right;
+    }
+
+    .target-medals:not(:disabled):hover,
+    .target-medals:not(:disabled):focus-visible {
+      color: var(--color-accent);
+    }
+
+    .target-medals:disabled {
+      opacity: .55;
+      cursor: default;
+    }
+
+    .target-medals-number {
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    #nextCallout:empty {
+      display: none;
+    }
+
+    .result-section {
+      padding: var(--space-xl) var(--space-md);
+      border-top: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+    }
+
+    .result-head {
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-head h2 {
+      margin: 0;
+      color: var(--color-ink-2);
+      font-size: .72rem;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .result-primary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-column: 1 / -1;
+      gap: var(--space-sm);
+      align-items: center;
+      padding: var(--space-xs) 0 var(--space-sm);
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+    }
+
+    .result-grid .status-value {
+      display: block;
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      font-size: 1.2rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-primary .status-value {
+      font-size: 1.55rem;
+    }
+
+    .privacy-toggle {
+      width: auto;
+      min-height: 2.5rem;
+      padding: var(--space-xs) var(--space-sm);
+      border: var(--rule-thin) solid var(--color-rule);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-accent);
+      font-size: .72rem;
+      box-shadow: none;
+    }
+
+    .candidate-section {
+      padding: var(--space-lg) var(--space-md) var(--space-2xl);
+      border-top: var(--rule-thin) solid var(--color-rule);
+    }
+
+    .candidate-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+
+    .candidate-head h2 {
+      margin: 0;
+      font-size: .82rem;
+    }
+
+    .candidate-head span {
+      color: var(--color-ink-2);
+      font-size: .64rem;
+      font-weight: 800;
+    }
+
+    .candidate-section table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      table-layout: fixed;
+      font-size: .72rem;
+    }
+
+    .candidate-section th,
+    .candidate-section td {
+      padding: var(--space-sm) var(--space-2xs);
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+      overflow-wrap: anywhere;
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    .candidate-section th:first-child,
+    .candidate-section td:first-child {
+      text-align: left;
+    }
+
+    .candidate-section th {
+      color: var(--color-ink-2);
+      font-size: .64rem;
+      font-weight: 700;
+    }
+
+    .candidate-section tr.current-candidate td {
+      background: var(--color-accent-soft);
+      font-weight: 900;
+    }
+
+    .current-candidate td {
+      background: var(--color-accent-soft);
+    }
+
+    .candidate-status {
+      display: block;
+      color: var(--color-accent-text);
+      font-size: .58rem;
+      font-weight: 900;
+    }
+
+    .candidate-required-unit {
+      margin-left: .08em;
+      color: var(--color-ink-2);
+      font-size: .78em;
+      font-weight: 700;
+    }
+
+    .exchange-choices.open {
+      display: block;
+      padding: 0 0 calc(var(--space-xl) + env(safe-area-inset-bottom));
+    }
+
+    .condition-editor-header {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      display: grid;
+      grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+      align-items: center;
+      min-height: 4rem;
+      padding: 0 var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      background: var(--color-paper);
+    }
+
+    .condition-editor-header h2 {
+      grid-column: 2;
+      margin: 0;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .condition-editor-back {
+      display: grid;
+      grid-column: 1;
+      place-items: center;
+      width: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+      background: transparent;
+      color: var(--color-ink);
+      box-shadow: none;
+    }
+
+    .condition-editor-back svg { width: 1.25rem; height: 1.25rem; }
+
+    .condition-editor-body {
+      display: grid;
+      gap: 0;
+      max-width: 32rem;
+      margin: 0 auto;
+    }
+
+    .condition-editor-group,
+    .condition-preset-fields {
+      padding: var(--space-lg) var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+    }
+
+    .condition-editor-group h3 {
+      margin: 0 0 var(--space-sm);
+      font-size: .72rem;
+    }
+
+    .condition-kind-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .condition-field-label {
+      display: block;
+      margin-bottom: var(--space-2xs);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .condition-input-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .condition-input-shell input {
+      min-width: 0;
+      min-height: 2.75rem;
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    }
+
+    .condition-input-shell span {
+      display: grid;
+      place-items: center;
+      min-width: 2.35rem;
+      padding: 0 var(--space-xs);
+      border: var(--rule-thin) solid var(--color-rule);
+      border-left: 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: var(--color-surface-soft);
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .condition-kind-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+
+    .condition-kind-options button,
+    .condition-prize-options button {
+      min-height: 2.75rem;
+      padding: var(--space-xs);
+      border: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+      color: var(--color-ink);
+      font-size: .72rem;
+      box-shadow: none;
+    }
+
+    .condition-kind-options button[aria-pressed="true"],
+    .condition-prize-options button[aria-pressed="true"] {
+      border-color: var(--color-accent);
+      background: var(--color-accent-soft);
+      color: var(--color-accent-text);
+    }
+
+    .condition-prize-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .condition-help {
+      margin: var(--space-xs) 0 0;
+      color: var(--color-ink-2);
+      font-size: .66rem;
+    }
+
+    .condition-editor-apply {
+      width: auto;
+      min-height: 3rem;
+      margin: var(--space-xl) var(--space-md) 0;
+    }
+
+    .work-head {
+      padding: var(--space-lg) var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+    }
+
+    .work-head h2 {
+      margin: 0;
+      font-size: var(--text-md);
+    }
+
+    .work-head p {
+      margin: var(--space-xs) 0 0;
+      color: var(--color-ink-2);
+      font-size: .7rem;
+    }
+
+    .group-section,
+    .setting-block {
+      display: grid;
+      gap: var(--space-sm);
+      padding: var(--space-lg) var(--space-md);
+      margin: 0;
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .group-section h2,
+    .group-section h3,
+    .setting-block h3 {
+      margin: 0;
+      font-size: .82rem;
+    }
+
+    .transfer-section {
+      background: var(--color-paper);
+    }
+
+    #paymentRows {
+      gap: 0;
+      margin-bottom: var(--space-md);
+      border-top: var(--rule-strong) solid var(--color-accent);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+    }
+
+    .payment {
+      min-height: 3rem;
+      padding: var(--space-sm) 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: .84rem;
+      font-weight: 900;
+    }
+
+    .member-columns,
+    .member {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) repeat(2, minmax(0, 1fr)) auto;
+      gap: var(--space-2xs);
+      align-items: center;
+    }
+
+    .member-columns {
+      padding: 0 var(--space-2xs) var(--space-xs);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      color: var(--color-ink-2);
+      font-size: .62rem;
+      font-weight: 700;
+    }
+
+    #memberRows {
+      gap: 0;
+    }
+
+    .member {
+      padding: var(--space-xs) 0;
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .member input {
+      min-width: 0;
+      min-height: 2.5rem;
+      padding: var(--space-xs);
+      border: var(--rule-thin) solid var(--color-rule);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: .72rem;
+    }
+
+    .member input[type="number"] {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .member-remove {
+      display: inline-grid;
+      width: 2.5rem;
+      height: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+      place-items: center;
+      border: var(--rule-thin) solid var(--color-rule);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-danger);
+    }
+
+    .member-remove svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .breakdown-section {
+      background: var(--color-surface);
+    }
+
+    .distribution-section {
+      gap: 0;
+    }
+
+    .distribution-section h2 {
+      margin-bottom: var(--space-sm);
+    }
+
+    .distribution-section label {
+      margin-bottom: var(--space-xs);
+      color: var(--color-ink-2);
+      font-size: .68rem;
+      line-height: 1.5;
+    }
+
+    .distribution-section select {
+      min-height: 2.75rem;
+    }
+
+    .distribution-section .note {
+      margin: var(--space-xs) 0 0;
+      font-size: .7rem;
+      line-height: 1.5;
+    }
+
+    .group-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .group-kpis .status-item {
+      min-width: 0;
+      padding: var(--space-sm) 0;
+      border-bottom: var(--rule-strong) solid var(--color-rule);
+    }
+
+    .group-kpis .status-value {
+      font-size: .9rem;
+    }
+
+    .group-result-table {
+      min-width: 0;
+      border-collapse: collapse;
+      border-spacing: 0;
+      table-layout: fixed;
+      font-size: .72rem;
+    }
+
+    .group-result-table th,
+    .group-result-table td {
+      padding: var(--space-sm) var(--space-2xs);
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    .group-result-table th:first-child,
+    .group-result-table td:first-child {
+      text-align: left;
+    }
+
+    .breakdown-section {
+      display: block;
+      padding: var(--space-lg) var(--space-md);
+      background: var(--color-surface);
+    }
+
+    .breakdown-section > h3 {
+      margin-bottom: var(--space-sm);
+    }
+
+    .group-totals {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .group-totals > * {
+      min-width: 0;
+      padding: var(--space-sm) 0;
+      border-bottom: var(--rule-strong) solid var(--color-rule);
+      background: transparent;
+    }
+
+    .group-totals .status-value {
+      font-size: .9rem;
+    }
+
+    .group-table {
+      width: 100%;
+      min-width: 0;
+      margin-bottom: var(--space-lg);
+      border-collapse: collapse;
+      border-spacing: 0;
+      table-layout: fixed;
+      font-size: .72rem;
+    }
+
+    .group-table th,
+    .group-table td {
+      padding: var(--space-sm) var(--space-2xs);
+      border: 0;
+      border-bottom: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: 0;
+      background: transparent;
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    .group-table th:first-child,
+    .group-table td:first-child {
+      text-align: left;
+    }
+
+    #settingsPanel > h2 {
+      margin: 0;
+      padding: var(--space-lg) var(--space-md);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+      font-size: var(--text-md);
+    }
+
+    .setting-block {
+      background: transparent;
+    }
+
+    .setting-block .row-3 {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .setting-block .row-3 > span:empty {
+      display: none;
+    }
+
+    .update-setting {
+      padding-block: var(--space-md);
+    }
+
+    .update-setting #checkUpdateBtn {
+      width: auto;
+      justify-self: start;
+    }
+
+    .preset-order-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .preset-order-actions button {
+      display: inline-flex;
+      gap: var(--space-xs);
+      align-items: center;
+      justify-content: center;
+      min-height: 2.75rem;
+      border: var(--rule-thin) solid var(--color-rule);
+      background: var(--color-surface);
+      color: var(--color-accent-text);
+    }
+
+    .preset-order-actions svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .admin-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 22rem) {
+      .goal-scale {
+        --endpoint-column: 5rem;
+      }
+
+      .group-section,
+      .setting-block {
+        padding-inline: var(--space-md);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -1884,132 +2893,99 @@
         <h1>交換目安 計算ツール</h1>
       </div>
       <nav class="tabs" role="tablist" aria-label="画面切替">
-        <button class="tab active" data-tab="exchange" role="tab" aria-selected="true" aria-controls="exchangeTab" type="button">交換</button>
-        <button class="tab" data-tab="group" role="tab" aria-selected="false" aria-controls="groupTab" type="button">ノリ打ち</button>
-        <button class="tab" data-tab="settings" role="tab" aria-selected="false" aria-controls="settingsTab" type="button">管理</button>
+        <button id="exchangeTabButton" class="tab active" data-tab="exchange" role="tab" aria-selected="true" aria-controls="exchangeTab" tabindex="0" type="button">交換</button>
+        <button id="groupTabButton" class="tab" data-tab="group" role="tab" aria-selected="false" aria-controls="groupTab" tabindex="-1" type="button">ノリ打ち</button>
+        <button id="settingsTabButton" class="tab" data-tab="settings" role="tab" aria-selected="false" aria-controls="settingsTab" tabindex="-1" type="button">管理</button>
       </nav>
     </div>
 
-    <section id="exchangeTab" role="tabpanel">
+    <section id="exchangeTab" role="tabpanel" aria-labelledby="exchangeTabButton">
       <section class="panel">
         <h2>交換</h2>
 
-        <div class="saved-settings-panel">
-          <div class="saved-settings-header">
-            <label>条件</label>
-            <div id="activePresetStatus" class="preset-status"></div>
-            <button id="openConditionSheetBtn" class="condition-change-btn" type="button">変更</button>
+        <section class="preset-region" aria-label="保存した条件">
+          <div class="preset-region-head">
+            <span class="preset-label">Preset</span>
+            <span id="activePresetStatus" class="preset-status"></span>
           </div>
-          <div id="presetStrip" class="preset-strip"></div>
-          <div class="condition-summary-grid" aria-label="現在の条件">
-            <div class="condition-summary-item">
-              <span>交換率</span>
-              <strong id="conditionRateSummary">-</strong>
-            </div>
-            <div class="condition-summary-item">
-              <span>景品</span>
-              <strong id="conditionPrizeSummary">-</strong>
-            </div>
+          <div class="preset-row">
+            <div id="presetStrip" class="preset-strip"></div>
+            <button id="addPresetBtn" class="preset-add" type="button" aria-label="Presetを追加">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
           </div>
-        </div>
+        </section>
+
+        <section class="condition-strip" aria-label="現在の条件">
+          <div class="condition-copy">
+            <span class="condition-label">現在の条件</span>
+            <strong class="condition-value">
+              <span id="conditionRateSummary">-</span>
+              <span aria-hidden="true"> · </span>
+              <span id="conditionPrizeSummary">-</span>
+            </strong>
+          </div>
+          <button id="openConditionSheetBtn" class="condition-change-btn" type="button">変更</button>
+        </section>
 
         <div class="exchange-choices" aria-label="交換条件">
-          <div class="condition-sheet-header">
-            <div class="condition-sheet-title">条件</div>
-            <button id="closeConditionSheetBtn" class="condition-sheet-close" type="button">閉じる</button>
+          <header class="condition-editor-header">
+            <button id="closeConditionSheetBtn" class="condition-editor-back" type="button" aria-label="交換画面に戻る">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <h2>条件を変更</h2>
+          </header>
+          <div class="condition-editor-body">
+            <section class="condition-editor-group">
+              <h3>種別</h3>
+              <div class="condition-kind-row">
+                <div class="condition-field">
+                  <label for="conditionLendingRate">貸し出しレート</label>
+                  <div class="condition-input-shell"><input id="conditionLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal"><span>円</span></div>
+                </div>
+                <div class="condition-field">
+                  <span class="condition-field-label">遊技タイプ</span>
+                  <div class="condition-kind-options" role="group" aria-label="遊技タイプ">
+                    <button type="button" data-condition-kind="pachi" aria-pressed="true">パチンコ</button>
+                    <button type="button" data-condition-kind="slot" aria-pressed="false">パチスロ</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="condition-editor-group">
+              <h3>交換率</h3>
+              <label for="conditionExchangeRate">100円あたり</label>
+              <div class="condition-input-shell"><input id="conditionExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal"><span id="conditionExchangeRateUnit">玉</span></div>
+              <p class="condition-help">店舗の交換率に合わせて入力してください。</p>
+              <p id="conditionRateError" class="field-error hidden"></p>
+            </section>
+            <section class="condition-editor-group">
+              <h3>景品</h3>
+              <div id="conditionPrizeChoices" class="condition-prize-options"></div>
+              <p id="conditionPrizeError" class="condition-help">1つ以上選択してください。</p>
+            </section>
+            <div id="conditionPresetFields" class="condition-preset-fields hidden">
+              <label for="quickPresetName">Preset名（任意）</label>
+              <input id="quickPresetName" type="text" placeholder="例: 駅前店">
+              <p class="condition-help">空欄の場合はレートと遊技タイプから自動で作成します。</p>
+              <div id="savePresetPreview" class="save-preview"></div>
+            </div>
+            <button id="applyConditionBtn" class="condition-editor-apply" type="button">この条件を反映</button>
+            <button id="saveConditionPresetBtn" class="condition-editor-apply hidden" type="button">Presetとして保存</button>
           </div>
-          <section class="exchange-category rate-builder" aria-labelledby="exchangeRateHeading">
-            <h3 id="exchangeRateHeading" class="exchange-category-title">交換率</h3>
-            <div class="rate-sub-fields">
-              <div>
-                <label>入力方法</label>
-                <div class="rate-mode" role="group" aria-label="交換率の入力方法">
-                  <button id="rateModePreset" class="active" type="button" data-rate-mode="preset" aria-pressed="true">よく使う</button>
-                  <button id="rateModeCustom" type="button" data-rate-mode="custom" aria-pressed="false">手入力</button>
-                </div>
-              </div>
-              <div id="guidedRateFieldsGroup" class="guided-rate-fields">
-                <div id="mainRateCategoryField">
-                  <label id="mainRateCategoryLabel" for="mainRateCategory">種類</label>
-                  <select id="mainRateCategory">
-                    <option value="pachi4">4円パチンコ</option>
-                    <option value="pachi1">1円パチンコ</option>
-                    <option value="slot20">20円スロット</option>
-                    <option value="slot5">5円スロット</option>
-                  </select>
-                </div>
-                <div id="guidedExchangeRateFields" class="rate-option-fields">
-                  <label for="mainRateOption">よく使う交換率</label>
-                  <select id="mainRateOption"></select>
-                </div>
-              </div>
-              <div id="customExchangeRateFields" class="custom-rate-fields hidden">
-                <label for="customExchangeRate">交換率を手入力</label>
-                <div class="inline-unit">
-                  <input id="customExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal" placeholder="5.152" />
-                  <span id="customExchangeRateUnit">数（100円あたり）</span>
-                </div>
-                <div id="customExchangeRatePayout" class="field-help">1単位 = -円</div>
-                <div id="customExchangeRateError" class="field-error hidden"></div>
-              </div>
-              <select id="rateType" class="hidden" aria-hidden="true"></select>
-            </div>
-          </section>
-
-          <section class="exchange-category" aria-labelledby="prizeChoiceHeading">
-            <h3 id="prizeChoiceHeading" class="exchange-category-title">景品</h3>
-            <div id="prizeChoices" class="chips"></div>
-          </section>
-
-          <button
-            id="showSaveSettingsBtn"
-            class="secondary save-toggle-btn"
-            type="button"
-            aria-expanded="false"
-            aria-controls="saveSettingsForm"
-            data-save-toggle-label="open"
-          >この条件を保存</button>
-          <div id="saveSettingsForm" class="save-settings-form hidden">
-            <div>
-              <label for="quickPresetName">設定名</label>
-              <input id="quickPresetName" type="text" placeholder="例: 駅前店" />
-              <p class="field-help">任意です。空欄の場合は交換率から自動で表示名を作ります。</p>
-            </div>
-            <div id="saveManualRateMeta" class="save-meta hidden">
-              <label>保存名用</label>
-              <div class="manual-save-meta-row">
-                <div>
-                  <label for="manualSaveLendingRate">貸し出しレート</label>
-                  <div class="inline-unit">
-                    <input id="manualSaveLendingRate" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="5" />
-                    <span>円</span>
-                  </div>
-                </div>
-                <div class="manual-save-kind-field">
-                  <label id="manualSaveKindLabel">種別</label>
-                  <input id="manualSaveKind" type="hidden" value="slot" />
-                  <div id="manualSaveKindButtons" class="manual-save-kind" role="group" aria-labelledby="manualSaveKindLabel">
-                    <button type="button" class="active" data-manual-save-kind="slot" aria-pressed="true">パチスロ</button>
-                    <button type="button" data-manual-save-kind="pachi" aria-pressed="false">パチンコ</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="savePresetPreview" class="save-preview">
-              <span class="save-preview-label">保存名</span>
-              <span>
-                <span class="preset-chip-main">20スロ</span>
-                <span class="preset-chip-sub">5.2枚交換</span>
-              </span>
-            </div>
-            <div class="preset-save-row">
-              <button id="quickSavePresetBtn" type="button">設定を保存</button>
-              <button id="cancelSaveSettingsBtn" class="secondary" type="button" data-save-toggle-label="close">閉じる</button>
-            </div>
+          <div class="condition-legacy-bridge hidden" aria-hidden="true">
+            <button type="button" data-rate-mode="preset"></button><button type="button" class="active" data-rate-mode="custom"></button>
+            <select id="mainRateCategory"><option value="pachi4">pachi4</option><option value="pachi1">pachi1</option><option value="slot20">slot20</option><option value="slot5">slot5</option></select>
+            <select id="mainRateOption"></select><div id="rateBridgeGuided"></div>
+            <div id="customExchangeRateFields"><input id="customExchangeRate" min="0.001" max="999"><span id="customExchangeRateUnit"></span><span id="customExchangeRatePayout"></span><span id="customExchangeRateError"></span></div>
+            <select id="rateType"></select><div id="saveManualRateMeta"></div>
+            <input id="manualSaveKind" value="pachi"><button type="button" data-manual-save-kind="pachi"></button><button type="button" data-manual-save-kind="slot"></button>
+            <input id="manualSaveLendingRate">
           </div>
         </div>
 
         <div class="primary-input">
+          <h2 class="section-heading">持ち玉と交換目標</h2>
           <label for="medals">持ち玉</label>
           <div class="primary-input-row">
             <input id="medals" type="number" min="0" step="1" inputmode="numeric" value="0" />
@@ -2031,49 +3007,56 @@
           </div>
         </div>
 
-        <div class="goal-rail" aria-label="目標レール">
-          <button id="prevAuxTargetBtn" class="goal-node aux-target" type="button">
-            <span>ひとつ前</span><b id="prevAuxTarget">-</b>
-          </button>
-          <div class="goal-node status-item">
-            <div id="leftTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
-            <div class="status-label" aria-label="余り">-</div>
-            <div id="leftMedals" class="status-value">0枚</div>
+        <div class="goal-scale" aria-label="達成目標から次の目標までの現在位置">
+          <svg class="held-to-current-line" viewBox="0 0 100 80" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M50 0 L50 80" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <div id="leftMedals" class="segment-delta used">−0枚</div>
+          <div id="nextShortage" class="segment-delta needed">＋0枚</div>
+          <div class="scale-track" aria-hidden="true">
+            <span class="scale-point achieved"></span>
+            <span class="scale-point current"></span>
+            <span class="scale-point next"></span>
+            <span class="current-label">現在</span>
           </div>
-          <div class="goal-node status-item">
-            <div id="nextTargetMedals" class="status-subvalue target-medals">目標 0枚</div>
-            <div class="status-label" aria-label="あと">+</div>
-            <div id="nextShortage" class="status-value">0枚</div>
+          <div class="scale-endpoints">
+            <button id="leftTargetMedals" class="target-medals" type="button" disabled>達成目標 -</button>
+            <button id="nextTargetMedals" class="target-medals" type="button" disabled>次の目標 -</button>
           </div>
-          <button id="nextAuxTargetBtn" class="goal-node aux-target" type="button">
-            <span>さらに次</span><b id="nextAuxTarget">-</b>
-          </button>
         </div>
 
         <div id="nextCallout" class="callout hidden"></div>
       </section>
 
-      <section id="exchangeDetails" class="panel details">
-        <h2>結果</h2>
-        <p class="sensitive-hint">タップで金額と景品を表示</p>
-        <div class="status-line result-summary sensitive-scope blurred" data-sensitive-group="summary">
-          <div class="status-item">
-            <div class="status-label">必要枚数</div>
-            <div id="bestRequired" class="status-value">0枚</div>
+      <section id="exchangeDetails" class="result-section sensitive-scope blurred" data-sensitive-group="summary" aria-labelledby="resultHeading">
+        <div class="result-head"><h2 id="resultHeading">現在の交換結果</h2></div>
+        <div class="result-grid">
+          <div class="result-primary">
+            <div class="result-primary-copy">
+              <span class="status-label">必要枚数</span>
+              <strong id="bestRequired" class="status-value">0枚</strong>
+            </div>
+            <button id="privacyToggle" class="privacy-toggle" type="button" data-sensitive-toggle="summary" data-label-show="金額と景品を表示" data-label-hide="金額と景品を隠す" aria-label="交換額と景品の表示を切り替え">
+              <span class="sensitive-toggle-label">金額と景品を表示</span>
+            </button>
           </div>
-          <div class="status-item">
-            <div class="status-label">交換額</div>
-            <div id="bestYen" class="status-value sensitive-value">0円</div>
+          <div>
+            <span class="status-label">交換額</span>
+            <strong id="bestYen" class="status-value sensitive-value">0円</strong>
           </div>
-          <div class="status-item">
-            <div class="status-label">景品</div>
-            <div id="bestCombo" class="status-value sensitive-value">-</div>
+          <div>
+            <span class="status-label">景品</span>
+            <strong id="bestCombo" class="status-value sensitive-value">-</strong>
           </div>
-          <button class="sensitive-toggle" type="button" data-sensitive-toggle="summary" data-label-show="金額と景品を表示" data-label-hide="金額と景品を隠す" aria-label="交換額と景品の表示を切り替え">
-            <span class="sensitive-toggle-label">金額と景品を表示</span>
-          </button>
         </div>
-        <div class="table-wrap sensitive-table sensitive-scope blurred" data-sensitive-group="table">
+      </section>
+
+      <section id="candidateResults" class="candidate-section sensitive-scope blurred" data-sensitive-group="table" aria-labelledby="candidateHeading">
+        <div class="candidate-head">
+          <h2 id="candidateHeading">交換候補</h2>
+          <span>上1 · 達成 · 下2</span>
+        </div>
+        <div class="table-wrap sensitive-table">
           <table>
             <thead>
               <tr>
@@ -2084,17 +3067,17 @@
             </thead>
             <tbody id="candidateRows"></tbody>
           </table>
-          <button class="sensitive-toggle" type="button" data-sensitive-toggle="table" data-label-show="候補表の金額と景品を表示" data-label-hide="候補表の金額と景品を隠す" aria-label="候補表の交換額と景品の表示を切り替え">
-            <span class="sensitive-toggle-label">候補表の金額と景品を表示</span>
-          </button>
         </div>
       </section>
 
     </section>
 
-    <section id="settingsTab" class="hidden" role="tabpanel">
+    <section id="settingsTab" class="hidden" role="tabpanel" aria-labelledby="settingsTabButton">
       <section id="settingsPanel" class="panel">
-        <h2>管理</h2>
+        <header class="work-head">
+          <h2>管理</h2>
+          <p>景品額と保存した条件を整理します。</p>
+        </header>
         <div class="setting-block">
           <h3>景品額</h3>
           <label for="newPrizeValue">景品額（円）</label>
@@ -2108,11 +3091,22 @@
 
         <div class="setting-block">
           <h3>保存した条件</h3>
+          <label for="presetManage">編集するPreset</label>
           <select id="presetManage"></select>
           <p class="note">保存した条件の表示順を変えます。</p>
           <div class="preset-order-actions">
-            <button id="movePresetUpBtn" class="secondary" type="button">上へ</button>
-            <button id="movePresetDownBtn" class="secondary" type="button">下へ</button>
+            <button id="movePresetUpBtn" class="secondary" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>上へ移動</span>
+            </button>
+            <button id="movePresetDownBtn" class="secondary" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>下へ移動</span>
+            </button>
+          </div>
+          <div class="admin-actions">
+            <button id="editPresetBtn" type="button">編集</button>
+            <button id="deletePresetBtn" class="danger" type="button">削除</button>
           </div>
           <div id="presetEditForm" class="preset-edit-form hidden">
             <label for="editPresetName">保存名</label>
@@ -2144,9 +3138,8 @@
             <div id="editPresetPrizes" class="preset-edit-prizes"></div>
             <button id="savePresetEditBtn" type="button">更新</button>
           </div>
-          <button id="deletePresetBtn" class="danger" type="button">削除</button>
         </div>
-        <div class="setting-block">
+        <div class="setting-block update-setting">
           <h3>アプリ更新</h3>
           <button id="checkUpdateBtn" class="secondary" type="button">更新を確認</button>
           <p id="updateStatus" class="note"></p>
@@ -2154,10 +3147,31 @@
       </section>
     </section>
 
-    <section id="groupTab" class="hidden" role="tabpanel">
-      <section class="panel">
+    <section id="groupTab" class="hidden" role="tabpanel" aria-labelledby="groupTabButton">
+      <header class="work-head">
         <h2>ノリ打ち</h2>
-        <label for="groupMode">配分</label>
+        <p>投資と回収から、メンバーごとの目標収支と受け渡しを計算します。</p>
+      </header>
+
+      <section class="group-section transfer-section">
+        <h3>受け渡し</h3>
+        <div id="paymentRows"></div>
+      </section>
+
+      <section class="group-section members-section">
+        <div class="section-title">
+          <h2>メンバー</h2>
+          <button id="addMemberBtn" class="compact-btn" type="button">追加</button>
+        </div>
+        <div class="member-columns" aria-hidden="true">
+          <span>名前</span><span>投資</span><span>回収</span><span></span>
+        </div>
+        <div id="memberRows"></div>
+      </section>
+
+      <section class="group-section distribution-section">
+        <h2>配分</h2>
+        <label for="groupMode">配分方法</label>
         <select id="groupMode">
           <option value="none">均等</option>
           <option value="A">少し差をつける</option>
@@ -2166,17 +3180,9 @@
         <p class="note">成績に応じて、目標収支に差をつけます。</p>
       </section>
 
-      <section class="panel">
-        <div class="section-title">
-          <h2>メンバー</h2>
-          <button id="addMemberBtn" class="compact-btn" type="button">追加</button>
-        </div>
-        <div id="memberRows"></div>
-      </section>
-
-      <section class="panel">
-        <h2>結果</h2>
-        <div class="status-line">
+      <section class="group-section breakdown-section">
+        <h3>計算内訳</h3>
+        <div class="group-totals">
           <div class="status-item">
             <div class="status-label">総投資</div>
             <div id="groupInvestment" class="status-value">0円</div>
@@ -2191,7 +3197,7 @@
           </div>
         </div>
         <div class="table-wrap">
-          <table class="group-result-table">
+          <table class="group-table">
             <thead>
               <tr>
                 <th>名前</th>
@@ -2202,8 +3208,6 @@
             <tbody id="memberResultRows"></tbody>
           </table>
         </div>
-        <h3>受け渡し</h3>
-        <div id="paymentRows"></div>
       </section>
     </section>
   </main>
@@ -2281,7 +3285,7 @@
       unitLabelFor,
       unitLabelForPreset,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=62";
+    } from "./app-core.mjs?v=68";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -2296,10 +3300,12 @@
       slot5: { label: "5円スロット", shortLabel: "5スロ", unitLabel: "枚", yenPerUnit: 5, yenBase: 1000 },
     };
     const medalsInput = document.getElementById("medals");
+    const leftTargetMedals = document.getElementById("leftTargetMedals");
+    const nextTargetMedals = document.getElementById("nextTargetMedals");
     const investmentCounter = document.getElementById("investmentCounter");
     const investmentAmountDisplay = document.getElementById("investmentAmount");
     const rateTypeInput = document.getElementById("rateType");
-    const guidedRateFieldsGroup = document.getElementById("guidedRateFieldsGroup");
+    const guidedRateFieldsGroup = document.getElementById("rateBridgeGuided");
     const mainRateCategoryInput = document.getElementById("mainRateCategory");
     const mainRateOptionInput = document.getElementById("mainRateOption");
     const customExchangeRateInput = document.getElementById("customExchangeRate");
@@ -2314,7 +3320,13 @@
     const manualSaveKindInput = document.getElementById("manualSaveKind");
     const manualSaveKindButtons = [...document.querySelectorAll("[data-manual-save-kind]")];
     const manualSaveLendingRateInput = document.getElementById("manualSaveLendingRate");
-    const prizeChoices = document.getElementById("prizeChoices");
+    const prizeChoices = document.getElementById("conditionPrizeChoices");
+    const conditionLendingRate = document.getElementById("conditionLendingRate");
+    const conditionExchangeRate = document.getElementById("conditionExchangeRate");
+    const conditionKindButtons = [...document.querySelectorAll("[data-condition-kind]")];
+    const conditionPresetFields = document.getElementById("conditionPresetFields");
+    const applyConditionBtn = document.getElementById("applyConditionBtn");
+    const saveConditionPresetBtn = document.getElementById("saveConditionPresetBtn");
     const presetManage = document.getElementById("presetManage");
     const movePresetUpBtn = document.getElementById("movePresetUpBtn");
     const movePresetDownBtn = document.getElementById("movePresetDownBtn");
@@ -2326,8 +3338,6 @@
     const editPresetRateOption = document.getElementById("editPresetRateOption");
     const editPresetPrizes = document.getElementById("editPresetPrizes");
     const details = document.getElementById("exchangeDetails");
-    const prevAuxTargetBtn = document.getElementById("prevAuxTargetBtn");
-    const nextAuxTargetBtn = document.getElementById("nextAuxTargetBtn");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
     const toast = document.getElementById("toast");
@@ -2428,6 +3438,8 @@
         rateCategory: isCustomRateMode() ? "manual" : mainRateCategoryInput.value,
         exchangeRate: currentExchangeRateValue(),
         isCustomExchangeRate: isCustomRateMode(),
+        manualRateKind: isCustomRateMode() ? manualSaveKindInput.value : "",
+        manualLendingRate: isCustomRateMode() ? Number(manualSaveLendingRateInput.value) || null : null,
         prizes: currentPrizes(),
       });
     }
@@ -2504,8 +3516,8 @@
         .map(([yen, count]) => [Number(yen), count])
         .filter(([, count]) => count > 0)
         .sort((a, b) => b[0] - a[0])
-        .map(([yen, count]) => `${formatNumber(yen)}円×${count}`)
-        .join(" / ") || "-";
+        .map(([yen, count]) => count === 1 ? formatNumber(yen) : `${formatNumber(yen)}×${count}`)
+        .join(" + ") || "-";
     }
 
     function renderRates(selected = rateTypeInput.value) {
@@ -2721,8 +3733,7 @@
       const unitLabel = config.unitLabel === CUSTOM_RATE_UNIT_LABEL ? "数" : config.unitLabel;
       customExchangeRateFields.classList.toggle("hidden", !isCustom);
       guidedRateFieldsGroup.classList.toggle("hidden", isCustom);
-      saveManualRateMeta.classList.toggle("hidden", !isCustom || document.getElementById("saveSettingsForm").classList.contains("hidden"));
-      document.getElementById("mainRateCategoryLabel").textContent = "種類";
+      saveManualRateMeta.classList.add("hidden");
       if (!config) return;
       document.getElementById("customExchangeRateUnit").textContent = `${unitLabel}（${formatNumber(config.yenBase || 100)}円あたり）`;
       const value = Number(customExchangeRateInput.value);
@@ -2760,13 +3771,9 @@
     }
 
     function setSaveSettingsOpen(open, { clearName = false } = {}) {
-      const form = document.getElementById("saveSettingsForm");
-      const toggle = document.getElementById("showSaveSettingsBtn");
-      form.classList.toggle("hidden", !open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.dataset.saveToggleLabel = open ? "close" : "open";
-      toggle.textContent = open ? "閉じる" : "この条件を保存";
-      saveManualRateMeta.classList.toggle("hidden", !open || !isCustomRateMode());
+      conditionPresetFields.classList.toggle("hidden", !open);
+      applyConditionBtn.classList.toggle("hidden", open);
+      saveConditionPresetBtn.classList.toggle("hidden", !open);
       if (clearName) document.getElementById("quickPresetName").value = "";
       renderSavePreview();
     }
@@ -2827,9 +3834,56 @@
       }
     }
 
-    function setConditionSheetOpen(open) {
+    function selectedConditionKind() {
+      return conditionKindButtons.find((button) => button.getAttribute("aria-pressed") === "true")?.dataset.conditionKind || "pachi";
+    }
+
+    function setConditionKind(kind) {
+      const next = kind === "slot" ? "slot" : "pachi";
+      conditionKindButtons.forEach((button) => {
+        const selected = button.dataset.conditionKind === next;
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      document.getElementById("conditionExchangeRateUnit").textContent = next === "slot" ? "枚" : "玉";
+    }
+
+    function populateConditionEditor() {
+      const category = mainRateCategoryInput.value || "pachi4";
+      const kind = category.startsWith("slot") ? "slot" : "pachi";
+      setConditionKind(kind);
+      const defaultLendingRate = RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || (kind === "slot" ? 20 : 4);
+      conditionLendingRate.value = manualSaveLendingRateInput.value || formatExchangeRateValue(defaultLendingRate);
+      conditionExchangeRate.value = formatExchangeRateValue(currentExchangeRateValue());
+      renderPrizeChoices(currentPrizes().length ? currentPrizes() : getPrizeTypes());
+    }
+
+    function applyConditionEditorValues() {
+      const lendingRate = Number(conditionLendingRate.value);
+      const exchangeRate = Number(conditionExchangeRate.value);
+      const prizes = currentPrizes();
+      document.getElementById("conditionRateError").classList.toggle("hidden", lendingRate > 0 && exchangeRate > 0);
+      document.getElementById("conditionPrizeError").classList.toggle("field-error", prizes.length === 0);
+      if (!(lendingRate > 0) || !(exchangeRate > 0) || prizes.length === 0) return false;
+      const kind = selectedConditionKind();
+      mainRateCategoryInput.value = kind === "slot" ? "slot20" : "pachi4";
+      setManualSaveKind(kind);
+      manualSaveLendingRateInput.value = formatExchangeRateValue(lendingRate);
+      activePresetUnitLabel = kind === "slot" ? "枚" : "玉";
+      customExchangeRateInput.value = formatExchangeRateValue(exchangeRate);
+      setRateMode("custom", { custom: false });
+      syncMainRateToHidden({ custom: false });
+      markCustomSettings();
+      renderExchange();
+      return true;
+    }
+
+    function setConditionSheetOpen(open, { presetMode = false } = {}) {
       exchangeChoices.classList.toggle("open", open);
       openConditionSheetBtn.setAttribute("aria-expanded", String(open));
+      if (open) {
+        populateConditionEditor();
+        setSaveSettingsOpen(presetMode, { clearName: presetMode });
+      }
     }
 
     function renderConditionSummary() {
@@ -2837,7 +3891,7 @@
       const prizeSummary = document.getElementById("conditionPrizeSummary");
       const rate = currentExchangeRateValue();
       const config = currentRateCategoryConfig();
-      const typeText = isCustomRateMode() ? "手入力" : rateTypeLabel();
+      const typeText = isCustomRateMode() ? manualSaveRateLabel() : rateTypeLabel();
       rateSummary.textContent = Number.isFinite(rate) && rate > 0
         ? `${typeText} / ${formatExchangeRateValue(rate)}${config?.unitLabel || currentUnit()}交換`
         : `${typeText} / -`;
@@ -2933,7 +3987,17 @@
     }
 
     function renderPrizeChoices(selected = currentPrizes().length ? currentPrizes() : getPrizeTypes()) {
-      renderPrizeChecks(prizeChoices, "prize", selected);
+      const selectedValues = new Set(selected.map(Number));
+      prizeChoices.innerHTML = "";
+      getPrizeTypes().forEach((prize) => {
+        const checked = selectedValues.has(Number(prize));
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.conditionPrize = String(prize);
+        button.setAttribute("aria-pressed", String(checked));
+        button.innerHTML = `<input class="hidden" type="checkbox" name="prize" value="${prize}" ${checked ? "checked" : ""}>${formatNumber(prize)}円`;
+        prizeChoices.appendChild(button);
+      });
       renderManageLists();
     }
 
@@ -3048,59 +4112,47 @@
       const label = element.id === "leftTargetMedals" ? "達成目標" : "次の目標";
       if (!Number.isFinite(Number(value))) {
         element.textContent = `${label} -`;
+        element.disabled = true;
+        delete element.dataset.targetMedals;
+        element.removeAttribute("aria-label");
         return;
       }
+      element.disabled = false;
+      element.dataset.targetMedals = String(value);
+      element.setAttribute("aria-label", `${label}の${formatNumber(value)}${unit}を持ち玉に設定`);
       element.innerHTML = `<span>${label}</span><span><span class="target-medals-number">${formatNumber(value)}</span><span class="target-medals-unit">${unit}</span></span>`;
     }
 
-    function renderAuxTarget(button, value, unit) {
-      const label = button.querySelector("b");
-      const hasTarget = Number.isFinite(Number(value));
-      label.textContent = hasTarget ? `${formatNumber(value)}${unit}` : "-";
-      button.disabled = !hasTarget;
-      button.dataset.targetMedals = hasTarget ? String(value) : "";
-    }
-
-    function auxTargetMedals(result, rates) {
-      const previous = result.candidates.find((candidate) => candidate.yen > 0 && candidate.yen < result.best.yen);
-      const nextResult = result.next.yen
-        ? calculateExchange({
-            medals: result.next.requiredMedals,
-            rateType: rateTypeInput.value,
-            prizes: currentPrizes(),
-            rates,
-          })
-        : null;
-      return {
-        previous: previous ? previous.requiredMedals : null,
-        next: nextResult?.next.yen ? nextResult.next.requiredMedals : null,
-      };
+    function applyTargetMedals(target) {
+      const value = Number(target.dataset.targetMedals);
+      if (!Number.isFinite(value)) return;
+      medalsInput.value = String(value);
+      medalsInput.dispatchEvent(new Event("input", { bubbles: true }));
+      medalsInput.focus({ preventScroll: true });
     }
 
     function syncSensitiveResults() {
-      details.querySelectorAll("[data-sensitive-group]").forEach((item) => {
+      const toggle = document.getElementById("privacyToggle");
+      document.querySelectorAll("[data-sensitive-group]").forEach((item) => {
         item.classList.toggle("blurred", sensitiveResultsBlurred);
-        const toggle = details.querySelector(`[data-sensitive-toggle="${item.dataset.sensitiveGroup}"]`);
-        const label = toggle?.querySelector(".sensitive-toggle-label");
-        if (toggle) toggle.setAttribute("aria-pressed", String(!sensitiveResultsBlurred));
-        if (label && toggle) {
-          label.textContent = sensitiveResultsBlurred
-            ? toggle.dataset.labelShow
-            : toggle.dataset.labelHide;
-        }
       });
+      const label = toggle?.querySelector(".sensitive-toggle-label");
+      if (toggle) toggle.setAttribute("aria-pressed", String(!sensitiveResultsBlurred));
+      if (label && toggle) {
+        label.textContent = sensitiveResultsBlurred
+          ? toggle.dataset.labelShow
+          : toggle.dataset.labelHide;
+      }
     }
 
     function renderExchange() {
       renderCustomRateFields();
       if (!validateCurrentRate()) {
         const unit = currentUnit();
-        document.getElementById("leftMedals").textContent = `-${unit}`;
-        document.getElementById("nextShortage").textContent = `-${unit}`;
+        document.getElementById("leftMedals").textContent = `−0${unit}`;
+        document.getElementById("nextShortage").textContent = `＋0${unit}`;
         renderTargetMedals(document.getElementById("leftTargetMedals"), null, unit);
         renderTargetMedals(document.getElementById("nextTargetMedals"), null, unit);
-        renderAuxTarget(prevAuxTargetBtn, null, unit);
-        renderAuxTarget(nextAuxTargetBtn, null, unit);
         document.getElementById("bestYen").textContent = "-円";
         document.getElementById("bestRequired").textContent = `-${unit}`;
         document.getElementById("bestCombo").textContent = "-";
@@ -3119,13 +4171,10 @@
       });
       const unit = currentUnit();
       const shortage = result.next.shortage;
-      const auxTargets = auxTargetMedals(result, rates);
-      document.getElementById("leftMedals").textContent = `${formatNumber(result.best.left)}${unit}`;
-      document.getElementById("nextShortage").textContent = `${formatNumber(shortage)}${unit}`;
+      document.getElementById("leftMedals").textContent = `−${formatNumber(result.best.left)}${unit}`;
+      document.getElementById("nextShortage").textContent = `＋${formatNumber(shortage)}${unit}`;
       renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
       renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
-      renderAuxTarget(prevAuxTargetBtn, auxTargets.previous, unit);
-      renderAuxTarget(nextAuxTargetBtn, auxTargets.next, unit);
       document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
@@ -3136,10 +4185,11 @@
 
       const rows = document.getElementById("candidateRows");
       rows.innerHTML = "";
-      result.candidates.forEach((candidate) => {
+      result.candidates.slice(0, 4).forEach((candidate) => {
         const tr = document.createElement("tr");
+        if (candidate.requiredMedals === result.best.requiredMedals) tr.className = "current-candidate";
         tr.innerHTML = `
-          <td>${formatNumber(candidate.requiredMedals)}${unit}</td>
+          <td>${candidate.requiredMedals === result.best.requiredMedals ? '<span class="candidate-status">達成</span>' : ""}${formatNumber(candidate.requiredMedals)}<span class="candidate-required-unit">${unit}</span></td>
           <td><span class="sensitive-value">${formatNumber(candidate.yen)}円</span></td>
           <td><span class="sensitive-value">${comboText(candidate.combo)}</span></td>
         `;
@@ -3177,12 +4227,12 @@
         const row = document.createElement("div");
         row.className = "member";
         row.innerHTML = `
-          <input type="text" placeholder="名前" value="${member.name}" data-member="${index}" data-field="name" />
-          <div class="row">
-            <input type="number" min="0" step="100" inputmode="numeric" placeholder="投資額" value="${member.investment}" data-member="${index}" data-field="investment" />
-            <input type="number" min="0" step="100" inputmode="numeric" placeholder="回収額" value="${member.recovery}" data-member="${index}" data-field="recovery" />
-          </div>
-          <button class="danger" type="button" data-remove-member="${index}">削除</button>
+          <input type="text" aria-label="名前" placeholder="名前" value="${member.name}" data-member="${index}" data-field="name" />
+          <input type="number" aria-label="投資" min="0" step="100" inputmode="numeric" placeholder="投資" value="${member.investment}" data-member="${index}" data-field="investment" />
+          <input type="number" aria-label="回収" min="0" step="100" inputmode="numeric" placeholder="回収" value="${member.recovery}" data-member="${index}" data-field="recovery" />
+          <button class="member-remove danger" type="button" data-remove-member="${index}" aria-label="${member.name}を削除">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
         `;
         memberRows.appendChild(row);
       });
@@ -3230,6 +4280,13 @@
       });
       renderMainRateOptions();
       if (settings.isCustomExchangeRate && Number.isFinite(Number(settings.exchangeRate))) {
+        const savedKind = settings.manualRateKind === "slot" ? "slot" : "pachi";
+        mainRateCategoryInput.value = savedKind === "slot" ? "slot20" : "pachi4";
+        setManualSaveKind(savedKind);
+        if (Number.isFinite(Number(settings.manualLendingRate))) {
+          manualSaveLendingRateInput.value = formatExchangeRateValue(settings.manualLendingRate);
+        }
+        activePresetUnitLabel = savedKind === "slot" ? "枚" : "玉";
         customExchangeRateInput.value = formatExchangeRateValue(settings.exchangeRate);
         renderMainRateOptions();
         setRateMode("custom", { custom: false });
@@ -3248,6 +4305,7 @@
           const active = item === tab;
           item.classList.toggle("active", active);
           item.setAttribute("aria-selected", String(active));
+          item.tabIndex = active ? 0 : -1;
         });
         document.getElementById("exchangeTab").classList.toggle("hidden", tab.dataset.tab !== "exchange");
         document.getElementById("groupTab").classList.toggle("hidden", tab.dataset.tab !== "group");
@@ -3256,15 +4314,6 @@
       });
     });
 
-    function applyAuxTarget(button) {
-      const targetMedals = Number(button.dataset.targetMedals);
-      if (!Number.isFinite(targetMedals)) return;
-      medalsInput.value = String(targetMedals);
-      renderExchange();
-    }
-
-    prevAuxTargetBtn.addEventListener("click", () => applyAuxTarget(prevAuxTargetBtn));
-    nextAuxTargetBtn.addEventListener("click", () => applyAuxTarget(nextAuxTargetBtn));
     details.addEventListener("click", (event) => {
       const target = event.target.closest("[data-sensitive-toggle]");
       if (!target) return;
@@ -3365,16 +4414,25 @@
       });
     });
 
-    document.getElementById("showSaveSettingsBtn").addEventListener("click", () => {
-      const isOpen = document.getElementById("showSaveSettingsBtn").getAttribute("aria-expanded") === "true";
-      setSaveSettingsOpen(!isOpen, { clearName: isOpen });
+    openConditionSheetBtn.addEventListener("click", () => setConditionSheetOpen(true, { presetMode: false }));
+    document.getElementById("addPresetBtn").addEventListener("click", () => {
+      setConditionSheetOpen(true, { presetMode: true });
     });
-
-    openConditionSheetBtn.addEventListener("click", () => setConditionSheetOpen(true));
     closeConditionSheetBtn.addEventListener("click", () => setConditionSheetOpen(false));
 
-    document.getElementById("cancelSaveSettingsBtn").addEventListener("click", () => {
-      setSaveSettingsOpen(false, { clearName: true });
+    conditionKindButtons.forEach((button) => {
+      button.addEventListener("click", () => setConditionKind(button.dataset.conditionKind));
+    });
+    prizeChoices.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-condition-prize]");
+      if (!button) return;
+      const input = button.querySelector("input");
+      input.checked = !input.checked;
+      button.setAttribute("aria-pressed", String(input.checked));
+    });
+    applyConditionBtn.addEventListener("click", () => {
+      if (!applyConditionEditorValues()) return;
+      setConditionSheetOpen(false);
     });
 
     document.getElementById("quickPresetName").addEventListener("input", renderSavePreview);
@@ -3383,8 +4441,8 @@
     });
     manualSaveLendingRateInput.addEventListener("input", renderSavePreview);
 
-    document.getElementById("quickSavePresetBtn").addEventListener("click", () => {
-      if (!validateCurrentRate()) {
+    saveConditionPresetBtn.addEventListener("click", () => {
+      if (!applyConditionEditorValues() || !validateCurrentRate()) {
         showToast("交換率を正しく入力してください。");
         return;
       }
@@ -3419,9 +4477,20 @@
       activePresetName = displayName;
       renderActivePresetStatus();
       showToast(`${displayName}を保存しました。`);
+      setConditionSheetOpen(false);
     });
 
     presetManage.addEventListener("change", renderPresetEditForm);
+    document.getElementById("editPresetBtn").addEventListener("click", () => {
+      renderPresetEditForm();
+      const presets = loadJson(PRESETS_KEY, []);
+      if (selectedPresetIndex(presetManage.value, presets) === null) {
+        showToast("編集する設定を選んでください。");
+        return;
+      }
+      presetEditForm.classList.remove("hidden");
+      editPresetName.focus();
+    });
 
     function moveSelectedPreset(direction) {
       const presets = loadJson(PRESETS_KEY, []);
@@ -3574,6 +4643,8 @@
       }
     });
     medalsInput.addEventListener("input", renderExchange);
+    leftTargetMedals.addEventListener("click", () => applyTargetMedals(leftTargetMedals));
+    nextTargetMedals.addEventListener("click", () => applyTargetMedals(nextTargetMedals));
     mainRateCategoryInput.addEventListener("change", () => {
       renderMainRateOptions();
       syncMainRateToHidden();
