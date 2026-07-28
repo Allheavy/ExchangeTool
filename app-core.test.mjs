@@ -47,7 +47,7 @@ assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id=
 assert.match(indexHtml, /class="chip-mark" aria-hidden="true"/);
 assert.match(indexHtml, /\.chip\.selected[\s\S]*background: var\(--accent\)/);
 assert.match(indexHtml, /\.chip\.selected\s*\{[^}]*box-shadow: none/);
-assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: rgba\(40, 84, 103/);
+assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: var\(--color-accent-focus\)/);
 assert.match(indexHtml, /id="quickSavePresetBtn"/);
 assert.match(indexHtml, /id="presetEditForm"/);
 assert.match(indexHtml, /id="editPresetName"/);
