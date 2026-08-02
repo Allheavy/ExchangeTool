@@ -240,6 +240,17 @@ export function buildRateConfigFromOption(category, optionValue) {
 
 function buildCandidates(bestYen, reachable, prizes, rateType, medals, rates) {
   const candidates = [];
+  for (let yen = bestYen + 1; yen < reachable.length; yen++) {
+    if (!reachable[yen]) continue;
+    const requiredMedals = requiredMedalsForYen(yen, rateType, rates);
+    candidates.push({
+      yen,
+      requiredMedals,
+      left: medals - requiredMedals,
+      combo: bestComboForYen(yen, prizes) || emptyCombo(prizes),
+    });
+    break;
+  }
   for (let yen = bestYen; yen >= 0 && candidates.length < 10; yen--) {
     if (!reachable[yen]) continue;
     const requiredMedals = requiredMedalsForYen(yen, rateType, rates);
@@ -257,10 +268,8 @@ function roundToUnit(value, unit) {
   return Math.round(value / unit) * unit;
 }
 
-function groupRoundUnit(members) {
-  return members.every((member) => member.investment % 1000 === 0 && member.recovery % 1000 === 0)
-    ? 1000
-    : 100;
+function groupRoundUnit(mode) {
+  return mode === "none" ? 500 : 1000;
 }
 
 export function computeGroupShares(totalProfit, performances, mode = "none", roundUnit = 100) {
@@ -310,7 +319,7 @@ export function settleGroup(input) {
   const totalRecovery = normalized.reduce((sum, member) => sum + member.recovery, 0);
   const totalProfit = totalRecovery - totalInvestment;
   const performances = normalized.map((member) => member.recovery - member.investment);
-  const roundUnit = groupRoundUnit(normalized);
+  const roundUnit = groupRoundUnit(mode);
   const shares = computeGroupShares(totalProfit, performances, mode, roundUnit);
 
   const rows = normalized.map((member, index) => {

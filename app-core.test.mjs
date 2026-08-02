@@ -13,6 +13,7 @@ import {
   rateUnitHintText,
   unitLabelForPreset,
   selectedPresetIndex,
+  settleGroup,
   movePreset,
   updatePresetAtIndex,
 } from "./app-core.mjs";
@@ -27,7 +28,7 @@ const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
 assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=62" \/>/);
 assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=62" \/>/);
-assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=62"/);
+assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=68"/);
 assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
 assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
 const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
@@ -42,13 +43,13 @@ assert.match(indexHtml, /function selectInitialZeroOnFocus/);
 assert.match(indexHtml, /medalsInput\.addEventListener\("focus", selectInitialZeroOnFocus\)/);
 assert.match(indexHtml, /id="mainRateCategory"/);
 assert.match(indexHtml, /id="mainRateOption"/);
-assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="mainRateCategory"[\s\S]*id="mainRateOption"/);
-assert.match(indexHtml, /id="exchangeRateHeading"[^>]*>交換率<\/h3>[\s\S]*id="prizeChoiceHeading"[^>]*>景品<\/h3>/);
+assert.match(indexHtml, /class="condition-editor-group"[\s\S]*>交換率<\/h3>[\s\S]*id="conditionExchangeRate"/);
+assert.match(indexHtml, />交換率<\/h3>[\s\S]*>景品<\/h3>/);
 assert.match(indexHtml, /class="chip-mark" aria-hidden="true"/);
 assert.match(indexHtml, /\.chip\.selected[\s\S]*background: var\(--accent\)/);
 assert.match(indexHtml, /\.chip\.selected\s*\{[^}]*box-shadow: none/);
 assert.match(indexHtml, /\.chip:not\(\.selected\)[\s\S]*border-color: var\(--color-accent-focus\)/);
-assert.match(indexHtml, /id="quickSavePresetBtn"/);
+assert.match(indexHtml, /id="saveConditionPresetBtn"/);
 assert.match(indexHtml, /id="presetEditForm"/);
 assert.match(indexHtml, /id="editPresetName"/);
 assert.match(indexHtml, /id="editPresetRateCategory"/);
@@ -62,20 +63,14 @@ assert.match(indexHtml, /selectedPresetIndex\(presetManage\.value, presets\)/);
 assert.match(indexHtml, /movePreset\(\{ presets, index, direction \}\)/);
 assert.match(indexHtml, /id="leftTargetMedals"/);
 assert.match(indexHtml, /id="nextTargetMedals"/);
-assert.match(indexHtml, /id="prevAuxTarget"/);
-assert.match(indexHtml, /id="nextAuxTarget"/);
-assert.match(indexHtml, /ひとつ前/);
-assert.match(indexHtml, /さらに次/);
-assert.match(indexHtml, /id="prevAuxTargetBtn"/);
-assert.match(indexHtml, /id="nextAuxTargetBtn"/);
 assert.match(indexHtml, /id="openConditionSheetBtn"/);
 assert.match(indexHtml, /id="conditionRateSummary"/);
 assert.match(indexHtml, /id="conditionPrizeSummary"/);
 assert.match(indexHtml, /id="openCalcBtn"[\s\S]*class="inline-calc-btn"/);
 assert.doesNotMatch(indexHtml, /id="jumpExchangeTargetBtn"/);
-assert.match(indexHtml, /applyAuxTarget\(button\)/);
-assert.match(indexHtml, /prevAuxTargetBtn\.addEventListener\("click"/);
-assert.match(indexHtml, /nextAuxTargetBtn\.addEventListener\("click"/);
+assert.doesNotMatch(indexHtml, /applyAuxTarget\(button\)/);
+assert.doesNotMatch(indexHtml, /prevAuxTargetBtn\.addEventListener\("click"/);
+assert.doesNotMatch(indexHtml, /nextAuxTargetBtn\.addEventListener\("click"/);
 assert.doesNotMatch(indexHtml, /余りを引く/);
 assert.doesNotMatch(indexHtml, /一段下げる/);
 assert.doesNotMatch(indexHtml, /次の交換額へ/);
@@ -85,55 +80,53 @@ assert.match(indexHtml, /<th>必要枚数<\/th>[\s\S]*<th>交換額<\/th>[\s\S]*
 assert.match(indexHtml, /data-sensitive-group="summary"/);
 assert.match(indexHtml, /data-sensitive-group="table"/);
 assert.match(indexHtml, /data-sensitive-toggle="summary"/);
-assert.match(indexHtml, /data-sensitive-toggle="table"/);
+assert.doesNotMatch(indexHtml, /data-sensitive-toggle="table"/);
 assert.match(indexHtml, /\.sensitive-scope\.blurred/);
-assert.match(indexHtml, /タップで金額と景品を表示/);
 assert.match(indexHtml, /details\.addEventListener\("click"/);
 assert.match(indexHtml, /let sensitiveResultsBlurred = true/);
 assert.match(indexHtml, /function syncSensitiveResults/);
 assert.match(indexHtml, /classList\.toggle\("blurred", sensitiveResultsBlurred\)/);
 assert.match(indexHtml, /sensitiveResultsBlurred = !sensitiveResultsBlurred/);
-assert.match(indexHtml, /function auxTargetMedals\(result, rates\)/);
-assert.match(indexHtml, /candidate\.yen > 0 && candidate\.yen < result\.best\.yen/);
-assert.match(indexHtml, /medals: result\.next\.requiredMedals/);
-assert.match(indexHtml, /renderAuxTarget\(prevAuxTargetBtn, auxTargets\.previous, unit\)/);
-assert.match(indexHtml, /renderAuxTarget\(nextAuxTargetBtn, auxTargets\.next, unit\)/);
+assert.doesNotMatch(indexHtml, /function auxTargetMedals\(result, rates\)/);
 assert.doesNotMatch(indexHtml, /id="toggleDetailsBtn"/);
 assert.doesNotMatch(indexHtml, /detailsOpen/);
 assert.match(indexHtml, /id="updateBanner"/);
 assert.match(indexHtml, /id="reloadUpdateBtn"/);
 assert.match(indexHtml, /id="checkUpdateBtn"/);
-assert.match(indexHtml, /手入力/);
 assert.match(indexHtml, /data-rate-mode="preset"/);
 assert.match(indexHtml, /data-rate-mode="custom"/);
 assert.doesNotMatch(indexHtml, /id="manualRateUnit"/);
 assert.match(indexHtml, /id="saveManualRateMeta"/);
 assert.match(indexHtml, /id="manualSaveKind"/);
 assert.doesNotMatch(indexHtml, /<select id="manualSaveKind"/);
-assert.match(indexHtml, /data-manual-save-kind="slot"[^>]*>パチスロ<\/button>/);
-assert.match(indexHtml, /data-manual-save-kind="pachi"[^>]*>パチンコ<\/button>/);
+assert.match(indexHtml, /data-condition-kind="slot"[^>]*>パチスロ<\/button>/);
+assert.match(indexHtml, /data-condition-kind="pachi"[^>]*>パチンコ<\/button>/);
 assert.match(indexHtml, /id="manualSaveLendingRate"/);
 assert.match(indexHtml, /貸し出しレート/);
 assert.match(indexHtml, /manualSaveKindInput\.value === "pachi" \? `\$\{rateText\}円パチンコ` : `\$\{rateText\}円スロット`/);
+assert.match(indexHtml, /const typeText = isCustomRateMode\(\) \? manualSaveRateLabel\(\) : rateTypeLabel\(\)/);
+assert.match(indexHtml, /manualRateKind:\s*isCustomRateMode\(\)\s*\?\s*manualSaveKindInput\.value/);
+assert.match(indexHtml, /manualLendingRate:\s*isCustomRateMode\(\)\s*\?\s*Number\(manualSaveLendingRateInput\.value\)/);
+assert.match(indexHtml, /settings\.manualRateKind/);
+assert.match(indexHtml, /settings\.manualLendingRate/);
 assert.doesNotMatch(indexHtml, /表示用の種類/);
-assert.match(indexHtml, /id="customExchangeRate"[^>]*step="0\.001"/);
-assert.match(indexHtml, /class="secondary save-toggle-btn"/);
-assert.match(indexHtml, /button\.save-toggle-btn[\s\S]*width: auto/);
-assert.match(indexHtml, /この条件を保存/);
+assert.match(indexHtml, /id="conditionExchangeRate"[^>]*step="0\.001"/);
+assert.match(indexHtml, /id="applyConditionBtn"/);
+assert.match(indexHtml, /Presetとして保存/);
 assert.doesNotMatch(indexHtml, /景品・金額を見る/);
 assert.doesNotMatch(indexHtml, /景品・金額を隠す/);
 assert.doesNotMatch(indexHtml, /結果を見る/);
 assert.doesNotMatch(indexHtml, /結果を隠す/);
+assert.doesNotMatch(indexHtml, /`\$\{formatNumber\(yen\)\}円×\$\{count\}`/);
+assert.match(indexHtml, /count === 1\s*\?\s*formatNumber\(yen\)\s*:\s*`\$\{formatNumber\(yen\)\}×\$\{count\}`/);
 assert.match(indexHtml, /<th>名前<\/th>\s*<th>実績<\/th>\s*<th>目標収支<\/th>\s*<\/tr>/);
 assert.doesNotMatch(indexHtml, /<th>差額<\/th>/);
 assert.doesNotMatch(indexHtml, /member\.balance >= 0 \? "渡す " : "受ける "/);
 assert.doesNotMatch(indexHtml, /#memberResultRows td:nth-child\(4\)/);
-assert.match(indexHtml, /id="showSaveSettingsBtn"[^>]*aria-expanded="false"/);
-assert.match(indexHtml, /data-save-toggle-label="open"/);
-assert.match(indexHtml, /data-save-toggle-label="close"/);
-assert.match(indexHtml, /設定名/);
+assert.doesNotMatch(indexHtml, /id="showSaveSettingsBtn"/);
+assert.match(indexHtml, /Preset名（任意）/);
 assert.match(indexHtml, /placeholder="例: 駅前店"/);
-assert.match(indexHtml, /任意です。空欄の場合は交換率から自動で表示名を作ります。/);
+assert.match(indexHtml, /空欄の場合はレートと遊技タイプから自動で作成します。/);
 assert.doesNotMatch(indexHtml, /例: 交換設定A/);
 assert.doesNotMatch(indexHtml, /<select id="editPresetRateCategory"/);
 assert.match(indexHtml, /id="editPresetLendingRate"/);
@@ -161,8 +154,8 @@ assert.match(indexHtml, /function renderInvestmentCounter/);
 assert.match(indexHtml, /investmentAmount = Math\.max\(0, investmentAmount \+ delta\)/);
 assert.match(indexHtml, /investmentAmount = 0/);
 assert.doesNotMatch(indexHtml, /data-member="\$\{index\}" data-investment-delta/);
-assert.match(serviceWorker, /exchange-tool-pwa-v62/);
-assert.match(serviceWorker, /\.\/app-core\.mjs\?v=62/);
+assert.match(serviceWorker, /exchange-tool-pwa-v68/);
+assert.match(serviceWorker, /\.\/app-core\.mjs\?v=68/);
 assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=62/);
 assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=62/);
 
@@ -183,11 +176,49 @@ assert.equal(exactText, "余りは0枚です。");
 
 assert.equal(calculateExchange({ medals: 0, rateType: "pachi4_28", prizes: [500] }).best.requiredMedals, 0);
 
+const candidateWindow = calculateExchange({
+  medals: 7820,
+  rateType: "test25",
+  prizes: [500, 1000, 5000],
+  rates: { test25: { medalsPerYen: 0.25, unitLabel: "玉" } },
+}).candidates.slice(0, 4);
+assert.deepEqual(candidateWindow.map((candidate) => candidate.requiredMedals), [7875, 7750, 7625, 7500]);
+assert.deepEqual(candidateWindow.map((candidate) => candidate.yen), [31500, 31000, 30500, 30000]);
+
 assert.deepEqual(
   computeGroupShares(-60000, [-80000, 20000], "B", 1000),
   [-45000, -15000],
   "large group-share differences should strongly reduce damage for better performers"
 );
+
+assert.deepEqual(
+  settleGroup({
+    mode: "none",
+    members: [
+      { name: "A", investment: 20000, recovery: 28000 },
+      { name: "B", investment: 15000, recovery: 22000 },
+    ],
+  }).payments,
+  [{ from: "A", to: "B", amount: 500 }],
+  "group settlement should match the approved mock without rounding 500 yen up to 1000"
+);
+
+for (const mode of ["A", "B"]) {
+  const roundedSettlement = settleGroup({
+    mode,
+    members: [
+      { name: "A", investment: 10000, recovery: 18000 },
+      { name: "B", investment: 10000, recovery: 17000 },
+    ],
+  });
+  assert.equal(roundedSettlement.roundUnit, 1000);
+  assert.ok(roundedSettlement.members.every((member) => member.targetNet % 1000 === 0));
+  assert.ok(roundedSettlement.payments.every((payment) => payment.amount % 1000 === 0));
+  assert.equal(
+    roundedSettlement.members.reduce((sum, member) => sum + member.targetNet, 0),
+    roundedSettlement.totalProfit
+  );
+}
 
 const fiveHundredYenUnitRates = {
   twentySixForFiveHundred: { label: "26 per 500", medalsPerYen: 26 / 500, unitLabel: "枚" },
