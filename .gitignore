@@ -1,1 +1,3 @@
 .worktrees/
+.playwright-mcp/
+.superpowers/**/state/*.out

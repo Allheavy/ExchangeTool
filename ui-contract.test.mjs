@@ -180,3 +180,12 @@ test("candidate emphasis and group breakdown styling match the approved mock", (
   assert.match(html, /\.group-table\s*\{[^}]*margin-bottom:\s*var\(--space-lg\)/s);
   assert.match(html, /\.breakdown-section\s*\{[^}]*display:\s*block[^}]*padding:\s*var\(--space-lg\)\s+var\(--space-md\)/s);
 });
+
+test("empty group transfer message keeps breathing room above the divider", () => {
+  const html = indexHtml();
+
+  assert.match(
+    html,
+    /#paymentRows\s*>\s*\.note:only-child\s*\{[^}]*margin:\s*0[^}]*padding:\s*var\(--space-sm\)\s+0\s+var\(--space-md\)/s
+  );
+});
