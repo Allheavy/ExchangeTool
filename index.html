@@ -2961,7 +2961,6 @@
               <h3>交換率</h3>
               <label for="conditionExchangeRate">100円あたり</label>
               <div class="condition-input-shell"><input id="conditionExchangeRate" type="number" min="0.001" max="999" step="0.001" inputmode="decimal"><span id="conditionExchangeRateUnit">玉</span></div>
-              <p class="condition-help">店舗の交換率に合わせて入力してください。</p>
               <p id="conditionRateError" class="field-error hidden"></p>
             </section>
             <section class="condition-editor-group">
@@ -2972,7 +2971,6 @@
             <div id="conditionPresetFields" class="condition-preset-fields hidden">
               <label for="quickPresetName">Preset名（任意）</label>
               <input id="quickPresetName" type="text" placeholder="例: 駅前店">
-              <p class="condition-help">空欄の場合はレートと遊技タイプから自動で作成します。</p>
               <div id="savePresetPreview" class="save-preview"></div>
             </div>
             <button id="applyConditionBtn" class="condition-editor-apply" type="button">この条件を反映</button>
@@ -3059,7 +3057,6 @@
       <section id="candidateResults" class="candidate-section sensitive-scope blurred" data-sensitive-group="table" aria-labelledby="candidateHeading">
         <div class="candidate-head">
           <h2 id="candidateHeading">交換候補</h2>
-          <span>上1 · 達成 · 下2</span>
         </div>
         <div class="table-wrap sensitive-table">
           <table>
@@ -3081,7 +3078,6 @@
       <section id="settingsPanel" class="panel">
         <header class="work-head">
           <h2>管理</h2>
-          <p>景品額と保存した条件を整理します。</p>
         </header>
         <div class="setting-block">
           <h3>景品額</h3>
@@ -3089,7 +3085,7 @@
           <div class="row-3">
             <input id="newPrizeValue" type="number" min="1" step="1" inputmode="numeric" placeholder="例: 100" />
             <span></span>
-            <button id="addPrizeBtn" type="button">追加</button>
+            <button id="addPrizeBtn" type="button">景品額を追加</button>
           </div>
           <div id="prizeTypeList" class="manage-list"></div>
         </div>
@@ -3098,7 +3094,6 @@
           <h3>保存した条件</h3>
           <label for="presetManage">編集するPreset</label>
           <select id="presetManage"></select>
-          <p class="note">保存した条件の表示順を変えます。</p>
           <div class="preset-order-actions">
             <button id="movePresetUpBtn" class="secondary" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3141,7 +3136,7 @@
             </div>
             <label>景品</label>
             <div id="editPresetPrizes" class="preset-edit-prizes"></div>
-            <button id="savePresetEditBtn" type="button">更新</button>
+            <button id="savePresetEditBtn" type="button">条件を保存</button>
           </div>
         </div>
         <div class="setting-block update-setting">
@@ -3155,7 +3150,6 @@
     <section id="groupTab" class="hidden" role="tabpanel" aria-labelledby="groupTabButton">
       <header class="work-head">
         <h2>ノリ打ち</h2>
-        <p>投資と回収から、メンバーごとの目標収支と受け渡しを計算します。</p>
       </header>
 
       <section class="group-section transfer-section">
@@ -3166,7 +3160,7 @@
       <section class="group-section members-section">
         <div class="section-title">
           <h2>メンバー</h2>
-          <button id="addMemberBtn" class="compact-btn" type="button">追加</button>
+          <button id="addMemberBtn" class="compact-btn" type="button">メンバーを追加</button>
         </div>
         <div class="member-columns" aria-hidden="true">
           <span>名前</span><span>投資</span><span>回収</span><span></span>

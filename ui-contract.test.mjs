@@ -86,7 +86,7 @@ test("approved mock structure is preserved across exchange, group, and managemen
 
   assert.match(html, /class="goal-scale"[\s\S]*id="leftMedals"[\s\S]*class="scale-track"[\s\S]*id="leftTargetMedals"[\s\S]*id="nextTargetMedals"/);
   assert.doesNotMatch(html, /ひとつ前|さらに次|id="prevAuxTargetBtn"|id="nextAuxTargetBtn"/);
-  assert.match(html, /class="candidate-head"[\s\S]*上1 · 達成 · 下2/);
+  assert.match(html, /class="candidate-head"\s*>\s*<h2 id="candidateHeading">交換候補<\/h2>\s*<\/div>/);
   assert.match(html, /id="exchangeDetails"[\s\S]*>現在の交換結果<\/h2>/);
 
   assert.ok(
@@ -102,10 +102,34 @@ test("approved mock structure is preserved across exchange, group, and managemen
   assert.match(html, /id="movePresetUpBtn"[\s\S]*?<svg[\s\S]*?上へ移動/);
   assert.match(html, /id="movePresetDownBtn"[\s\S]*?<svg[\s\S]*?下へ移動/);
   assert.match(html, /class="setting-block update-setting"/);
-  assert.match(html, /<header class="work-head">\s*<h2>管理<\/h2>\s*<p>景品額と保存した条件を整理します。<\/p>/);
+  assert.match(html, /<header class="work-head">\s*<h2>管理<\/h2>\s*<\/header>/);
   assert.match(html, /class="admin-actions"[\s\S]*id="editPresetBtn"[\s\S]*id="deletePresetBtn"/);
   assert.match(html, /\.setting-block \.row-3\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto/s);
   assert.match(html, /\.update-setting #checkUpdateBtn\s*\{[^}]*width:\s*auto/s);
+});
+
+test("UI copy names actions without repeating features and preserves decision guidance", () => {
+  const html = indexHtml();
+
+  for (const redundantCopy of [
+    "店舗の交換率に合わせて入力してください。",
+    "空欄の場合はレートと遊技タイプから自動で作成します。",
+    "景品額と保存した条件を整理します。",
+    "保存した条件の表示順を変えます。",
+    "投資と回収から、メンバーごとの目標収支と受け渡しを計算します。",
+    "上1 · 達成 · 下2",
+  ]) {
+    assert.ok(!html.includes(redundantCopy), redundantCopy);
+  }
+  assert.match(html, /id="addPrizeBtn"[^>]*>景品額を追加<\/button>/);
+  assert.match(html, /id="addMemberBtn"[^>]*>メンバーを追加<\/button>/);
+  assert.match(html, /id="savePresetEditBtn"[^>]*>条件を保存<\/button>/);
+  assert.match(html, /id="conditionPrizeError"[^>]*>1つ以上選択してください。<\/p>/);
+  assert.match(html, /成績に応じて、目標収支に差をつけます。/);
+  assert.match(html, /受け渡しはありません。/);
+  assert.match(html, /for="quickPresetName">Preset名（任意）<\/label>/);
+  assert.match(html, /id="savePresetPreview"/);
+  assert.match(html, /aria-label="電卓を開く"/);
 });
 
 test("production tokens use the approved warm paper and pencil slate palette", () => {
