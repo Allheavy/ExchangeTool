@@ -4,6 +4,7 @@ import {
   computeGroupShares,
   activePresetStatusText,
   buildRateConfigFromOption,
+  calculateExchangeFee,
   calculateExchange,
   exchangeCalloutText,
   formatExchangeRateValue,
@@ -15,11 +16,102 @@ import {
   selectedPresetIndex,
   settleGroup,
   movePreset,
+  normalizeExchangeFeeSettings,
   updatePresetAtIndex,
 } from "./app-core.mjs";
 import { existsSync, readFileSync } from "node:fs";
 
 assert.deepEqual(DEFAULT_PRIZES, [500, 1000, 5000]);
+
+for (const [grossYen, expectedFee, expectedNet] of [
+  [5000, 100, 4900],
+  [1000, 20, 980],
+  [500, 10, 490],
+]) {
+  assert.deepEqual(calculateExchangeFee({ grossYen, feeRatePercent: 2 }), {
+    grossYen,
+    feeYen: expectedFee,
+    netYen: expectedNet,
+  });
+}
+assert.deepEqual(calculateExchangeFee({ grossYen: 500, feeRatePercent: 1.5, feeRoundingUnit: 1 }), {
+  grossYen: 500,
+  feeYen: 8,
+  netYen: 492,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 500, feeRatePercent: 1.5, feeRoundingUnit: 10 }), {
+  grossYen: 500,
+  feeYen: 10,
+  netYen: 490,
+});
+assert.equal(calculateExchangeFee({ grossYen: 1000, feeRatePercent: 1.5, feeRoundingUnit: 1 }).feeYen, 15);
+assert.equal(calculateExchangeFee({ grossYen: 500, feeRatePercent: 1.5, feeRoundingUnit: 1 }).feeYen * 2, 16);
+assert.equal(calculateExchangeFee({ grossYen: 2000, feeRatePercent: 1.5, feeRoundingUnit: 10 }).feeYen, 30);
+assert.equal(calculateExchangeFee({ grossYen: 1000, feeRatePercent: 1.5, feeRoundingUnit: 10 }).feeYen * 2, 40);
+assert.deepEqual(calculateExchangeFee({ grossYen: 10000, feeRatePercent: 1.1 }), {
+  grossYen: 10000,
+  feeYen: 110,
+  netYen: 9890,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 1234, feeEnabled: false, feeRatePercent: "invalid" }), {
+  grossYen: 1234,
+  feeYen: 0,
+  netYen: 1234,
+});
+assert.deepEqual(normalizeExchangeFeeSettings({}), {
+  feeEnabled: false,
+  feeRatePercent: 0,
+  feeRoundingUnit: 1,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 1234, ...normalizeExchangeFeeSettings({}) }), {
+  grossYen: 1234,
+  feeYen: 0,
+  netYen: 1234,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 1234, feeRatePercent: 0 }), {
+  grossYen: 1234,
+  feeYen: 0,
+  netYen: 1234,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 0, feeRatePercent: 100 }), {
+  grossYen: 0,
+  feeYen: 0,
+  netYen: 0,
+});
+assert.deepEqual(calculateExchangeFee({ grossYen: 1, feeRatePercent: 100 }), {
+  grossYen: 1,
+  feeYen: 1,
+  netYen: 0,
+});
+for (const feeRatePercent of [-1, 100.01, 1.001, NaN, "not a rate"]) {
+  assert.equal(calculateExchangeFee({ grossYen: 5000, feeRatePercent }), null);
+}
+assert.equal(calculateExchangeFee({ grossYen: 5000, feeRatePercent: 2, feeRoundingUnit: 5 }), null);
+assert.equal(calculateExchangeFee({ grossYen: -1, feeRatePercent: 2 }), null);
+assert.equal(calculateExchangeFee({ grossYen: 1.5, feeRatePercent: 2 }), null);
+assert.deepEqual(normalizeExchangeFeeSettings({ feeEnabled: true, feeRatePercent: 1.15, feeRoundingUnit: 10 }), {
+  feeEnabled: true,
+  feeRatePercent: 1.15,
+  feeRoundingUnit: 10,
+});
+assert.deepEqual(normalizeExchangeFeeSettings({ feeEnabled: true, feeRatePercent: 100.01, feeRoundingUnit: 99 }), {
+  feeEnabled: false,
+  feeRatePercent: 0,
+  feeRoundingUnit: 1,
+});
+
+const unchangedGross = calculateExchange({
+  medals: 1001,
+  rateType: "onePerYen",
+  prizes: [500],
+  rates: { onePerYen: { medalsPerYen: 1, unitLabel: "枚" } },
+});
+assert.equal(unchangedGross.best.yen, 1000);
+assert.equal(unchangedGross.best.requiredMedals, 1000);
+assert.equal(unchangedGross.best.left, 1);
+assert.deepEqual(unchangedGross.best.combo, { 500: 2 });
+assert.equal(unchangedGross.candidates[0].yen, 1500);
+assert.equal(unchangedGross.candidates[0].requiredMedals, 1500);
 
 const indexHtml = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 const serviceWorker = readFileSync(new URL("./sw.js", import.meta.url), "utf8");
@@ -28,7 +120,7 @@ const faviconSvgUrl = new URL("./icons/favicon.svg", import.meta.url);
 assert.match(indexHtml, /id="medals"[^>]*value="0"/);
 assert.match(indexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/icons\/favicon\.svg\?v=62" \/>/);
 assert.match(indexHtml, /<link rel="apple-touch-icon" href="\.\/icons\/icon-192\.png\?v=62" \/>/);
-assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=68"/);
+assert.match(indexHtml, /from "\.\/app-core\.mjs\?v=69"/);
 assert.doesNotMatch(indexHtml, /<link rel="icon" href="\.\/icons\/icon-192\.png" \/>/);
 assert.ok(existsSync(faviconSvgUrl), "generic SVG favicon should exist");
 const faviconSvg = readFileSync(faviconSvgUrl, "utf8");
@@ -77,7 +169,7 @@ assert.doesNotMatch(indexHtml, /一段下げる/);
 assert.doesNotMatch(indexHtml, /次の交換額へ/);
 assert.match(indexHtml, /class="target-medals-number"/);
 assert.match(indexHtml, /id="exchangeDetails"[\s\S]*必要枚数[\s\S]*id="bestRequired"[\s\S]*交換額[\s\S]*id="bestYen"[\s\S]*景品[\s\S]*id="bestCombo"/);
-assert.match(indexHtml, /<th>必要枚数<\/th>[\s\S]*<th>交換額<\/th>[\s\S]*<th>景品<\/th>/);
+assert.match(indexHtml, /<th>必要枚数<\/th>[\s\S]*<th id="candidateMoneyHeading">交換額<\/th>[\s\S]*<th>景品<\/th>/);
 assert.match(indexHtml, /data-sensitive-group="summary"/);
 assert.match(indexHtml, /data-sensitive-group="table"/);
 assert.match(indexHtml, /data-sensitive-toggle="summary"/);
@@ -156,8 +248,8 @@ assert.match(indexHtml, /function renderInvestmentCounter/);
 assert.match(indexHtml, /investmentAmount = Math\.max\(0, investmentAmount \+ delta\)/);
 assert.match(indexHtml, /investmentAmount = 0/);
 assert.doesNotMatch(indexHtml, /data-member="\$\{index\}" data-investment-delta/);
-assert.match(serviceWorker, /exchange-tool-pwa-v68/);
-assert.match(serviceWorker, /\.\/app-core\.mjs\?v=68/);
+assert.match(serviceWorker, /exchange-tool-pwa-v69/);
+assert.match(serviceWorker, /\.\/app-core\.mjs\?v=69/);
 assert.match(serviceWorker, /\.\/icons\/icon-192\.png\?v=62/);
 assert.match(serviceWorker, /\.\/icons\/icon-512\.png\?v=62/);
 
@@ -304,6 +396,9 @@ const presetUpdate = updatePresetAtIndex({
     prizeValues: [1000, 500, 1000],
     unitLabel: "枚",
     rateLabel: "20円スロット 5.3枚交換",
+    feeEnabled: true,
+    feeRatePercent: 1.5,
+    feeRoundingUnit: 10,
   },
 });
 
@@ -316,6 +411,11 @@ assert.deepEqual(presetUpdate.presets[0], {
   prizes: [500],
 });
 assert.equal(presetUpdate.presets[1].exchangeRate, 5.3);
+assert.deepEqual(normalizeExchangeFeeSettings(presetUpdate.updated), {
+  feeEnabled: true,
+  feeRatePercent: 1.5,
+  feeRoundingUnit: 10,
+});
 
 assert.equal(selectedPresetIndex(""), null);
 assert.equal(selectedPresetIndex("0", [{ name: "A" }]), 0);

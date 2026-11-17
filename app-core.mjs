@@ -77,6 +77,54 @@ export function requiredMedalsForYen(yen, rateType, rates = RATE_CONFIGS) {
   return Math.max(0, Math.ceil(yen * rateConfigFor(rateType, rates).medalsPerYen - 1e-9));
 }
 
+function feeRateBasisPoints(value) {
+  if (value === null || value === undefined) return null;
+  const text = String(value).trim();
+  if (!/^(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/.test(text)) return null;
+  const [whole = "0", fraction = ""] = text.split(".");
+  const basisPoints = Number(whole || 0) * 100 + Number((fraction + "00").slice(0, 2));
+  return Number.isInteger(basisPoints) && basisPoints >= 0 && basisPoints <= 10000
+    ? basisPoints
+    : null;
+}
+
+export function normalizeExchangeFeeSettings(settings = {}) {
+  const basisPoints = feeRateBasisPoints(settings.feeRatePercent);
+  const roundingUnit = Number(settings.feeRoundingUnit) === 10 ? 10 : 1;
+  return {
+    feeEnabled: settings.feeEnabled === true && basisPoints !== null,
+    feeRatePercent: basisPoints === null ? 0 : basisPoints / 100,
+    feeRoundingUnit: roundingUnit,
+  };
+}
+
+export function calculateExchangeFee({
+  grossYen,
+  feeEnabled = true,
+  feeRatePercent = 0,
+  feeRoundingUnit = 1,
+} = {}) {
+  const gross = typeof grossYen === "number"
+    ? grossYen
+    : typeof grossYen === "string" && grossYen.trim() !== ""
+      ? Number(grossYen)
+      : NaN;
+  if (!Number.isSafeInteger(gross) || gross < 0) return null;
+  if (!feeEnabled) return { grossYen: gross, feeYen: 0, netYen: gross };
+
+  const basisPoints = feeRateBasisPoints(feeRatePercent);
+  const roundingUnit = Number(feeRoundingUnit);
+  if (basisPoints === null || ![1, 10].includes(roundingUnit)) return null;
+  if (basisPoints === 0 || gross === 0) return { grossYen: gross, feeYen: 0, netYen: gross };
+
+  const unit = BigInt(roundingUnit);
+  const denominator = 10000n * unit;
+  const numerator = BigInt(gross) * BigInt(basisPoints);
+  const roundedFee = ((numerator + denominator - 1n) / denominator) * unit;
+  const feeYen = Math.min(gross, Number(roundedFee));
+  return { grossYen: gross, feeYen, netYen: gross - feeYen };
+}
+
 export function normalizePrizes(prizes) {
   const cleaned = (prizes || [])
     .map((value) => Number(value))

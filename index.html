@@ -2554,6 +2554,67 @@
       font-size: .66rem;
     }
 
+    .fee-toggle {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+      font-weight: 800;
+    }
+
+    .fee-toggle input {
+      width: 1.125rem;
+      min-height: 1.125rem;
+      margin: 0;
+      accent-color: var(--color-accent);
+    }
+
+    .fee-fields {
+      display: grid;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    .fee-fields > div:not(.fee-preview) > label {
+      display: block;
+      margin-bottom: var(--space-2xs);
+    }
+
+    .fee-fields select {
+      width: 100%;
+    }
+
+    .fee-preview {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-xs);
+      align-items: baseline;
+      padding: var(--space-sm);
+      border: var(--rule-thin) solid var(--color-rule-soft);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-soft);
+      font-size: .75rem;
+    }
+
+    .fee-preview strong {
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fee-preview small {
+      grid-column: 1 / -1;
+      color: var(--color-ink-2);
+    }
+
+    .fee-preview small:empty {
+      display: none;
+    }
+
+    .preset-fee-controls {
+      display: grid;
+      gap: var(--space-xs);
+      padding-top: var(--space-xs);
+    }
+
     .condition-editor-apply {
       width: auto;
       min-height: 3rem;
@@ -2968,6 +3029,22 @@
               <div id="conditionPrizeChoices" class="condition-prize-options"></div>
               <p id="conditionPrizeError" class="condition-help">1つ以上選択してください。</p>
             </section>
+            <section class="condition-editor-group">
+              <h3>手数料</h3>
+              <label class="fee-toggle" for="conditionFeeEnabled"><input id="conditionFeeEnabled" type="checkbox">交換手数料</label>
+              <div id="conditionFeeFields" class="fee-fields hidden">
+                <div>
+                  <label for="conditionFeeRate">手数料率</label>
+                  <div class="condition-input-shell"><input id="conditionFeeRate" type="number" min="0" max="100" step="0.01" value="0" inputmode="decimal"><span>%</span></div>
+                </div>
+                <div>
+                  <label for="conditionFeeRoundingUnit">手数料の切り上げ単位</label>
+                  <select id="conditionFeeRoundingUnit"><option value="1">1円</option><option value="10">10円</option></select>
+                </div>
+                <p id="conditionFeeError" class="field-error hidden"></p>
+                <div class="fee-preview"><span>5,000円分の受取額</span><strong id="conditionFeePreviewAmount">5,000円</strong><small id="conditionFeePreviewDeduction" class="sensitive-value"></small></div>
+              </div>
+            </section>
             <div id="conditionPresetFields" class="condition-preset-fields hidden">
               <label for="quickPresetName">Preset名（任意）</label>
               <input id="quickPresetName" type="text" placeholder="例: 駅前店">
@@ -3044,8 +3121,9 @@
             </button>
           </div>
           <div>
-            <span class="status-label">交換額</span>
+            <span id="bestYenLabel" class="status-label">交換額</span>
             <strong id="bestYen" class="status-value sensitive-value">0円</strong>
+            <small id="bestFeeDeduction" class="status-label sensitive-value hidden"></small>
           </div>
           <div>
             <span class="status-label">景品</span>
@@ -3063,7 +3141,7 @@
             <thead>
               <tr>
                 <th>必要枚数</th>
-                <th>交換額</th>
+                <th id="candidateMoneyHeading">交換額</th>
                 <th>景品</th>
               </tr>
             </thead>
@@ -3136,6 +3214,20 @@
             </div>
             <label>景品</label>
             <div id="editPresetPrizes" class="preset-edit-prizes"></div>
+            <div class="preset-fee-controls">
+              <label class="fee-toggle" for="editPresetFeeEnabled"><input id="editPresetFeeEnabled" type="checkbox">交換手数料</label>
+              <div id="editPresetFeeFields" class="fee-fields hidden">
+                <div>
+                  <label for="editPresetFeeRate">手数料率</label>
+                  <div class="condition-input-shell"><input id="editPresetFeeRate" type="number" min="0" max="100" step="0.01" value="0" inputmode="decimal"><span>%</span></div>
+                </div>
+                <div>
+                  <label for="editPresetFeeRoundingUnit">手数料の切り上げ単位</label>
+                  <select id="editPresetFeeRoundingUnit"><option value="1">1円</option><option value="10">10円</option></select>
+                </div>
+                <p id="editPresetFeeError" class="field-error hidden"></p>
+              </div>
+            </div>
             <button id="savePresetEditBtn" type="button">条件を保存</button>
           </div>
         </div>
@@ -3272,19 +3364,21 @@
       RATE_CONFIGS,
       buildRateConfigFromOption,
       calculateExchange,
+      calculateExchangeFee,
       deletePrizeType,
       evaluateCalculatorExpression,
       exchangeCalloutText,
       formatNumber,
       movePreset,
       nextMemberName,
+      normalizeExchangeFeeSettings,
       rateCategoryOptions,
       selectedPresetIndex,
       settleGroup,
       unitLabelFor,
       unitLabelForPreset,
       updatePresetAtIndex,
-    } from "./app-core.mjs?v=68";
+    } from "./app-core.mjs?v=69";
 
     const SETTINGS_KEY = "exchangeTool.settings.v5";
     const PRESETS_KEY = "exchangeTool.presets.v5";
@@ -3322,6 +3416,13 @@
     const prizeChoices = document.getElementById("conditionPrizeChoices");
     const conditionLendingRate = document.getElementById("conditionLendingRate");
     const conditionExchangeRate = document.getElementById("conditionExchangeRate");
+    const conditionFeeEnabled = document.getElementById("conditionFeeEnabled");
+    const conditionFeeFields = document.getElementById("conditionFeeFields");
+    const conditionFeeRate = document.getElementById("conditionFeeRate");
+    const conditionFeeRoundingUnit = document.getElementById("conditionFeeRoundingUnit");
+    const conditionFeeError = document.getElementById("conditionFeeError");
+    const conditionFeePreviewAmount = document.getElementById("conditionFeePreviewAmount");
+    const conditionFeePreviewDeduction = document.getElementById("conditionFeePreviewDeduction");
     const conditionKindButtons = [...document.querySelectorAll("[data-condition-kind]")];
     const conditionPresetFields = document.getElementById("conditionPresetFields");
     const applyConditionBtn = document.getElementById("applyConditionBtn");
@@ -3336,6 +3437,11 @@
     const editPresetKindButtons = [...document.querySelectorAll("[data-edit-preset-kind]")];
     const editPresetRateOption = document.getElementById("editPresetRateOption");
     const editPresetPrizes = document.getElementById("editPresetPrizes");
+    const editPresetFeeEnabled = document.getElementById("editPresetFeeEnabled");
+    const editPresetFeeFields = document.getElementById("editPresetFeeFields");
+    const editPresetFeeRate = document.getElementById("editPresetFeeRate");
+    const editPresetFeeRoundingUnit = document.getElementById("editPresetFeeRoundingUnit");
+    const editPresetFeeError = document.getElementById("editPresetFeeError");
     const details = document.getElementById("exchangeDetails");
     const calcSheet = document.getElementById("calcSheet");
     const memberRows = document.getElementById("memberRows");
@@ -3347,6 +3453,7 @@
     const updateStatus = document.getElementById("updateStatus");
     let activePresetName = "";
     let activePresetUnitLabel = "";
+    let currentFeeSettings = normalizeExchangeFeeSettings({});
     let mainRateId = "";
     let activeCustomRateId = "";
     let calcExpression = "";
@@ -3439,6 +3546,7 @@
         isCustomExchangeRate: isCustomRateMode(),
         manualRateKind: isCustomRateMode() ? manualSaveKindInput.value : "",
         manualLendingRate: isCustomRateMode() ? Number(manualSaveLendingRateInput.value) || null : null,
+        ...currentFeeSettings,
         prizes: currentPrizes(),
       });
     }
@@ -3846,6 +3954,46 @@
       document.getElementById("conditionExchangeRateUnit").textContent = next === "slot" ? "枚" : "玉";
     }
 
+    function conditionFeeDraft() {
+      return {
+        feeEnabled: conditionFeeEnabled.checked,
+        feeRatePercent: conditionFeeRate.value,
+        feeRoundingUnit: conditionFeeRoundingUnit.value,
+      };
+    }
+
+    function renderConditionFeePreview() {
+      const preview = calculateExchangeFee({ grossYen: 5000, ...conditionFeeDraft() });
+      conditionFeeFields.classList.toggle("hidden", !conditionFeeEnabled.checked);
+      conditionFeeError.classList.toggle("hidden", preview !== null);
+      conditionFeeError.textContent = preview === null
+        ? "0〜100％・小数点以下2桁までで入力してください。"
+        : "";
+      conditionFeePreviewAmount.textContent = preview ? `${formatNumber(preview.netYen)}円` : "—";
+      conditionFeePreviewDeduction.textContent = preview?.feeYen
+        ? `手数料 −${formatNumber(preview.feeYen)}円`
+        : "";
+      return preview !== null;
+    }
+
+    function conditionFeeDraftSettings() {
+      return normalizeExchangeFeeSettings(conditionFeeDraft());
+    }
+
+    function editPresetFeeDraft() {
+      return {
+        feeEnabled: editPresetFeeEnabled.checked,
+        feeRatePercent: editPresetFeeRate.value,
+        feeRoundingUnit: editPresetFeeRoundingUnit.value,
+      };
+    }
+
+    function syncEditPresetFeeFields() {
+      editPresetFeeFields.classList.toggle("hidden", !editPresetFeeEnabled.checked);
+      editPresetFeeError.classList.add("hidden");
+      editPresetFeeError.textContent = "";
+    }
+
     function populateConditionEditor() {
       const category = mainRateCategoryInput.value || "pachi4";
       const kind = category.startsWith("slot") ? "slot" : "pachi";
@@ -3853,6 +4001,10 @@
       const defaultLendingRate = RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || (kind === "slot" ? 20 : 4);
       conditionLendingRate.value = manualSaveLendingRateInput.value || formatExchangeRateValue(defaultLendingRate);
       conditionExchangeRate.value = formatExchangeRateValue(currentExchangeRateValue());
+      conditionFeeEnabled.checked = currentFeeSettings.feeEnabled;
+      conditionFeeRate.value = formatExchangeRateValue(currentFeeSettings.feeRatePercent);
+      conditionFeeRoundingUnit.value = String(currentFeeSettings.feeRoundingUnit);
+      renderConditionFeePreview();
       renderPrizeChoices(currentPrizes().length ? currentPrizes() : getPrizeTypes());
     }
 
@@ -3863,7 +4015,10 @@
       document.getElementById("conditionRateError").classList.toggle("hidden", lendingRate > 0 && exchangeRate > 0);
       document.getElementById("conditionPrizeError").classList.toggle("field-error", prizes.length === 0);
       if (!(lendingRate > 0) || !(exchangeRate > 0) || prizes.length === 0) return false;
+      if (!renderConditionFeePreview()) return false;
+      const nextFeeSettings = conditionFeeDraftSettings();
       const kind = selectedConditionKind();
+      currentFeeSettings = nextFeeSettings;
       mainRateCategoryInput.value = kind === "slot" ? "slot20" : "pachi4";
       setManualSaveKind(kind);
       manualSaveLendingRateInput.value = formatExchangeRateValue(lendingRate);
@@ -3891,9 +4046,13 @@
       const rate = currentExchangeRateValue();
       const config = currentRateCategoryConfig();
       const typeText = isCustomRateMode() ? manualSaveRateLabel() : rateTypeLabel();
-      rateSummary.textContent = Number.isFinite(rate) && rate > 0
+      const rateText = Number.isFinite(rate) && rate > 0
         ? `${typeText} / ${formatExchangeRateValue(rate)}${config?.unitLabel || currentUnit()}交換`
         : `${typeText} / -`;
+      const feeText = currentFeeSettings.feeEnabled && currentFeeSettings.feeRatePercent > 0
+        ? ` / 手数料${formatExchangeRateValue(currentFeeSettings.feeRatePercent)}％${currentFeeSettings.feeRoundingUnit === 10 ? "・10円単位" : ""}`
+        : "";
+      rateSummary.textContent = `${rateText}${feeText}`;
       const prizes = currentPrizes();
       prizeSummary.textContent = prizes.length
         ? prizes.map((prize) => `${formatNumber(prize)}円`).join(" / ")
@@ -4018,6 +4177,9 @@
       presetEditForm.classList.toggle("hidden", !preset);
       if (!preset) {
         editPresetPrizes.innerHTML = "";
+        editPresetFeeEnabled.checked = false;
+        editPresetFeeFields.classList.add("hidden");
+        editPresetFeeError.classList.add("hidden");
         return;
       }
       const category = rateCategoryForPreset(preset);
@@ -4029,6 +4191,11 @@
       renderEditPresetKindButtons();
       editPresetRateOption.value = formatExchangeRateValue(rateValue);
       renderPrizeChecks(editPresetPrizes, "editPresetPrize", Array.isArray(preset.prizes) ? preset.prizes : getPrizeTypes());
+      const feeSettings = normalizeExchangeFeeSettings(preset);
+      editPresetFeeEnabled.checked = feeSettings.feeEnabled;
+      editPresetFeeRate.value = formatExchangeRateValue(feeSettings.feeRatePercent);
+      editPresetFeeRoundingUnit.value = String(feeSettings.feeRoundingUnit);
+      syncEditPresetFeeFields();
     }
 
     function renderManageLists() {
@@ -4074,6 +4241,7 @@
 
     function applyPreset(preset) {
       if (!preset) return;
+      currentFeeSettings = normalizeExchangeFeeSettings(preset);
       activePresetName = displayNameForPreset(preset);
       activePresetUnitLabel = unitLabelForPreset(preset, "");
       if (preset.isCustomExchangeRate && Number.isFinite(Number(preset.exchangeRate))) {
@@ -4169,12 +4337,22 @@
         rates,
       });
       const unit = currentUnit();
+      const feeActive = currentFeeSettings.feeEnabled && currentFeeSettings.feeRatePercent > 0;
+      const bestReceipt = calculateExchangeFee({ grossYen: result.best.yen, ...currentFeeSettings });
+      const bestDisplayedYen = bestReceipt?.netYen ?? result.best.yen;
       const shortage = result.next.shortage;
       document.getElementById("leftMedals").textContent = `−${formatNumber(result.best.left)}${unit}`;
       document.getElementById("nextShortage").textContent = `＋${formatNumber(shortage)}${unit}`;
       renderTargetMedals(document.getElementById("leftTargetMedals"), result.best.requiredMedals, unit);
       renderTargetMedals(document.getElementById("nextTargetMedals"), result.next.yen ? result.next.requiredMedals : null, unit);
-      document.getElementById("bestYen").textContent = `${formatNumber(result.best.yen)}円`;
+      document.getElementById("bestYenLabel").textContent = feeActive ? "受取額" : "交換額";
+      document.getElementById("bestYen").textContent = `${formatNumber(bestDisplayedYen)}円`;
+      const feeDeduction = document.getElementById("bestFeeDeduction");
+      feeDeduction.classList.toggle("hidden", !feeActive || !bestReceipt?.feeYen);
+      feeDeduction.textContent = feeActive && bestReceipt?.feeYen
+        ? `手数料 −${formatNumber(bestReceipt.feeYen)}円`
+        : "";
+      document.getElementById("candidateMoneyHeading").textContent = feeActive ? "受取額" : "交換額";
       document.getElementById("bestRequired").textContent = `${formatNumber(result.best.requiredMedals)}${unit}`;
       document.getElementById("bestCombo").textContent = comboText(result.best.combo);
 
@@ -4187,11 +4365,33 @@
       result.candidates.slice(0, 4).forEach((candidate) => {
         const tr = document.createElement("tr");
         if (candidate.requiredMedals === result.best.requiredMedals) tr.className = "current-candidate";
-        tr.innerHTML = `
-          <td>${candidate.requiredMedals === result.best.requiredMedals ? '<span class="candidate-status">達成</span>' : ""}${formatNumber(candidate.requiredMedals)}<span class="candidate-required-unit">${unit}</span></td>
-          <td><span class="sensitive-value">${formatNumber(candidate.yen)}円</span></td>
-          <td><span class="sensitive-value">${comboText(candidate.combo)}</span></td>
-        `;
+        const candidateReceipt = feeActive
+          ? calculateExchangeFee({ grossYen: candidate.yen, ...currentFeeSettings })
+          : null;
+        const candidateDisplayedYen = candidateReceipt?.netYen ?? candidate.yen;
+        const requiredCell = document.createElement("td");
+        if (candidate.requiredMedals === result.best.requiredMedals) {
+          const status = document.createElement("span");
+          status.className = "candidate-status";
+          status.textContent = "達成";
+          requiredCell.appendChild(status);
+        }
+        requiredCell.append(document.createTextNode(formatNumber(candidate.requiredMedals)));
+        const requiredUnit = document.createElement("span");
+        requiredUnit.className = "candidate-required-unit";
+        requiredUnit.textContent = unit;
+        requiredCell.appendChild(requiredUnit);
+        const moneyCell = document.createElement("td");
+        const moneyValue = document.createElement("span");
+        moneyValue.className = "sensitive-value";
+        moneyValue.textContent = `${formatNumber(candidateDisplayedYen)}円`;
+        moneyCell.appendChild(moneyValue);
+        const comboCell = document.createElement("td");
+        const comboValue = document.createElement("span");
+        comboValue.className = "sensitive-value";
+        comboValue.textContent = comboText(candidate.combo);
+        comboCell.appendChild(comboValue);
+        tr.append(requiredCell, moneyCell, comboCell);
         rows.appendChild(tr);
       });
       syncSensitiveResults();
@@ -4277,6 +4477,7 @@
         rateType: "rate5152",
         prizes: getPrizeTypes(),
       });
+      currentFeeSettings = normalizeExchangeFeeSettings(settings);
       renderMainRateOptions();
       if (settings.isCustomExchangeRate && Number.isFinite(Number(settings.exchangeRate))) {
         const savedKind = settings.manualRateKind === "slot" ? "slot" : "pachi";
@@ -4422,6 +4623,9 @@
     conditionKindButtons.forEach((button) => {
       button.addEventListener("click", () => setConditionKind(button.dataset.conditionKind));
     });
+    conditionFeeEnabled.addEventListener("change", renderConditionFeePreview);
+    conditionFeeRate.addEventListener("input", renderConditionFeePreview);
+    conditionFeeRoundingUnit.addEventListener("change", renderConditionFeePreview);
     prizeChoices.addEventListener("click", (event) => {
       const button = event.target.closest("[data-condition-prize]");
       if (!button) return;
@@ -4441,7 +4645,13 @@
     manualSaveLendingRateInput.addEventListener("input", renderSavePreview);
 
     saveConditionPresetBtn.addEventListener("click", () => {
-      if (!applyConditionEditorValues() || !validateCurrentRate()) {
+      if (!applyConditionEditorValues()) {
+        showToast(conditionFeeEnabled.checked && !renderConditionFeePreview()
+          ? "手数料率を確認してください。"
+          : "交換率を正しく入力してください。");
+        return;
+      }
+      if (!validateCurrentRate()) {
         showToast("交換率を正しく入力してください。");
         return;
       }
@@ -4464,6 +4674,7 @@
         isCustomExchangeRate: isCustomRateMode(),
         manualRateKind: isCustomRateMode() ? manualSaveKindInput.value : "",
         manualLendingRate: isCustomRateMode() ? Number(manualSaveLendingRateInput.value) || null : null,
+        ...currentFeeSettings,
         prizes,
         prizeValues: prizes,
         unitLabel: rateConfig?.unitLabel || currentUnit(),
@@ -4519,6 +4730,9 @@
       button.addEventListener("click", () => setEditPresetKind(button.dataset.editPresetKind));
     });
     editPresetLendingRate.addEventListener("input", syncEditPresetCategoryFromInputs);
+    editPresetFeeEnabled.addEventListener("change", syncEditPresetFeeFields);
+    editPresetFeeRate.addEventListener("input", syncEditPresetFeeFields);
+    editPresetFeeRoundingUnit.addEventListener("change", syncEditPresetFeeFields);
 
     document.getElementById("savePresetEditBtn").addEventListener("click", () => {
       const presets = loadJson(PRESETS_KEY, []);
@@ -4527,6 +4741,12 @@
         showToast("編集する設定を選んでください。");
         return;
       }
+      const feePreview = calculateExchangeFee({ grossYen: 5000, ...editPresetFeeDraft() });
+      editPresetFeeError.textContent = feePreview === null
+        ? "0〜100％・小数点以下2桁までで入力してください。"
+        : "";
+      editPresetFeeError.classList.toggle("hidden", feePreview !== null);
+      if (feePreview === null) return;
       syncEditPresetCategoryFromInputs();
       const category = editPresetRateCategory.value;
       const exchangeRate = Number(editPresetRateOption.value);
@@ -4557,6 +4777,7 @@
           isCustomExchangeRate: !guidedRate,
           manualRateKind: category.startsWith("pachi") ? "pachi" : "slot",
           manualLendingRate: Number(editPresetLendingRate.value) || RATE_CATEGORY_UI_CONFIGS[category]?.yenPerUnit || null,
+          ...normalizeExchangeFeeSettings(editPresetFeeDraft()),
           prizes,
           prizeValues: prizes,
           unitLabel: rateConfig.unitLabel,

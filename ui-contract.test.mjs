@@ -170,7 +170,7 @@ test("exchange targets, connector, candidate units, and preset add alignment fol
   assert.match(html, /leftTargetMedals\.addEventListener\("click",\s*\(\) => applyTargetMedals\(leftTargetMedals\)\)/);
   assert.match(html, /nextTargetMedals\.addEventListener\("click",\s*\(\) => applyTargetMedals\(nextTargetMedals\)\)/);
   assert.match(html, /medalsInput\.dispatchEvent\(new Event\("input", \{ bubbles: true \}\)\)/);
-  assert.match(html, /class="candidate-required-unit"/);
+  assert.match(html, /requiredUnit\.className = "candidate-required-unit"/);
   assert.match(html, /\.preset-row\s*\{[^}]*align-items:\s*center/s);
   assert.match(html, /\.preset-add\s*\{[^}]*align-self:\s*center/s);
 });
@@ -192,6 +192,39 @@ test("condition editor uses the approved fullscreen mock structure", () => {
   assert.doesNotMatch(html, />よく使う</);
   assert.doesNotMatch(html, /id="showSaveSettingsBtn"/);
   assert.doesNotMatch(html, /id="guidedRateFieldsGroup"/);
+});
+
+test("exchange fee is opt-in, rounded once on gross, and persisted with settings and Presets", () => {
+  const html = indexHtml();
+  const serviceWorker = readFileSync(serviceWorkerUrl, "utf8");
+
+  assert.match(html, /id="conditionFeeEnabled" type="checkbox">交換手数料/);
+  assert.match(html, /id="conditionFeeRate" type="number" min="0" max="100" step="0\.01"/);
+  assert.match(html, /id="conditionFeeRoundingUnit"[\s\S]*value="1">1円[\s\S]*value="10">10円/);
+  assert.match(html, /5,000円分の受取額[\s\S]*id="conditionFeePreviewAmount"/);
+  assert.match(html, /function renderConditionFeePreview\(\)[\s\S]*calculateExchangeFee\(\{ grossYen: 5000/);
+  assert.match(html, /id="editPresetFeeEnabled" type="checkbox">交換手数料/);
+  assert.match(html, /id="editPresetFeeRate" type="number" min="0" max="100" step="0\.01"/);
+  assert.match(html, /id="editPresetFeeRoundingUnit"/);
+
+  assert.match(html, /data-sensitive-group="summary"[\s\S]*id="bestFeeDeduction" class="status-label sensitive-value hidden"/);
+  assert.match(html, /id="bestYenLabel" class="status-label">交換額/);
+  assert.match(html, /id="candidateMoneyHeading">交換額<\/th>/);
+  assert.match(html, /const feeActive = currentFeeSettings\.feeEnabled && currentFeeSettings\.feeRatePercent > 0/);
+  assert.match(html, /bestYenLabel"\)\.textContent = feeActive \? "受取額" : "交換額"/);
+  assert.match(html, /candidateMoneyHeading"\)\.textContent = feeActive \? "受取額" : "交換額"/);
+  assert.match(html, /function saveSettings\(\)[\s\S]*\.\.\.currentFeeSettings[\s\S]*prizes: currentPrizes\(\)/);
+  assert.match(html, /function applyInitialSettings\(\)[\s\S]*currentFeeSettings = normalizeExchangeFeeSettings\(settings\)/);
+  assert.match(html, /presets\.push\(\{[\s\S]*\.\.\.currentFeeSettings[\s\S]*prizeValues: prizes/);
+  assert.match(html, /function applyPreset\(preset\)[\s\S]*currentFeeSettings = normalizeExchangeFeeSettings\(preset\)/);
+  assert.match(html, /\.\.\.normalizeExchangeFeeSettings\(editPresetFeeDraft\(\)\)/);
+  assert.match(html, /editPresetFeeEnabled\.checked = feeSettings\.feeEnabled/);
+  assert.match(html, /conditionFeeEnabled\.addEventListener\("change", renderConditionFeePreview\)/);
+  assert.match(html, /closeConditionSheetBtn\.addEventListener\("click", \(\) => setConditionSheetOpen\(false\)\)/);
+  assert.match(html, /from "\.\/app-core\.mjs\?v=69"/);
+  assert.match(serviceWorker, /exchange-tool-pwa-v69/);
+  assert.match(serviceWorker, /\.\/app-core\.mjs\?v=69/);
+  assert.match(html, /\.\/tokens\.css\?v=65/);
 });
 
 test("candidate emphasis and group breakdown styling match the approved mock", () => {
